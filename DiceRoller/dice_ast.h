@@ -1,6 +1,10 @@
 #ifndef DICE_AST_H
 #define DICE_AST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // the maximum size of a die that may be rolled
 #define DICE_MAX_SIDES 100000
 // the maximum number of dice that may be rolled (including extra dice from exploding dice/rerolls)
@@ -168,5 +172,9 @@ DiceAST *dice_compare_less(DiceAST *expr);
 
 int evaluate(DiceAST *node);
 void free_tree(DiceAST *root);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

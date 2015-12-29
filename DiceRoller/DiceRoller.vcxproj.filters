@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dice.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dice_ast.c">
       <Filter>Source Files</Filter>
     </ClCompile>

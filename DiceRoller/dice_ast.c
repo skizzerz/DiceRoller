@@ -82,6 +82,8 @@ DiceAST *dice_nothing()
 	node->type = DICE_NODE_NULL;
 	node->size = sizeof(DiceAST);
 	node->value = 0;
+
+	return node;
 }
 
 DiceAST *dice_basic_node(DiceAST *num, DiceAST *sides, DiceAST *extras)
@@ -89,10 +91,6 @@ DiceAST *dice_basic_node(DiceAST *num, DiceAST *sides, DiceAST *extras)
 	DiceAST *ret;
 	DiceExtras *ext;
 	DiceRollNode *node;
-	DiceKeepNode *keep;
-	DiceExplodeNode *explode;
-	DiceRerollNode *reroll;
-	DiceSuccessNode *success;
 
 	node = (DiceRollNode *)malloc(sizeof(DiceRollNode));
 	node->base.type = DICE_NODE_ROLL;
@@ -534,11 +532,12 @@ DiceAST *dice_compare_less(DiceAST *expr) {
 
 // produces a random integer from [1, max] (inclusive)
 static int rand_int(int max) {
-
+	// FIXME: replace with an RNG that guarantees an even distribution
+	return (rand() % max) + 1;
 }
 
 static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
-	int res,
+	int res, i, num1, num2,
 		rolls = 0;
 
 	if (recurse > DICE_MAX_RECURSE)
@@ -550,8 +549,6 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 		if (res < 0)
 			return res;
 		rolls = res;
-		if (rolls > DICE_MAX_DICE)
-			return DICE_ERROR_MAXDICE;
 
 		res = evaluate_reentrant(((DiceMathNode *)node)->right, root, recurse + 1);
 		if (res < 0)
@@ -581,13 +578,30 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 	case DICE_NODE_GROUP:
 		break;
 	case DICE_NODE_ROLL:
-		res = evaluate_reentrant(((DiceRollNode *)node)->num, root, recurse + 1);
+		res = evaluate_reentrant(((DiceRollNode *)node)->sides, root, recurse + 1);
 		if (res < 0)
 			return res;
 		rolls = res;
+		if (((DiceRollNode *)node)->sides->value > DICE_MAX_SIDES)
+			return DICE_ERROR_MAXSIDES;
+
+		res = evaluate_reentrant(((DiceRollNode *)node)->num, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls += res;
+		num1 = ((DiceRollNode *)node)->num->value;
+		rolls += num1;
 		if (rolls > DICE_MAX_DICE)
 			return DICE_ERROR_MAXDICE;
 
+		((DiceRollNode *)node)->values = (int *)malloc(rolls * sizeof(int));
+		node->value = 0;
+
+		for (i = 0; i < num1; ++i) {
+			num2 = rand_int(((DiceRollNode *)node)->sides->value);
+			((DiceRollNode *)node)->values[i] = num2;
+			node->value += num2;
+		}
 
 		break;
 	case DICE_NODE_REROLL:
