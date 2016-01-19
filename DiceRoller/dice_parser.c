@@ -165,7 +165,7 @@ union YYSTYPE
 
 
 
-int yyparse (DiceAST &&expr, yyscan_t scanner);
+int yyparse (DiceAST **expr, yyscan_t scanner);
 
 #endif /* !YY_YY_DICE_PARSER_H_INCLUDED  */
 
@@ -697,7 +697,7 @@ do {                                                                      \
 `----------------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DiceAST &&expr, yyscan_t scanner)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DiceAST **expr, yyscan_t scanner)
 {
   FILE *yyo = yyoutput;
   YYUSE (yyo);
@@ -718,7 +718,7 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DiceAST &&expr, yyscan_t scanner)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DiceAST **expr, yyscan_t scanner)
 {
   YYFPRINTF (yyoutput, "%s %s (",
              yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
@@ -756,7 +756,7 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, int yyrule, DiceAST &&expr, yyscan_t scanner)
+yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, int yyrule, DiceAST **expr, yyscan_t scanner)
 {
   unsigned long int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -1036,7 +1036,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, DiceAST &&expr, yyscan_t scanner)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, DiceAST **expr, yyscan_t scanner)
 {
   YYUSE (yyvaluep);
   YYUSE (expr);
@@ -1058,7 +1058,7 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, DiceAST &&expr, yy
 `----------*/
 
 int
-yyparse (DiceAST &&expr, yyscan_t scanner)
+yyparse (DiceAST **expr, yyscan_t scanner)
 {
 /* The lookahead symbol.  */
 int yychar;

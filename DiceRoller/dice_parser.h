@@ -104,6 +104,6 @@ union YYSTYPE
 
 
 
-int yyparse (DiceAST &&expr, yyscan_t scanner);
+int yyparse (DiceAST **expr, yyscan_t scanner);
 
 #endif /* !YY_YY_DICE_PARSER_H_INCLUDED  */

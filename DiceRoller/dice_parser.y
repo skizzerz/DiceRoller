@@ -22,7 +22,7 @@ typedef void* yy_scanner_t;
 
 %define api.pure
 %lex-param { yyscan_t scanner }
-%parse-param { DiceAST &&expr }
+%parse-param { DiceAST **expr }
 %parse-param { yyscan_t scanner }
 
 %union {
