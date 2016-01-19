@@ -18,6 +18,7 @@ typedef void* yy_scanner_t;
 
 %output "dice_parser.c"
 %defines "dice_parser.h"
+%expect 9
 
 %define api.pure
 %lex-param { yyscan_t scanner }
@@ -42,7 +43,7 @@ typedef void* yy_scanner_t;
 %token T_COMPOUND
 %token T_PENETRATE
 %token T_FAIL
-%token T_EQUAL
+%token T_EQUALS
 %token T_GREATER
 %token T_LESS
 %token T_LBRACE
@@ -116,7 +117,7 @@ opt_number
 	;
 
 grouped_roll
-	: number T_LBRACE grouped_roll_inner T_RBRACE grouped_extras
+	: opt_number T_LBRACE grouped_roll_inner T_RBRACE grouped_extras
 		{ $$ = dice_group_node($1, $3, $5); }
 	| basic_roll { $$ = $1; }
 	;

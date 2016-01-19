@@ -57,4 +57,6 @@ SPACE " "
 "*"				{ return T_MULTIPLY; }
 "/"				{ return T_DIVIDE; }
 
+.|\n			{ /* no-op */ }
+
 %%
