@@ -465,7 +465,7 @@ static yyconst flex_int16_t yy_chk[71] =
 #line 2 "dice_lexer.l"
 
 #include "dice.h"
-#include "dice_lexer.h"
+#include "dice_ast.h"
 #include "dice_parser.h"
 
 #define YY_NO_UNISTD_H 1
