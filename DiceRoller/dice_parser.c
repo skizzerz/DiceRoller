@@ -65,13 +65,15 @@
 #line 1 "dice_parser.y" /* yacc.c:339  */
 
 
+#define YY_NO_UNISTD
+#define YY_USE_CONST
 #include "dice.h"
 #include "dice_ast.h"
 #include "dice_parser.h"
 #include "dice_lexer.h"
 
 
-#line 75 "dice_parser.c" /* yacc.c:339  */
+#line 77 "dice_parser.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -101,7 +103,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 10 "dice_parser.y" /* yacc.c:355  */
+#line 12 "dice_parser.y" /* yacc.c:355  */
 
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -110,7 +112,7 @@ typedef void* yyscan_t;
 #endif
 
 
-#line 114 "dice_parser.c" /* yacc.c:355  */
+#line 116 "dice_parser.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -152,12 +154,12 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "dice_parser.y" /* yacc.c:355  */
+#line 30 "dice_parser.y" /* yacc.c:355  */
 
 	unsigned int value;
 	DiceAST *expr;
 
-#line 161 "dice_parser.c" /* yacc.c:355  */
+#line 163 "dice_parser.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -171,7 +173,7 @@ int yyparse (DiceAST **expr, yyscan_t scanner);
 
 /* Copy the second part of user declarations.  */
 
-#line 175 "dice_parser.c" /* yacc.c:358  */
+#line 177 "dice_parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -471,11 +473,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    84,    84,    88,    92,    93,    94,    98,    99,   100,
-     104,   105,   106,   110,   111,   115,   116,   120,   122,   126,
-     127,   131,   135,   137,   142,   146,   147,   148,   149,   150,
-     151,   155,   156,   157,   161,   162,   163,   164,   168,   169,
-     173,   174,   178,   179,   183,   184,   188,   189,   190
+       0,    86,    86,    90,    94,    95,    96,   100,   101,   102,
+     106,   107,   108,   112,   113,   117,   118,   122,   124,   128,
+     129,   133,   137,   139,   144,   148,   149,   150,   151,   152,
+     153,   157,   158,   159,   163,   164,   165,   166,   170,   171,
+     175,   176,   180,   181,   185,   186,   190,   191,   192
 };
 #endif
 
@@ -1306,289 +1308,289 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 84 "dice_parser.y" /* yacc.c:1646  */
+#line 86 "dice_parser.y" /* yacc.c:1646  */
     { *expr = (yyvsp[0].expr); }
-#line 1312 "dice_parser.c" /* yacc.c:1646  */
+#line 1314 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 88 "dice_parser.y" /* yacc.c:1646  */
+#line 90 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1318 "dice_parser.c" /* yacc.c:1646  */
+#line 1320 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 92 "dice_parser.y" /* yacc.c:1646  */
+#line 94 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_multiply_node((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1324 "dice_parser.c" /* yacc.c:1646  */
+#line 1326 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 93 "dice_parser.y" /* yacc.c:1646  */
+#line 95 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_divide_node((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1330 "dice_parser.c" /* yacc.c:1646  */
+#line 1332 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 94 "dice_parser.y" /* yacc.c:1646  */
+#line 96 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1336 "dice_parser.c" /* yacc.c:1646  */
+#line 1338 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 98 "dice_parser.y" /* yacc.c:1646  */
+#line 100 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_add_node((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1342 "dice_parser.c" /* yacc.c:1646  */
+#line 1344 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 99 "dice_parser.y" /* yacc.c:1646  */
+#line 101 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_subtract_node((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1348 "dice_parser.c" /* yacc.c:1646  */
+#line 1350 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 100 "dice_parser.y" /* yacc.c:1646  */
+#line 102 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1354 "dice_parser.c" /* yacc.c:1646  */
+#line 1356 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 104 "dice_parser.y" /* yacc.c:1646  */
+#line 106 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[-1].expr); }
-#line 1360 "dice_parser.c" /* yacc.c:1646  */
+#line 1362 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 105 "dice_parser.y" /* yacc.c:1646  */
+#line 107 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1366 "dice_parser.c" /* yacc.c:1646  */
+#line 1368 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 106 "dice_parser.y" /* yacc.c:1646  */
+#line 108 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1372 "dice_parser.c" /* yacc.c:1646  */
+#line 1374 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 110 "dice_parser.y" /* yacc.c:1646  */
+#line 112 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_literal_node((yyvsp[0].value)); }
-#line 1378 "dice_parser.c" /* yacc.c:1646  */
+#line 1380 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 111 "dice_parser.y" /* yacc.c:1646  */
+#line 113 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[-1].expr); }
-#line 1384 "dice_parser.c" /* yacc.c:1646  */
+#line 1386 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 115 "dice_parser.y" /* yacc.c:1646  */
+#line 117 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1390 "dice_parser.c" /* yacc.c:1646  */
+#line 1392 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 116 "dice_parser.y" /* yacc.c:1646  */
+#line 118 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_literal_node(1); }
-#line 1396 "dice_parser.c" /* yacc.c:1646  */
+#line 1398 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 121 "dice_parser.y" /* yacc.c:1646  */
+#line 123 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_group_node((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1402 "dice_parser.c" /* yacc.c:1646  */
+#line 1404 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 122 "dice_parser.y" /* yacc.c:1646  */
+#line 124 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1408 "dice_parser.c" /* yacc.c:1646  */
+#line 1410 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 126 "dice_parser.y" /* yacc.c:1646  */
+#line 128 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_extend_group((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 1414 "dice_parser.c" /* yacc.c:1646  */
+#line 1416 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 127 "dice_parser.y" /* yacc.c:1646  */
+#line 129 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_group_list((yyvsp[0].expr)); }
-#line 1420 "dice_parser.c" /* yacc.c:1646  */
+#line 1422 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 131 "dice_parser.y" /* yacc.c:1646  */
+#line 133 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_group_extras((yyvsp[-1].expr), (yyvsp[0].expr)); }
-#line 1426 "dice_parser.c" /* yacc.c:1646  */
+#line 1428 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 136 "dice_parser.y" /* yacc.c:1646  */
+#line 138 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_basic_node((yyvsp[-3].expr), (yyvsp[-1].expr), (yyvsp[0].expr)); }
-#line 1432 "dice_parser.c" /* yacc.c:1646  */
+#line 1434 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 138 "dice_parser.y" /* yacc.c:1646  */
+#line 140 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_fate_node((yyvsp[-2].expr)); }
-#line 1438 "dice_parser.c" /* yacc.c:1646  */
+#line 1440 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 142 "dice_parser.y" /* yacc.c:1646  */
+#line 144 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_basic_extras((yyvsp[-3].expr), (yyvsp[-2].expr), (yyvsp[-1].expr), (yyvsp[0].expr)); }
-#line 1444 "dice_parser.c" /* yacc.c:1646  */
+#line 1446 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 146 "dice_parser.y" /* yacc.c:1646  */
+#line 148 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_keep_high((yyvsp[0].expr)); }
-#line 1450 "dice_parser.c" /* yacc.c:1646  */
+#line 1452 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 147 "dice_parser.y" /* yacc.c:1646  */
+#line 149 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_keep_low((yyvsp[0].expr)); }
-#line 1456 "dice_parser.c" /* yacc.c:1646  */
+#line 1458 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 148 "dice_parser.y" /* yacc.c:1646  */
+#line 150 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_drop_high((yyvsp[0].expr)); }
-#line 1462 "dice_parser.c" /* yacc.c:1646  */
+#line 1464 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 149 "dice_parser.y" /* yacc.c:1646  */
+#line 151 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_drop_low((yyvsp[0].expr)); }
-#line 1468 "dice_parser.c" /* yacc.c:1646  */
+#line 1470 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 150 "dice_parser.y" /* yacc.c:1646  */
+#line 152 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_drop_low((yyvsp[0].expr)); }
-#line 1474 "dice_parser.c" /* yacc.c:1646  */
+#line 1476 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 151 "dice_parser.y" /* yacc.c:1646  */
+#line 153 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1480 "dice_parser.c" /* yacc.c:1646  */
+#line 1482 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 155 "dice_parser.y" /* yacc.c:1646  */
+#line 157 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_reroll((yyvsp[0].expr)); }
-#line 1486 "dice_parser.c" /* yacc.c:1646  */
+#line 1488 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 156 "dice_parser.y" /* yacc.c:1646  */
+#line 158 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_reroll_once((yyvsp[0].expr)); }
-#line 1492 "dice_parser.c" /* yacc.c:1646  */
+#line 1494 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 157 "dice_parser.y" /* yacc.c:1646  */
+#line 159 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1498 "dice_parser.c" /* yacc.c:1646  */
+#line 1500 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 161 "dice_parser.y" /* yacc.c:1646  */
+#line 163 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_explode((yyvsp[0].expr)); }
-#line 1504 "dice_parser.c" /* yacc.c:1646  */
+#line 1506 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 162 "dice_parser.y" /* yacc.c:1646  */
+#line 164 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_compound((yyvsp[0].expr)); }
-#line 1510 "dice_parser.c" /* yacc.c:1646  */
+#line 1512 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 163 "dice_parser.y" /* yacc.c:1646  */
+#line 165 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_penetrate((yyvsp[0].expr)); }
-#line 1516 "dice_parser.c" /* yacc.c:1646  */
+#line 1518 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 164 "dice_parser.y" /* yacc.c:1646  */
+#line 166 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1522 "dice_parser.c" /* yacc.c:1646  */
+#line 1524 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 168 "dice_parser.y" /* yacc.c:1646  */
+#line 170 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_success((yyvsp[-1].expr), (yyvsp[0].expr)); }
-#line 1528 "dice_parser.c" /* yacc.c:1646  */
+#line 1530 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 169 "dice_parser.y" /* yacc.c:1646  */
+#line 171 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1534 "dice_parser.c" /* yacc.c:1646  */
+#line 1536 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 173 "dice_parser.y" /* yacc.c:1646  */
+#line 175 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1540 "dice_parser.c" /* yacc.c:1646  */
+#line 1542 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 174 "dice_parser.y" /* yacc.c:1646  */
+#line 176 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1546 "dice_parser.c" /* yacc.c:1646  */
+#line 1548 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 178 "dice_parser.y" /* yacc.c:1646  */
+#line 180 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1552 "dice_parser.c" /* yacc.c:1646  */
+#line 1554 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 179 "dice_parser.y" /* yacc.c:1646  */
+#line 181 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_nothing(); }
-#line 1558 "dice_parser.c" /* yacc.c:1646  */
+#line 1560 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 183 "dice_parser.y" /* yacc.c:1646  */
+#line 185 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_compare_equals((yyvsp[0].expr)); }
-#line 1564 "dice_parser.c" /* yacc.c:1646  */
+#line 1566 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 184 "dice_parser.y" /* yacc.c:1646  */
+#line 186 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = (yyvsp[0].expr); }
-#line 1570 "dice_parser.c" /* yacc.c:1646  */
+#line 1572 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 188 "dice_parser.y" /* yacc.c:1646  */
+#line 190 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_compare_equals((yyvsp[0].expr)); }
-#line 1576 "dice_parser.c" /* yacc.c:1646  */
+#line 1578 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 189 "dice_parser.y" /* yacc.c:1646  */
+#line 191 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_compare_greater((yyvsp[0].expr)); }
-#line 1582 "dice_parser.c" /* yacc.c:1646  */
+#line 1584 "dice_parser.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 190 "dice_parser.y" /* yacc.c:1646  */
+#line 192 "dice_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = dice_compare_less((yyvsp[0].expr)); }
-#line 1588 "dice_parser.c" /* yacc.c:1646  */
+#line 1590 "dice_parser.c" /* yacc.c:1646  */
     break;
 
 
-#line 1592 "dice_parser.c" /* yacc.c:1646  */
+#line 1594 "dice_parser.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1816,5 +1818,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 193 "dice_parser.y" /* yacc.c:1906  */
+#line 195 "dice_parser.y" /* yacc.c:1906  */
 

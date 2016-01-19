@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 10 "dice_parser.y" /* yacc.c:1909  */
+#line 12 "dice_parser.y" /* yacc.c:1909  */
 
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -91,7 +91,7 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "dice_parser.y" /* yacc.c:1909  */
+#line 30 "dice_parser.y" /* yacc.c:1909  */
 
 	unsigned int value;
 	DiceAST *expr;

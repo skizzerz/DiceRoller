@@ -464,12 +464,13 @@ static yyconst flex_int16_t yy_chk[71] =
 #line 1 "dice_lexer.l"
 #line 2 "dice_lexer.l"
 
+#define YY_USE_CONST
 #include "dice.h"
 #include "dice_ast.h"
 #include "dice_parser.h"
 
 #define YY_NO_UNISTD_H 1
-#line 473 "dice_lexer.c"
+#line 474 "dice_lexer.c"
 
 #define INITIAL 0
 
@@ -707,10 +708,10 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 17 "dice_lexer.l"
+#line 18 "dice_lexer.l"
 
 
-#line 714 "dice_lexer.c"
+#line 715 "dice_lexer.c"
 
     yylval = yylval_param;
 
@@ -793,165 +794,165 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "dice_lexer.l"
+#line 20 "dice_lexer.l"
 { /* no-op, skip blanks */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 20 "dice_lexer.l"
+#line 21 "dice_lexer.l"
 { yylval->value = strtoul(yytext, NULL, 10); return T_DIGIT_STRING; }
 	YY_BREAK
 case 3:
-#line 23 "dice_lexer.l"
+#line 24 "dice_lexer.l"
 case 4:
 YY_RULE_SETUP
-#line 23 "dice_lexer.l"
+#line 24 "dice_lexer.l"
 { /* no-op, skip comments */ }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 25 "dice_lexer.l"
+#line 26 "dice_lexer.l"
 { return T_D; /* used for both drop lowest and dice */ }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 26 "dice_lexer.l"
+#line 27 "dice_lexer.l"
 { return T_FATE; }
 	YY_BREAK
 case 7:
-#line 29 "dice_lexer.l"
+#line 30 "dice_lexer.l"
 case 8:
 YY_RULE_SETUP
-#line 29 "dice_lexer.l"
+#line 30 "dice_lexer.l"
 { return T_KEEP_HIGH; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 30 "dice_lexer.l"
+#line 31 "dice_lexer.l"
 { return T_KEEP_LOW; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "dice_lexer.l"
+#line 32 "dice_lexer.l"
 { return T_DROP_LOW; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 32 "dice_lexer.l"
+#line 33 "dice_lexer.l"
 { return T_DROP_HIGH; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 34 "dice_lexer.l"
+#line 35 "dice_lexer.l"
 { return T_REROLL; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 35 "dice_lexer.l"
+#line 36 "dice_lexer.l"
 { return T_REROLL_ONCE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 37 "dice_lexer.l"
+#line 38 "dice_lexer.l"
 { return T_EXPLODE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 38 "dice_lexer.l"
+#line 39 "dice_lexer.l"
 { return T_COMPOUND; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 39 "dice_lexer.l"
+#line 40 "dice_lexer.l"
 { return T_PENETRATE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 41 "dice_lexer.l"
+#line 42 "dice_lexer.l"
 { return T_FAIL; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 43 "dice_lexer.l"
+#line 44 "dice_lexer.l"
 { return T_EQUALS; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 44 "dice_lexer.l"
+#line 45 "dice_lexer.l"
 { return T_GREATER; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 45 "dice_lexer.l"
+#line 46 "dice_lexer.l"
 { return T_LESS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 47 "dice_lexer.l"
+#line 48 "dice_lexer.l"
 { return T_LBRACE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 48 "dice_lexer.l"
+#line 49 "dice_lexer.l"
 { return T_RBRACE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 49 "dice_lexer.l"
+#line 50 "dice_lexer.l"
 { return T_LSQUARE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 50 "dice_lexer.l"
+#line 51 "dice_lexer.l"
 { return T_RSQUARE; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 51 "dice_lexer.l"
+#line 52 "dice_lexer.l"
 { return T_COMMA; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 53 "dice_lexer.l"
+#line 54 "dice_lexer.l"
 { return T_LPAREN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 54 "dice_lexer.l"
+#line 55 "dice_lexer.l"
 { return T_RPAREN; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 55 "dice_lexer.l"
+#line 56 "dice_lexer.l"
 { return T_PLUS; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 56 "dice_lexer.l"
+#line 57 "dice_lexer.l"
 { return T_MINUS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 57 "dice_lexer.l"
+#line 58 "dice_lexer.l"
 { return T_MULTIPLY; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 58 "dice_lexer.l"
+#line 59 "dice_lexer.l"
 { return T_DIVIDE; }
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 60 "dice_lexer.l"
+#line 61 "dice_lexer.l"
 { /* no-op */ }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 62 "dice_lexer.l"
+#line 63 "dice_lexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 955 "dice_lexer.c"
+#line 956 "dice_lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2115,7 +2116,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 62 "dice_lexer.l"
+#line 63 "dice_lexer.l"
 
 
 
