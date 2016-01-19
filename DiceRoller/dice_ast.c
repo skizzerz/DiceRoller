@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include "dice.h"
 #include "dice_ast.h"
 
 DiceAST *dice_multiply_node(DiceAST *left, DiceAST *right)
@@ -141,10 +142,8 @@ DiceAST *dice_basic_node(DiceAST *num, DiceAST *sides, DiceAST *extras)
 	return ret;
 }
 
-DiceAST *dice_fate_node(DiceAST *num, DiceAST *extras)
+DiceAST *dice_fate_node(DiceAST *num)
 {
-	DiceAST *ret;
-	DiceExtras *ext;
 	DiceRollNode *node;
 
 	node = (DiceRollNode *)malloc(sizeof(DiceRollNode));
@@ -156,44 +155,8 @@ DiceAST *dice_fate_node(DiceAST *num, DiceAST *extras)
 	node->num = num;
 	node->sides = NULL;
 	node->values = NULL;
-	ret = (DiceAST *)node;
 
-	if (extras->type == DICE_NODE_EXTRAS)
-	{
-		ext = (DiceExtras *)extras;
-
-		if (ext->reroll != NULL)
-		{
-			assert(ext->reroll->type == DICE_NODE_REROLL);
-			((DiceRerollNode *)ext->reroll)->expr = ret;
-			ret = ext->reroll;
-		}
-
-		if (ext->explode != NULL)
-		{
-			assert(ext->explode->type == DICE_NODE_EXPLODE);
-			((DiceExplodeNode *)ext->explode)->expr = ret;
-			ret = ext->explode;
-		}
-
-		if (ext->keep != NULL)
-		{
-			assert(ext->keep->type == DICE_NODE_KEEP);
-			((DiceKeepNode *)ext->keep)->expr = ret;
-			ret = ext->keep;
-		}
-
-		if (ext->success != NULL)
-		{
-			assert(ext->success->type == DICE_NODE_SUCCESS);
-			((DiceSuccessNode *)ext->success)->expr = ret;
-			ret = ext->success;
-		}
-	}
-
-	free(extras);
-
-	return ret;
+	return (DiceAST *)node;
 }
 
 DiceAST *dice_group_node(DiceAST *num, DiceAST *group, DiceAST *extras)
@@ -405,7 +368,7 @@ DiceAST *dice_reroll(DiceAST *cond) {
 	node->once = 0;
 	node->cond = cond;
 	node->expr = NULL;
-	node->rerolled = 0;
+	node->rolled = 0;
 
 	return (DiceAST *)node;
 }
@@ -420,7 +383,7 @@ DiceAST *dice_reroll_once(DiceAST *cond) {
 	node->once = 1;
 	node->cond = cond;
 	node->expr = NULL;
-	node->rerolled = 0;
+	node->rolled = 0;
 
 	return (DiceAST *)node;
 }
@@ -536,82 +499,485 @@ static int rand_int(int max) {
 	return (rand() % max) + 1;
 }
 
+// performs a comparison, returning 1 if the comparison is true and 0 if false
+static int dicecmp(int type, float dice_value, float comp_value) {
+	switch (type) {
+	case DICE_COMP_EQUAL:
+		return dice_value == comp_value;
+	case DICE_COMP_LESSER:
+		return dice_value < comp_value;
+	case DICE_COMP_GREATER:
+		return dice_value > comp_value;
+	}
+
+	// getting here means the comparison was ill-formed, which is an error
+	assert(0);
+	return 0;
+}
+
+// find an underlying "roll" of this node, which can be a roll, grouped roll, or keep node
+// (e.g. things with a "values" array that holds individual results)
+static DiceAST *find_roll(DiceAST *node) {
+	switch (node->type) {
+	case DICE_NODE_ROLL:
+	case DICE_NODE_GROUP:
+	case DICE_NODE_KEEP:
+		return node;
+	case DICE_NODE_REROLL:
+		return find_roll(((DiceRerollNode *)node)->expr);
+	case DICE_NODE_EXPLODE:
+		return find_roll(((DiceExplodeNode *)node)->expr);
+	case DICE_NODE_SUCCESS:
+		return find_roll(((DiceSuccessNode *)node)->expr);
+	default:
+		// invalid call
+		assert(0);
+	}
+}
+
+static int intcmp(const void *p1, const void *p2) {
+	int x = *(const int *)p1;
+	int y = *(const int *)p2;
+
+	if (x == y)
+		return 0;
+	if (x < y)
+		return -1;
+	return 1;
+}
+
 static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
-	int res, i, num1, num2,
-		rolls = 0;
+	int res, i, rolls = 0;
 
 	if (recurse > DICE_MAX_RECURSE)
 		return DICE_ERROR_MAXRECURSE;
 
 	switch (node->type) {
 	case DICE_NODE_MATH:
-		res = evaluate_reentrant(((DiceMathNode *)node)->left, root, recurse + 1);
+	{
+		DiceMathNode *self = (DiceMathNode *)node;
+
+		res = evaluate_reentrant(self->left, root, recurse + 1);
 		if (res < 0)
 			return res;
 		rolls = res;
 
-		res = evaluate_reentrant(((DiceMathNode *)node)->right, root, recurse + 1);
+		res = evaluate_reentrant(self->right, root, recurse + 1);
 		if (res < 0)
 			return res;
 		rolls += res;
 		if (rolls > DICE_MAX_DICE)
 			return DICE_ERROR_MAXDICE;
 
-		switch (((DiceMathNode *)node)->op) {
+		switch (self->op) {
 		case DICE_OP_ADD:
-			node->value = ((DiceMathNode *)node)->left->value + ((DiceMathNode *)node)->right->value;
+			node->value = self->left->value + self->right->value;
 			break;
 		case DICE_OP_SUBTRACT:
-			node->value = ((DiceMathNode *)node)->left->value - ((DiceMathNode *)node)->right->value;
+			node->value = self->left->value - self->right->value;
 			break;
 		case DICE_OP_MULTIPLY:
-			node->value = ((DiceMathNode *)node)->left->value * ((DiceMathNode *)node)->right->value;
+			node->value = self->left->value * self->right->value;
 			break;
 		case DICE_OP_DIVIDE:
-			if (((DiceMathNode *)node)->right->value == 0)
+			if (self->right->value == 0)
 				return DICE_ERROR_DIVZERO;
-			node->value = ((DiceMathNode *)node)->left->value / ((DiceMathNode *)node)->right->value;
+			node->value = self->left->value / self->right->value;
 			break;
 		}
 
 		break;
+	}
 	case DICE_NODE_GROUP:
-		break;
-	case DICE_NODE_ROLL:
-		res = evaluate_reentrant(((DiceRollNode *)node)->sides, root, recurse + 1);
+	{
+		DiceGroupedRollNode *self = (DiceGroupedRollNode *)node;
+		int run;
+		short num;
+
+		res = evaluate_reentrant(self->num, root, recurse + 1);
 		if (res < 0)
 			return res;
 		rolls = res;
-		if (((DiceRollNode *)node)->sides->value > DICE_MAX_SIDES)
-			return DICE_ERROR_MAXSIDES;
 
-		res = evaluate_reentrant(((DiceRollNode *)node)->num, root, recurse + 1);
-		if (res < 0)
-			return res;
-		rolls += res;
-		num1 = ((DiceRollNode *)node)->num->value;
-		rolls += num1;
-		if (rolls > DICE_MAX_DICE)
-			return DICE_ERROR_MAXDICE;
-
-		((DiceRollNode *)node)->values = (int *)malloc(rolls * sizeof(int));
+		num = (short)self->num->value;
+		self->values = (int *)malloc(num * self->groupsize * sizeof(int));
+		self->valuesize = num * self->groupsize;
 		node->value = 0;
 
-		for (i = 0; i < num1; ++i) {
-			num2 = rand_int(((DiceRollNode *)node)->sides->value);
-			((DiceRollNode *)node)->values[i] = num2;
-			node->value += num2;
+		for (run = 0; run < num; ++run) {
+			int offset = num * self->groupsize;
+
+			for (i = 0; i < self->groupsize; ++i) {
+				res = evaluate_reentrant(self->exprs[i], root, recurse + 1);
+				if (res < 0)
+					return res;
+				rolls += res;
+				if (rolls > DICE_MAX_DICE)
+					return DICE_ERROR_MAXDICE;
+
+				self->values[offset + i] = (int)self->exprs[i]->value;
+				node->value += self->values[offset + i];
+			}
 		}
 
 		break;
+	}
+	case DICE_NODE_ROLL:
+	{
+		DiceRollNode *self = (DiceRollNode *)node;
+		int num, val, sides, sub = 0;
+
+		res = evaluate_reentrant(self->num, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls = res;
+
+		num = (int)self->num->value;
+		if (num < 1)
+			return DICE_ERROR_MINDICE;
+		rolls += num;
+		if (rolls > DICE_MAX_DICE)
+			return DICE_ERROR_MAXDICE;
+
+		if (self->type == DICE_ROLL_NORMAL) {
+			res = evaluate_reentrant(self->sides, root, recurse + 1);
+			if (res < 0)
+				return res;
+			rolls += res;
+			sides = (int)self->sides->value;
+			if (sides > DICE_MAX_SIDES)
+				return DICE_ERROR_MAXSIDES;
+			if (sides < 1)
+				return DICE_ERROR_MINSIDES;
+		} else if (self->type == DICE_ROLL_FATE) {
+			sides = 3;
+			// normal range is [1, sides], for fate we want [-1, 1] so we subtract 2 from the result
+			sub = 2;
+		} else {
+			// invalid type
+			assert(0);
+		}
+
+		self->values = (int *)malloc(rolls * sizeof(int));
+		node->value = 0;
+
+		for (i = 0; i < num; ++i) {
+			val = rand_int(sides) - sub;
+			self->values[i] = val;
+			node->value += val;
+		}
+
+		break;
+	}
 	case DICE_NODE_REROLL:
+	{
+		DiceRerollNode *self = (DiceRerollNode *)node;
+		DiceCompareNode *cond = (DiceCompareNode *)self->cond;
+		// self->expr is guaranteed to be a DiceRollNode based on our grammar
+		DiceRollNode *roll = (DiceRollNode *)self->expr;
+		int num, val, sides, sub = 0;
+
+		res = evaluate_reentrant(self->expr, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls = res;
+
+		res = evaluate_reentrant(cond->expr, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls += res;
+		if (rolls > DICE_MAX_DICE)
+			return DICE_ERROR_MAXDICE;
+
+		++self->rolled;
+
+		num = (int)roll->num->value;
+
+		if (roll->type == DICE_ROLL_NORMAL) {
+			sides = (int)roll->sides->value;
+		} else {
+			sides = 3;
+			sub = 2;
+		}
+
+		// perform the rerolls here without reevaluating the subtree
+		// (which makes the number of dice and number of sides essentially fixed values)
+		while (dicecmp(cond->type, roll->base.value, cond->base.value)) {
+			rolls += num;
+			if (rolls > DICE_MAX_DICE)
+				return DICE_ERROR_MAXDICE;
+
+			roll->base.value = 0;
+			for (i = 0; i < num; ++i) {
+				val = rand_int(sides) - sub;
+				roll->values[i] = val;
+				roll->base.value += val;
+			}
+
+			if (self->once && self->rolled > 1)
+				break;
+		}
+
+		node->value = roll->base.value;
+
 		break;
+	}
 	case DICE_NODE_EXPLODE:
+	{
+		DiceExplodeNode *self = (DiceExplodeNode *)node;
+		DiceCompareNode *cond = (DiceCompareNode *)self->cond;
+		DiceRollNode *roll = find_roll(self->expr);
+		// fate dice cannot be exploded
+		assert(roll->type == DICE_ROLL_NORMAL);
+		int num = (int)roll->num->value;
+		int sides = (int)roll->sides->value;
+		int cond_type, val;
+		float cond_comp;
+
+		res = evaluate_reentrant(self->expr, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls = res;
+
+		if (cond != NULL) {
+			res = evaluate_reentrant(cond->expr, root, recurse + 1);
+			if (res < 0)
+				return res;
+			rolls += res;
+			if (rolls > DICE_MAX_DICE)
+				return DICE_ERROR_MAXDICE;
+			cond_type = cond->type;
+			cond_comp = cond->expr->value;
+		} else {
+			cond_type = DICE_COMP_EQUAL;
+			cond_comp = sides;
+		}
+
+		// go through our roll values and explode all of them that match cond
+		// if cond is NULL then we explode all of them with a result equal to the number of sides
+		switch (self->type) {
+		case DICE_EXPLODE_EXPLODE:
+			// new dice are added to the end, existing values are unchanged
+			for (i = 0; i < num; ++i) {
+				if (dicecmp(cond_type, roll->values[i], cond_comp)) {
+					++rolls;
+					if (rolls > DICE_MAX_DICE)
+						return DICE_ERROR_MAXDICE;
+
+					roll->values = (int *)realloc(roll->values, (num + 1) * sizeof(int));
+					val = rand_int(sides);
+					roll->values[num] = val;
+					roll->base.value += val;
+					++roll->extra;
+					++num;
+				}
+			}
+			break;
+		case DICE_EXPLODE_COMPOUND:
+			// new dice are added to the existing values, leaving number of individual die values unchanged
+			for (i = 0; i < num; ++i) {
+				val = roll->values[i];
+
+				while (dicecmp(cond_type, val, cond_comp)) {
+					++rolls;
+					if (rolls > DICE_MAX_DICE)
+						return DICE_ERROR_MAXDICE;
+
+					val = rand_int(sides);
+					roll->values[i] += val;
+					roll->base.value += val;
+				}
+			}
+			break;
+		case DICE_EXPLODE_PENETRATE:
+		{
+			// like DICE_EXPLODE_COMPOUND, except 1 is subtracted from each additional roll, and
+			// d100s downgrade to d20s, and d20s downgrade to d6s (per HackMaster 5e rules).
+			// Downgraded d20s do not further downgrade, however. Downgrading is not performed
+			// if an explicit condition is specified (e.g. cond != NULL), which allows for
+			// HackMaster 4e style penetrating dice which do not downgrade.
+			int orig_comp = cond_comp, orig_sides = sides, downgraded;
+
+			for (i = 0; i < num; ++i) {
+				val = roll->values[i];
+				downgraded = 0;
+				sides = orig_sides;
+				cond_comp = orig_comp;
+
+				while (dicecmp(cond_type, val, cond_comp)) {
+					++rolls;
+					if (rolls > DICE_MAX_DICE)
+						return DICE_ERROR_MAXDICE;
+
+					if (downgraded == 0 && cond == NULL) {
+						if (sides == 100) {
+							downgraded = 1;
+							sides = 20;
+							cond_comp = 20;
+						} else if (sides == 20) {
+							downgraded = 1;
+							sides = 6;
+							cond_comp = 6;
+						}
+					}
+
+					val = rand_int(sides);
+					roll->values[i] += val - 1;
+					roll->base.value += val - 1;
+				}
+			}
+			break;
+		}
+		}
+
+		node->value = roll->base.value;
+
 		break;
+	}
 	case DICE_NODE_KEEP:
+	{
+		DiceKeepNode *self = (DiceKeepNode *)node;
+		DiceAST *rollNode = find_roll(self->expr);
+
+		res = evaluate_reentrant(self->expr, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls = res;
+
+		res = evaluate_reentrant(self->amount, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls += res;
+		if (rolls > DICE_MAX_DICE)
+			return DICE_ERROR_MAXDICE;
+
+		if (rollNode->type == DICE_NODE_ROLL) {
+			DiceRollNode *roll = (DiceRollNode *)rollNode;
+			// can't use a keep node on fate dice
+			assert(roll->type == DICE_ROLL_NORMAL);
+
+			short num = (short)roll->num->value + roll->extra;
+
+			// sort die values lowest->highest so we can re-use the same underlying array
+			qsort(roll->values, (int)roll->num->value + roll->extra, sizeof(int), intcmp);
+
+			// determine our offset into roll->values depending on keep type
+			switch (self->type) {
+			case DICE_KEEP_KEEP_LOW:
+				self->num = min((short)self->amount->value, num);
+				self->values = roll->values;
+				break;
+			case DICE_KEEP_KEEP_HIGH:
+				self->num = min((short)self->amount->value, num);
+				self->values = roll->values + num - self->num;
+				break;
+			case DICE_KEEP_DROP_LOW:
+				self->num = max(num - (short)self->amount->value, 1);
+				self->values = roll->values + num - self->num;
+				break;
+			case DICE_KEEP_DROP_HIGH:
+				self->num = max(num - (short)self->amount->value, 1);
+				self->values = roll->values;
+			}
+		} else if (rollNode->type == DICE_NODE_GROUP) {
+			DiceGroupedRollNode *group = (DiceGroupedRollNode *)rollNode;
+
+			// sort die values lowest->highest so we can re-use the same underlying array
+			qsort(group->values, group->valuesize, sizeof(int), intcmp);
+
+			// determine our offset into group->values depending on keep type
+			switch (self->type) {
+			case DICE_KEEP_KEEP_LOW:
+				self->num = min((short)self->amount->value, group->valuesize);
+				self->values = group->values;
+				break;
+			case DICE_KEEP_KEEP_HIGH:
+				self->num = min((short)self->amount->value, group->valuesize);
+				self->values = group->values + group->valuesize - self->num;
+				break;
+			case DICE_KEEP_DROP_LOW:
+				self->num = max(group->valuesize - (short)self->amount->value, 1);
+				self->values = group->values + group->valuesize - self->num;
+				break;
+			case DICE_KEEP_DROP_HIGH:
+				self->num = max(group->valuesize - (short)self->amount->value, 1);
+				self->values = group->values;
+			}
+		} else {
+			// trying to keep a keep node, or something; not allowed by grammar regardless
+			assert(0);
+		}
+
+		node->value = 0;
+		for (i = 0; i < self->num; ++i) {
+			node->value += self->values[i];
+		}
+
 		break;
+	}
 	case DICE_NODE_SUCCESS:
+	{
+		DiceSuccessNode *self = (DiceSuccessNode *)node;
+		DiceCompareNode *success = (DiceCompareNode *)self->success_cond;
+		DiceCompareNode *failure = (DiceCompareNode *)self->failure_cond;
+		DiceAST *rollNode = find_roll(self->expr);
+		int *values;
+		int num;
+
+		res = evaluate_reentrant(self->expr, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls = res;
+
+		res = evaluate_reentrant(self->success_cond, root, recurse + 1);
+		if (res < 0)
+			return res;
+		rolls += res;
+		if (rolls > DICE_MAX_DICE)
+			return DICE_ERROR_MAXDICE;
+
+		if (failure != NULL) {
+			res = evaluate_reentrant(self->failure_cond, root, recurse + 1);
+			if (res < 0)
+				return res;
+			rolls += res;
+			if (rolls > DICE_MAX_DICE)
+				return DICE_ERROR_MAXDICE;
+		}
+
+		switch (rollNode->type) {
+		case DICE_NODE_ROLL:
+			values = ((DiceRollNode *)rollNode)->values;
+			num = (int)((DiceRollNode *)rollNode)->num->value + ((DiceRollNode *)rollNode)->extra;
+			break;
+		case DICE_NODE_GROUP:
+			values = ((DiceGroupedRollNode *)rollNode)->values;
+			num = ((DiceGroupedRollNode *)rollNode)->valuesize;
+			break;
+		case DICE_NODE_KEEP:
+			values = ((DiceKeepNode *)rollNode)->values;
+			num = ((DiceKeepNode *)rollNode)->num;
+			break;
+		default:
+			// invalid node type
+			assert(0);
+			break;
+		}
+
+		self->successes = 0;
+		self->failures = 0;
+		for (i = 0; i < num; ++i) {
+			if (dicecmp(success->type, values[i], success->base.value)) {
+				++self->successes;
+			} else if (failure != NULL && dicecmp(failure->type, values[i], failure->base.value)) {
+				++self->failures;
+			}
+		}
+
+		node->value = self->successes - self->failures;
+
 		break;
+	}
 	case DICE_NODE_LITERAL:
 		// no-op, these get evaluated directly but don't need to do anything as they already have the value set
 		break;
@@ -632,4 +998,71 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 // which maps to one of the DICE_ERROR_* constants
 int evaluate(DiceAST *node) {
 	return evaluate_reentrant(node, node, 0);
+}
+
+// recursively frees an AST tree
+void free_tree(DiceAST *root) {
+	int i;
+
+	if (root == NULL)
+		return;
+
+	switch (root->type) {
+	case DICE_NODE_COMPARE:
+		free_tree(((DiceCompareNode *)root)->expr);
+		break;
+	case DICE_NODE_EXPLODE:
+		free_tree(((DiceExplodeNode *)root)->cond);
+		free_tree(((DiceExplodeNode *)root)->expr);
+		break;
+	case DICE_NODE_EXTRAS:
+		free_tree(((DiceExtras *)root)->explode);
+		free_tree(((DiceExtras *)root)->keep);
+		free_tree(((DiceExtras *)root)->reroll);
+		free_tree(((DiceExtras *)root)->success);
+		break;
+	case DICE_NODE_GROUP:
+		for (i = 0; i < ((DiceGroupedRollNode *)root)->groupsize; ++i) {
+			free_tree(((DiceGroupedRollNode *)root)->exprs[i]);
+		}
+		free_tree(((DiceGroupedRollNode *)root)->num);
+		free(((DiceGroupedRollNode *)root)->exprs);
+		free(((DiceGroupedRollNode *)root)->values);
+		break;
+	case DICE_NODE_KEEP:
+		free_tree(((DiceKeepNode *)root)->amount);
+		free_tree(((DiceKeepNode *)root)->expr);
+		// do not free values here, as it wasn't allocated by us; it belongs to a node further down the tree
+		break;
+	case DICE_NODE_LITERAL:
+		// nothing to free here
+		break;
+	case DICE_NODE_MATH:
+		free_tree(((DiceMathNode *)root)->left);
+		free_tree(((DiceMathNode *)root)->right);
+		break;
+	case DICE_NODE_NULL:
+		// nothing to free here
+		break;
+	case DICE_NODE_REROLL:
+		free_tree(((DiceRerollNode *)root)->cond);
+		free_tree(((DiceRerollNode *)root)->expr);
+		break;
+	case DICE_NODE_ROLL:
+		free_tree(((DiceRollNode *)root)->num);
+		free_tree(((DiceRollNode *)root)->sides);
+		free(((DiceRollNode *)root)->values);
+		break;
+	case DICE_NODE_SUCCESS:
+		free_tree(((DiceSuccessNode *)root)->expr);
+		free_tree(((DiceSuccessNode *)root)->failure_cond);
+		free_tree(((DiceSuccessNode *)root)->success_cond);
+		break;
+	default:
+		// invalid node type
+		assert(0);
+		break;
+	}
+
+	free(root);
 }

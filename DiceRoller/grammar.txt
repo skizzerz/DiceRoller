@@ -18,7 +18,7 @@
               |  <>
 
 <number> ::= <digit_string>
-          |  '[' <basic_roll> ']'
+          |  '[' <math_expr> ']'
 
 <grouped_roll> ::= <opt_number> '{' <grouped_roll_inner> '}' <grouped_extras>
                 |  <basic_roll>
@@ -29,7 +29,7 @@
 <grouped_extras> ::= <keep_expr> <success_expr>
 
 <basic_roll> ::= <opt_number> 'd' <number> <basic_extras>
-              |  <opt_number> 'd' 'F' <basic_extras>
+              |  <opt_number> 'd' 'F'
 
 <basic_extras> ::= <reroll_expr> <explode_expr> <keep_expr> <success_expr>
 

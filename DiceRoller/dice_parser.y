@@ -1,12 +1,9 @@
 %{
 
+#include "dice.h"
 #include "dice_ast.h"
 #include "dice_parser.h"
 #include "dice_lexer.h"
-
-int yyerror(DiceAST **expr, yyscan_t scanner, const char *msg) {
-	// TODO: report error message
-}
 
 %}
 
@@ -110,7 +107,7 @@ paren_expr
 
 number
 	: T_DIGIT_STRING { $$ = dice_literal_node($1); }
-	| T_LSQUARE basic_roll T_RSQUARE { $$ = $2; }
+	| T_LSQUARE math_expr T_RSQUARE { $$ = $2; }
 	;
 
 opt_number
@@ -136,8 +133,8 @@ grouped_extras
 basic_roll
 	: number T_D number basic_extras
 		{ $$ = dice_basic_node($1, $3, $4); }
-	| number T_D T_FATE basic_extras
-		{ $$ = dice_fate_node($1, $4); }
+	| number T_D T_FATE
+		{ $$ = dice_fate_node($1); }
 	;
 
 basic_extras

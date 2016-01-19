@@ -5,13 +5,6 @@
 extern "C" {
 #endif
 
-// the maximum size of a die that may be rolled
-#define DICE_MAX_SIDES 100000
-// the maximum number of dice that may be rolled (including extra dice from exploding dice/rerolls)
-#define DICE_MAX_DICE 100
-// the maximum complexity (nestedness) of the expression tree; note that certain dice constructs use multiple levels
-#define DICE_MAX_RECURSE 20
-
 #define DICE_NODE_EXTRAS (-1)
 #define DICE_NODE_NULL 0
 #define DICE_NODE_MATH 1
@@ -45,11 +38,6 @@ extern "C" {
 #define DICE_COMP_LESSER 1
 #define DICE_COMP_GREATER 2
 
-#define DICE_ERROR_DIVZERO (-1)
-#define DICE_ERROR_MAXDICE (-2)
-#define DICE_ERROR_MAXRECURSE (-3)
-#define DICE_ERROR_MAXSIDES (-4)
-
 // base type for AST nodes
 typedef struct dice_ast_ {
 	short type; // node type
@@ -70,7 +58,7 @@ typedef struct dice_ast_group_ {
 	short valuesize; // how many ints are in values
 	DiceAST *num; // number of times to evaluate the group
 	DiceAST **exprs; // individual expressions in the group (points to an array of groupsize DiceASTs)
-	int *values; // if only one expr, value of each die in that expr, otherwise aggregated values of all exprs (points to an array of valuesize ints)
+	int *values; // stores the value of each expr cast to an int (points to an array of valuesize ints)
 } DiceGroupedRollNode;
 
 typedef struct dice_ast_roll_ {
@@ -79,7 +67,7 @@ typedef struct dice_ast_roll_ {
 	short extra; // extra dice rolled
 	DiceAST *num; // number of dice
 	DiceAST *sides; // how many sides each die has
-	int *values; // the result of the rolls (points to an array of num->value + extra ints, sorted highest to lowest)
+	int *values; // the result of the rolls (points to an array of num->value + extra ints)
 } DiceRollNode;
 
 // temporary structure used to aggregate extras attached to a die roll, not kept as a node to the AST
@@ -94,7 +82,7 @@ typedef struct dice_ast_extras_ {
 typedef struct dice_ast_reroll_ {
 	DiceAST base; // value = expr->value
 	short once; // whether to only reroll once
-	short rerolled; // number of times this expression was rerolled
+	short rolled; // number of times this expression was rolled
 	DiceAST *cond; // condition to determine if we need a reroll
 	DiceAST *expr; // dice expression
 } DiceRerollNode;
@@ -144,7 +132,7 @@ DiceAST *dice_literal_node(int value);
 DiceAST *dice_nothing();
 
 DiceAST *dice_basic_node(DiceAST *num, DiceAST *sides, DiceAST *extras);
-DiceAST *dice_fate_node(DiceAST *num, DiceAST *extras);
+DiceAST *dice_fate_node(DiceAST *num);
 DiceAST *dice_group_node(DiceAST *num, DiceAST *group, DiceAST *extras);
 DiceAST *dice_group_list(DiceAST *expr);
 DiceAST *dice_extend_group(DiceAST *group, DiceAST *expr);

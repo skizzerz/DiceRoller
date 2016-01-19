@@ -1,5 +1,7 @@
 %{
 
+#include "dice.h"
+#include "dice_lexer.h"
 #include "dice_parser.h"
 
 %}
@@ -16,6 +18,9 @@ SPACE " "
 
 {SPACE}			{ /* no-op, skip blanks */ }
 {DIGIT_STRING}	{ yylval->value = strtoul(yytext, NULL, 10); return T_DIGIT_STRING; }
+
+"//".*			|
+"--".*			{ /* no-op, skip comments */ }
 
 "d"				{ return T_D; /* used for both drop lowest and dice */ }
 "F"				{ return T_FATE; }
@@ -53,7 +58,3 @@ SPACE " "
 "/"				{ return T_DIVIDE; }
 
 %%
-
-int yyerror(const char *msg) {
-	// TODO: report error message
-}
