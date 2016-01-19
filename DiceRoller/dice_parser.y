@@ -1,5 +1,7 @@
 %{
 
+#define YY_NO_UNISTD
+#define YY_USE_CONST
 #include "dice.h"
 #include "dice_ast.h"
 #include "dice_parser.h"

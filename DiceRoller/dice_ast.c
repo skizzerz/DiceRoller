@@ -740,7 +740,8 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 	{
 		DiceExplodeNode *self = (DiceExplodeNode *)node;
 		DiceCompareNode *cond = (DiceCompareNode *)self->cond;
-		DiceRollNode *roll = find_roll(self->expr);
+		// explode node is guaranteed to be directly above a normal roll in our grammar
+		DiceRollNode *roll = (DiceRollNode *)find_roll(self->expr);
 		// fate dice cannot be exploded
 		assert(roll->type == DICE_ROLL_NORMAL);
 		int num = (int)roll->num->value;
@@ -810,7 +811,8 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 			// Downgraded d20s do not further downgrade, however. Downgrading is not performed
 			// if an explicit condition is specified (e.g. cond != NULL), which allows for
 			// HackMaster 4e style penetrating dice which do not downgrade.
-			int orig_comp = cond_comp, orig_sides = sides, downgraded;
+			float orig_comp = cond_comp;
+			int orig_sides = sides, downgraded;
 
 			for (i = 0; i < num; ++i) {
 				val = roll->values[i];
