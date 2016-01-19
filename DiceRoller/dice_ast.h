@@ -64,10 +64,10 @@ typedef struct dice_ast_group_ {
 typedef struct dice_ast_roll_ {
 	DiceAST base; // value = sum of values
 	short type; // normal or fate
-	short extra; // extra dice rolled
+	short valuesize; // how many ints are in values
 	DiceAST *num; // number of dice
 	DiceAST *sides; // how many sides each die has
-	int *values; // the result of the rolls (points to an array of num->value + extra ints)
+	int *values; // the result of the rolls (points to an array of valuesize ints)
 } DiceRollNode;
 
 // temporary structure used to aggregate extras attached to a die roll, not kept as a node to the AST
@@ -160,6 +160,7 @@ DiceAST *dice_compare_less(DiceAST *expr);
 
 int evaluate(DiceAST *node);
 void free_tree(DiceAST *root);
+DiceAST *find_roll(DiceAST *node);
 
 #ifdef __cplusplus
 }

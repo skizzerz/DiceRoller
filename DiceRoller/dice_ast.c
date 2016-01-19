@@ -98,7 +98,7 @@ DiceAST *dice_basic_node(DiceAST *num, DiceAST *sides, DiceAST *extras)
 	node->base.size = sizeof(DiceRollNode);
 	node->base.value = 0;
 	node->type = DICE_ROLL_NORMAL;
-	node->extra = 0;
+	node->valuesize = 0;
 	node->num = num;
 	node->sides = sides;
 	node->values = NULL;
@@ -151,7 +151,7 @@ DiceAST *dice_fate_node(DiceAST *num)
 	node->base.size = sizeof(DiceRollNode);
 	node->base.value = 0;
 	node->type = DICE_ROLL_FATE;
-	node->extra = 0;
+	node->valuesize = 0;
 	node->num = num;
 	node->sides = NULL;
 	node->values = NULL;
@@ -517,7 +517,7 @@ static int dicecmp(int type, float dice_value, float comp_value) {
 
 // find an underlying "roll" of this node, which can be a roll, grouped roll, or keep node
 // (e.g. things with a "values" array that holds individual results)
-static DiceAST *find_roll(DiceAST *node) {
+DiceAST *find_roll(DiceAST *node) {
 	switch (node->type) {
 	case DICE_NODE_ROLL:
 	case DICE_NODE_GROUP:
@@ -529,9 +529,22 @@ static DiceAST *find_roll(DiceAST *node) {
 		return find_roll(((DiceExplodeNode *)node)->expr);
 	case DICE_NODE_SUCCESS:
 		return find_roll(((DiceSuccessNode *)node)->expr);
+	case DICE_NODE_MATH:
+	{
+		// for math nodes, we only return a value if one but not both of the children have a roll
+		// if both have a roll, return NULL since not sure how to handle this yet, an API to get at multiple
+		// sets of rolls may be required for this
+		DiceAST *left = find_roll(((DiceMathNode *)node)->left);
+		DiceAST *right = find_roll(((DiceMathNode *)node)->right);
+
+		if (left != NULL && right != NULL)
+			return NULL;
+
+		return (left == NULL) ? right : left;
+	}
 	default:
-		// invalid call
-		assert(0);
+		// getting the underlying dice rolled is not supported for this node
+		return NULL;
 	}
 }
 
@@ -658,7 +671,8 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 			assert(0);
 		}
 
-		self->values = (int *)malloc(rolls * sizeof(int));
+		self->values = (int *)malloc(num * sizeof(int));
+		self->valuesize = (short)num;
 		node->value = 0;
 
 		for (i = 0; i < num; ++i) {
@@ -768,7 +782,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 					val = rand_int(sides);
 					roll->values[num] = val;
 					roll->base.value += val;
-					++roll->extra;
+					++roll->valuesize;
 					++num;
 				}
 			}
@@ -856,27 +870,25 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 			// can't use a keep node on fate dice
 			assert(roll->type == DICE_ROLL_NORMAL);
 
-			short num = (short)roll->num->value + roll->extra;
-
 			// sort die values lowest->highest so we can re-use the same underlying array
-			qsort(roll->values, (int)roll->num->value + roll->extra, sizeof(int), intcmp);
+			qsort(roll->values, roll->valuesize, sizeof(int), intcmp);
 
 			// determine our offset into roll->values depending on keep type
 			switch (self->type) {
 			case DICE_KEEP_KEEP_LOW:
-				self->num = min((short)self->amount->value, num);
+				self->num = min((short)self->amount->value, roll->valuesize);
 				self->values = roll->values;
 				break;
 			case DICE_KEEP_KEEP_HIGH:
-				self->num = min((short)self->amount->value, num);
-				self->values = roll->values + num - self->num;
+				self->num = min((short)self->amount->value, roll->valuesize);
+				self->values = roll->values + roll->valuesize - self->num;
 				break;
 			case DICE_KEEP_DROP_LOW:
-				self->num = max(num - (short)self->amount->value, 1);
-				self->values = roll->values + num - self->num;
+				self->num = max(roll->valuesize - (short)self->amount->value, 1);
+				self->values = roll->values + roll->valuesize - self->num;
 				break;
 			case DICE_KEEP_DROP_HIGH:
-				self->num = max(num - (short)self->amount->value, 1);
+				self->num = max(roll->valuesize - (short)self->amount->value, 1);
 				self->values = roll->values;
 			}
 		} else if (rollNode->type == DICE_NODE_GROUP) {
@@ -948,7 +960,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 		switch (rollNode->type) {
 		case DICE_NODE_ROLL:
 			values = ((DiceRollNode *)rollNode)->values;
-			num = (int)((DiceRollNode *)rollNode)->num->value + ((DiceRollNode *)rollNode)->extra;
+			num = ((DiceRollNode *)rollNode)->valuesize;
 			break;
 		case DICE_NODE_GROUP:
 			values = ((DiceGroupedRollNode *)rollNode)->values;
@@ -1064,5 +1076,9 @@ void free_tree(DiceAST *root) {
 		break;
 	}
 
+	// before freeing us, wipe out the type/size info so that the node is no longer considered valid
+	// in case someone passes us a freed pointer to a previously valid node
+	root->type = DICE_NODE_NULL;
+	root->size = 0;
 	free(root);
 }

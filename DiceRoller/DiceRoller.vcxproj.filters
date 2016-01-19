@@ -18,6 +18,15 @@
     <ClCompile Include="dice_ast.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dice_lexer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dice_parser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dice.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="grammar.txt">
@@ -34,6 +43,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dice_ast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dice_lexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dice_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unistd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

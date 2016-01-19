@@ -84,6 +84,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DICE_GEN_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,7 +114,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dice.c" />
     <ClCompile Include="dice_ast.c" />
+    <ClCompile Include="dice_lexer.c" />
+    <ClCompile Include="dice_parser.c" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="grammar.txt" />
@@ -123,7 +127,11 @@
     <None Include="dice_parser.y" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dice.h" />
     <ClInclude Include="dice_ast.h" />
+    <ClInclude Include="dice_lexer.h" />
+    <ClInclude Include="dice_parser.h" />
+    <ClInclude Include="unistd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
