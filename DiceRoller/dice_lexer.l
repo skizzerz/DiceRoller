@@ -1,7 +1,7 @@
 %{
 
 #include "dice.h"
-#include "dice_lexer.h"
+#include "dice_ast.h"
 #include "dice_parser.h"
 
 %}
