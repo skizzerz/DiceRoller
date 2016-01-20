@@ -30,6 +30,7 @@ extern "C" {
 #define DICE_ERROR_MINSIDES (-5)
 // trying to roll less than 1 die
 #define DICE_ERROR_MINDICE (-6)
+#define DICE_ERROR_UNKNOWN (-99)
 
 int dice_evaluate(const char *input, void **dice_result);
 int dice_total(void *dice_result, float *total);

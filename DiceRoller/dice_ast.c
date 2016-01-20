@@ -669,6 +669,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 		} else {
 			// invalid type
 			assert(0);
+			return DICE_ERROR_UNKNOWN;
 		}
 
 		self->values = (int *)malloc(num * sizeof(int));
@@ -920,6 +921,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 		} else {
 			// trying to keep a keep node, or something; not allowed by grammar regardless
 			assert(0);
+			return DICE_ERROR_UNKNOWN;
 		}
 
 		node->value = 0;
@@ -975,7 +977,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 		default:
 			// invalid node type
 			assert(0);
-			break;
+			return DICE_ERROR_UNKNOWN;
 		}
 
 		self->successes = 0;
@@ -998,7 +1000,7 @@ static int evaluate_reentrant(DiceAST *node, DiceAST *root, int recurse) {
 	default:
 		// encountered a node type that should not be directly evaluated
 		assert(0);
-		break;
+		return DICE_ERROR_UNKNOWN;
 	}
 
 	if (node == root)
