@@ -12,12 +12,17 @@
 #ifdef DICE_GEN_MAIN
 #include <stdio.h>
 
-int main() {
+int main(int argc, char *argv[]) {
 	void *result;
 	int res;
 	float total;
 
-	res = dice_evaluate("3d6", &result);
+	if (argc < 2) {
+		puts("Needs an argument");
+		return 1;
+	}
+
+	res = dice_evaluate(argv[1], &result);
 	if (res != 0) {
 		printf("Error: %d\n", res);
 		return 0;

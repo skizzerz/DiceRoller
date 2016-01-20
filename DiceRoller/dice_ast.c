@@ -1,3 +1,9 @@
+#ifndef DICE_GEN_MAIN
+#include "atheme.h"
+#else
+#include <time.h>
+#endif
+
 #include <stdlib.h>
 #include <assert.h>
 #include "dice.h"
@@ -494,9 +500,20 @@ DiceAST *dice_compare_less(DiceAST *expr) {
 }
 
 // produces a random integer from [1, max] (inclusive)
+// if in shalture itself, we have arc4random_uniform() to play with
+// when self-contained, we do not, so we use rand() which is crap but good enough for demonstration purposes
 static int rand_int(int max) {
-	// FIXME: replace with an RNG that guarantees an even distribution
+#ifdef DICE_GEN_MAIN
+	static int init = 0;
+	if (!init) {
+		srand(time(NULL));
+		init = 1;
+	}
+
 	return (rand() % max) + 1;
+#else
+	return arc4random_uniform(max) + 1;
+#endif
 }
 
 // performs a comparison, returning 1 if the comparison is true and 0 if false

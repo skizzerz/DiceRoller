@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 // the maximum size of a die that may be rolled
-#define DICE_MAX_SIDES 100000
+#define DICE_MAX_SIDES 10000
 // the maximum number of dice that may be rolled (including extra dice from exploding dice/rerolls)
 #define DICE_MAX_DICE 100
 // the maximum complexity (nestedness) of the expression tree; note that certain dice constructs use multiple levels
