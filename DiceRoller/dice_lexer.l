@@ -61,3 +61,7 @@ SPACE " "
 .|\n			{ /* no-op */ }
 
 %%
+
+void yyerror(const char *s) {
+	/* no-op for now, as we have no easy way of returning this string to the caller */
+}
