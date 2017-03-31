@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Dice.Exceptions;
 
 namespace Dice.AST
 {
-    /// <summary>
-    /// A group node represents one or more dice expressions that can be rolled multiple times as a set.
-    /// Like basic rolls, modifiers can be applied to the group as a whole.
-    /// </summary>
-    public class GroupNode : DiceAST, IRollNode
+	/// <summary>
+	/// A group node represents one or more dice expressions that can be rolled multiple times as a set.
+	/// Like basic rolls, modifiers can be applied to the group as a whole.
+	/// </summary>
+	public class GroupNode : DiceAST
     {
         private List<DiceAST> _expressions;
         private List<DieResult> _values;
@@ -41,65 +37,48 @@ namespace Dice.AST
 
         internal GroupNode(DiceAST numTimes, List<DiceAST> exprs)
         {
-            if (numTimes == null)
-            {
-                throw new ArgumentNullException("numTimes");
-            }
-
-            if (exprs == null)
-            {
-                throw new ArgumentNullException("exprs");
-            }
+			NumTimes = numTimes ?? throw new ArgumentNullException("numTimes");
+			_expressions = exprs ?? throw new ArgumentNullException("exprs");
+			_values = new List<DieResult>();
 
             if (exprs.Count == 0)
             {
                 throw new ArgumentException("A dice group must contain at least one expression", "exprs");
             }
-
-            NumTimes = numTimes;
-            _expressions = exprs;
-            _values = new List<DieResult>();
         }
 
-        internal override uint Evaluate(RollerConfig conf, DiceAST root, uint depth)
+        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
-            if (depth > conf.MaxRecursionDepth)
-            {
-                throw new DiceRecursionException(conf.MaxRecursionDepth);
-            }
-
             ulong rolls = NumTimes.Evaluate(conf, root, depth + 1);
-            Value = 0;
 
-            if (rolls > conf.MaxDice)
-            {
-                throw new TooManyDiceException(conf.MaxDice);
-            }
+            rolls += Roll(conf, root, depth, false);
 
-            rolls += Reroll(conf, root, depth);
-
-            if (rolls > conf.MaxDice)
-            {
-                throw new TooManyDiceException(conf.MaxDice);
-            }
-
-            return (uint)rolls;
+            return rolls;
         }
 
-        internal uint Reroll(RollerConfig conf, DiceAST root, uint depth)
+		protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+		{
+			return Roll(conf, root, depth, true);
+		}
+
+        internal ulong Roll(RollerConfig conf, DiceAST root, uint depth, bool reroll)
         {
             ulong rolls = 0;
             ushort numTimes = (ushort)NumTimes.Value;
+			Value = 0;
+
             for (ushort run = 0; run < numTimes; run++)
             {
                 foreach (var ast in Expressions)
                 {
-                    rolls += ast.Evaluate(conf, root, depth + 1);
-
-                    if (rolls > conf.MaxDice)
-                    {
-                        throw new TooManyDiceException(conf.MaxDice);
-                    }
+					if (reroll)
+					{
+						rolls += ast.Reroll(conf, root, depth + 1);
+					}
+					else
+					{
+						rolls += ast.Evaluate(conf, root, depth + 1);
+					}
 
                     // If the group contains exactly one member, we want to expose all dice rolled in the subtree
                     // e.g. {3d6+4d8} should contain a list of 7 final values, three for the d6s and four for the d8s.
@@ -108,7 +87,7 @@ namespace Dice.AST
                     // should expose 1 final value.
                     if (numTimes == 1)
                     {
-
+						_values = ast.Values.ToList();
                     }
                     else
                     {
@@ -124,7 +103,7 @@ namespace Dice.AST
                 }
             }
 
-            return (uint)rolls;
+            return rolls;
         }
     }
 }

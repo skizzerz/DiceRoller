@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dice
+﻿namespace Dice
 {
-    /// <summary>
-    /// Configuration for a Roller, controlling the maximum number of
-    /// dice, sides, and nesting depth, as well as which grammar is used.
-    /// </summary>
-    public class RollerConfig
+	/// <summary>
+	/// Configuration for a Roller, controlling the maximum number of
+	/// dice, sides, and nesting depth, as well as which grammar is used.
+	/// </summary>
+	public class RollerConfig
     {
         /// <summary>
         /// The maximum number of dice that may be rolled, including dice

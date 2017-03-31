@@ -50,7 +50,6 @@
     <Compile Include="AST\DieType.cs" />
     <Compile Include="AST\GroupNode.cs" />
     <Compile Include="AST\DiceAST.cs" />
-    <Compile Include="AST\IRollNode.cs" />
     <Compile Include="AST\MathNode.cs" />
     <Compile Include="AST\MathOp.cs" />
     <Compile Include="AST\RollNode.cs" />
@@ -70,7 +69,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>java -jar antlr4-4.6.jar -Dlanguage=CSharp grammar.g4</PreBuildEvent>
+    <PreBuildEvent>java -jar antlr-4.7-complete.jar -Dlanguage=CSharp grammar.g4</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
