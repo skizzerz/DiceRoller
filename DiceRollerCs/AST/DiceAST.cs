@@ -4,10 +4,10 @@ using Dice.Exceptions;
 
 namespace Dice.AST
 {
-	/// <summary>
-	/// Represents a node in the dice expression Abstract Syntax Tree
-	/// </summary>
-	public abstract class DiceAST
+    /// <summary>
+    /// Represents a node in the dice expression Abstract Syntax Tree
+    /// </summary>
+    public abstract class DiceAST
     {
         /// <summary>
         /// If true, this node has been evaluated
@@ -53,36 +53,36 @@ namespace Dice.AST
             return rolls;
         }
 
-		/// <summary>
-		/// Re-do the roll without re-evaluating the entire subtree again
-		/// </summary>
-		/// <param name="conf">Roller config</param>
-		/// <param name="root">AST root</param>
-		/// <param name="depth">Recursion depth</param>
-		/// <returns>Number of dice rolls performed</returns>
-		internal ulong Reroll(RollerConfig conf, DiceAST root, uint depth)
-		{
-			if (!Evaluated)
-			{
-				return Evaluate(conf, root, depth);
-			}
+        /// <summary>
+        /// Re-do the roll without re-evaluating the entire subtree again
+        /// </summary>
+        /// <param name="conf">Roller config</param>
+        /// <param name="root">AST root</param>
+        /// <param name="depth">Recursion depth</param>
+        /// <returns>Number of dice rolls performed</returns>
+        internal ulong Reroll(RollerConfig conf, DiceAST root, uint depth)
+        {
+            if (!Evaluated)
+            {
+                return Evaluate(conf, root, depth);
+            }
 
-			if (depth > conf.MaxRecursionDepth)
-			{
-				throw new DiceRecursionException(conf.MaxRecursionDepth);
-			}
+            if (depth > conf.MaxRecursionDepth)
+            {
+                throw new DiceRecursionException(conf.MaxRecursionDepth);
+            }
 
-			ulong rolls = RerollInternal(conf, root, depth);
+            ulong rolls = RerollInternal(conf, root, depth);
 
-			if (rolls > conf.MaxDice)
-			{
-				throw new TooManyDiceException(conf.MaxDice);
-			}
+            if (rolls > conf.MaxDice)
+            {
+                throw new TooManyDiceException(conf.MaxDice);
+            }
 
-			return rolls;
-		}
+            return rolls;
+        }
 
-		protected abstract ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth);
-		protected abstract ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth);
+        protected abstract ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth);
+        protected abstract ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth);
     }
 }
