@@ -10,7 +10,7 @@
         /// The maximum number of dice that may be rolled, including dice
         /// rolled due to rerolls or exploding dice. Exceeding this limit
         /// will result in a TooManyDiceException being thrown.
-        /// Default: 100
+        /// Default: 1,000
         /// </summary>
         public uint MaxDice { get; set; }
 
@@ -30,6 +30,15 @@
         public ushort MaxRecursionDepth { get; set; }
 
         /// <summary>
+        /// The maximum amount of times a die can be rerolled, either due to
+        /// rerolls, exploding dice, or anything else that rerolls dice.
+        /// Once a die is rerolled this many times, the final value is fixed
+        /// (no exception is thrown).
+        /// Default: 100
+        /// </summary>
+        public uint MaxRerolls { get; set; }
+
+        /// <summary>
         /// If true, only standard dice sizes (d2, d3, d4, d6, d8, d10, d12, d20, d100, d1,000, d10,000)
         /// may be rolled. If false, any die size from 1 to MaxSides, inclusive, can be rolled.
         /// Default: false
@@ -38,9 +47,10 @@
 
         public RollerConfig()
         {
-            MaxDice = 100;
+            MaxDice = 1000;
             MaxSides = 10000;
             MaxRecursionDepth = 20;
+            MaxRerolls = 100;
             NormalSidesOnly = false;
         }
     }

@@ -39,6 +39,9 @@
     <AssemblyOriginatorKeyFile>DiceRollerCs.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime.Standard, Version=4.7.0.0, Culture=neutral, PublicKeyToken=e78b2c5abd1fcb3f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.Standard.4.7.0\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,12 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\CompareOp.cs" />
+    <Compile Include="AST\ComparisonNode.cs" />
     <Compile Include="AST\DieResult.cs" />
     <Compile Include="AST\DieType.cs" />
+    <Compile Include="AST\ExplodingType.cs" />
     <Compile Include="AST\GroupNode.cs" />
     <Compile Include="AST\DiceAST.cs" />
+    <Compile Include="AST\KeepNode.cs" />
+    <Compile Include="AST\KeepType.cs" />
     <Compile Include="AST\MathNode.cs" />
     <Compile Include="AST\MathOp.cs" />
+    <Compile Include="AST\RerollNode.cs" />
     <Compile Include="AST\RollNode.cs" />
     <Compile Include="AST\RollType.cs" />
     <Compile Include="Exceptions\BadDiceException.cs" />
@@ -62,18 +71,27 @@
     <Compile Include="Exceptions\DiceException.cs" />
     <Compile Include="Exceptions\DiceRecursionException.cs" />
     <Compile Include="Exceptions\TooManyDiceException.cs" />
+    <Compile Include="Grammar\DiceGrammarBaseListener.cs" />
+    <Compile Include="Grammar\DiceGrammarLexer.cs" />
+    <Compile Include="Grammar\DiceGrammarListener.cs" />
+    <Compile Include="Grammar\DiceGrammarParser.cs" />
     <Compile Include="Roller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RollerConfig.cs" />
     <Compile Include="RollResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="DiceRollerCs.snk" />
+    <None Include="DiceGrammar.g4" />
+    <None Include="Grammar\DiceGrammar.tokens" />
+    <None Include="Grammar\DiceGrammarLexer.tokens" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>java -jar antlr-4.7-complete.jar -Dlanguage=CSharp grammar.g4</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
