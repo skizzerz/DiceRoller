@@ -80,17 +80,24 @@ namespace Dice.AST
             Value = 0;
             _values.Clear();
 
-            if (numDice == 0)
+            for (uint i = 0; i < numDice; i++)
             {
-                // short-circuit if we aren't actually rolling any dice
-                return 0;
+                var result = DoRoll(conf, RollType, (uint)numSides);
+
+                Value += result.Value;
+                _values.Add(result);
             }
 
-            byte[] roll = new byte[4];
-            uint sides = (uint)numSides;
-            DieType dt = DieType.Normal;
+            return (ulong)numDice;
+        }
 
-            switch (RollType)
+        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, uint numSides)
+        {
+            byte[] roll = new byte[4];
+            uint sides = numSides;
+            DieType dt;
+
+            switch (rollType)
             {
                 case RollType.Normal:
                     dt = DieType.Normal;
@@ -105,38 +112,39 @@ namespace Dice.AST
                     throw new InvalidOperationException("Unknown RollType");
             }
 
-            for (uint i = 0; i < numDice; i++)
+            do
             {
-                do
+                if (conf.GetRandomBytes != null)
+                {
+                    conf.GetRandomBytes(roll);
+                }
+                else
                 {
                     _rand.GetBytes(roll);
-                } while (!IsFairRoll(roll, sides));
-
-                // rollAmt is a number from 0 to sides-1, need to convert to a proper number
-                uint rollAmt = BitConverter.ToUInt32(roll, 0) % sides;
-
-                switch (RollType)
-                {
-                    case RollType.Normal:
-                        // change from 0 to sides-1 into 1 to sides
-                        rollAmt++;
-                        break;
-                    case RollType.Fudge:
-                        // normalize back into -numSides to +numSides
-                        rollAmt -= (sides - 1) / 2;
-                        break;
                 }
+            } while (!IsFairRoll(roll, sides));
 
-                Value += rollAmt;
-                _values.Add(new DieResult()
-                {
-                    DieType = dt,
-                    NumSides = (uint)numSides,
-                    Value = rollAmt
-                });
+            // rollAmt is a number from 0 to sides-1, need to convert to a proper number
+            uint rollAmt = BitConverter.ToUInt32(roll, 0) % sides;
+
+            switch (rollType)
+            {
+                case RollType.Normal:
+                    // change from 0 to sides-1 into 1 to sides
+                    rollAmt++;
+                    break;
+                case RollType.Fudge:
+                    // normalize back into -numSides to +numSides
+                    rollAmt -= (sides - 1) / 2;
+                    break;
             }
 
-            return (ulong)numDice;
+            return new DieResult()
+            {
+                DieType = dt,
+                NumSides = numSides,
+                Value = rollAmt
+            };
         }
 
         /// <summary>
@@ -146,7 +154,7 @@ namespace Dice.AST
         /// <param name="roll"></param>
         /// <param name="numSides"></param>
         /// <returns></returns>
-        private bool IsFairRoll(byte[] roll, uint numSides)
+        private static bool IsFairRoll(byte[] roll, uint numSides)
         {
             uint rollAmt = BitConverter.ToUInt32(roll, 0);
             uint numSets = UInt32.MaxValue / numSides;

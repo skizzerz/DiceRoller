@@ -1,4 +1,6 @@
-﻿namespace Dice
+﻿using System;
+
+namespace Dice
 {
     /// <summary>
     /// Configuration for a Roller, controlling the maximum number of
@@ -45,6 +47,16 @@
         /// </summary>
         public bool NormalSidesOnly { get; set; }
 
+        /// <summary>
+        /// If set, this function will be called whenever a random number is needed. The function
+        /// should fill the passed-in byte array with a number, which will be used as the die roll.
+        /// The BitConverter.GetBytes() method may be useful here, if the random number generator
+        /// generates an integer rather than a byte array natively.
+        /// If unset, a cryptographically strong random number generator is used to generate die rolls.
+        /// Leaving this unset is preferred, unless repeatable results are needed (such as in unit tests).
+        /// </summary>
+        public Action<byte[]> GetRandomBytes { get; set; }
+
         public RollerConfig()
         {
             MaxDice = 1000;
@@ -52,6 +64,7 @@
             MaxRecursionDepth = 20;
             MaxRerolls = 100;
             NormalSidesOnly = false;
+            GetRandomBytes = null;
         }
     }
 }

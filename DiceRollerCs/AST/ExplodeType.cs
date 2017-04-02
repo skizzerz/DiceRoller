@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace Dice.AST
 {
     /// <summary>
-    /// The type of exploding dice
+    /// The type of exploding dice. Note that compounding dice results is handled separately;
+    /// each ExplodeType can be configured to compound or not compound.
     /// </summary>
-    public enum ExplodingType
+    public enum ExplodeType
     {
         /// <summary>
         /// A new die is rolled each time the maximum is rolled (or the comparison succeeds).

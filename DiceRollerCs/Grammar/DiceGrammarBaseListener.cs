@@ -588,6 +588,20 @@ public partial class DiceGrammarBaseListener : IDiceGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExplode([NotNull] DiceGrammarParser.ExplodeContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>Compound</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterCompound([NotNull] DiceGrammarParser.CompoundContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Compound</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitCompound([NotNull] DiceGrammarParser.CompoundContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>Penetrate</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
 	/// <para>The default implementation does nothing.</para>

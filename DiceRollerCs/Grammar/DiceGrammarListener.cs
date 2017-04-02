@@ -504,6 +504,18 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExplode([NotNull] DiceGrammarParser.ExplodeContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>Compound</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCompound([NotNull] DiceGrammarParser.CompoundContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>Compound</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCompound([NotNull] DiceGrammarParser.CompoundContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>Penetrate</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explode_expr"/>.
 	/// </summary>

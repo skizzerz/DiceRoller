@@ -95,6 +95,7 @@ reroll_expr
 
 explode_expr
     : T_EXPLODE (compare_expr)? # Explode
+    | T_COMPOUND (compare_expr)? # Compound
     | T_PENETRATE (compare_expr)? # Penetrate
     ;
 
@@ -134,6 +135,7 @@ T_REROLL : 'r' ;
 T_REROLL_ONCE : 'ro' ;
 
 T_EXPLODE : 'e' ;
+T_COMPOUND : 'c' ;
 T_PENETRATE : 'p' ;
 
 T_FAIL : 'f' ;

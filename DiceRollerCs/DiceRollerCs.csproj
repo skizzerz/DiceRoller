@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>3021</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,7 +57,8 @@
     <Compile Include="AST\ComparisonNode.cs" />
     <Compile Include="AST\DieResult.cs" />
     <Compile Include="AST\DieType.cs" />
-    <Compile Include="AST\ExplodingType.cs" />
+    <Compile Include="AST\ExplodeNode.cs" />
+    <Compile Include="AST\ExplodeType.cs" />
     <Compile Include="AST\GroupNode.cs" />
     <Compile Include="AST\DiceAST.cs" />
     <Compile Include="AST\KeepNode.cs" />
