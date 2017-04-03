@@ -55,7 +55,10 @@
   <ItemGroup>
     <Compile Include="AST\CompareOp.cs" />
     <Compile Include="AST\ComparisonNode.cs" />
+    <Compile Include="AST\CritNode.cs" />
     <Compile Include="AST\LiteralNode.cs" />
+    <Compile Include="AST\SortDirection.cs" />
+    <Compile Include="AST\SortNode.cs" />
     <Compile Include="DieFlags.cs" />
     <Compile Include="DieResult.cs" />
     <Compile Include="DieType.cs" />

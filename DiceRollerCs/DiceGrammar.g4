@@ -70,7 +70,7 @@ grouped_extras
 
 basic_roll
     : number_expr T_D number_expr (basic_extras)* (basic_function)* # BasicBasic
-    | number_expr T_D T_FUDGE (number_expr)? # BasicFudge
+    | number_expr T_D T_FUDGE (number_expr)? (basic_extras)* (basic_function)* # BasicFudge
     ;
 
 basic_extras

@@ -127,6 +127,17 @@ namespace Dice.AST
             // rollAmt is a number from 0 to sides-1, need to convert to a proper number
             uint rollAmt = BitConverter.ToUInt32(roll, 0) % sides;
 
+            // first, mark if this was a critical or fumble. This may be overridden later by a CritNode.
+            if (rollAmt == 0)
+            {
+                flags |= DieFlags.Fumble;
+            }
+
+            if (rollAmt == sides - 1)
+            {
+                flags |= DieFlags.Critical;
+            }
+
             switch (rollType)
             {
                 case RollType.Normal:
