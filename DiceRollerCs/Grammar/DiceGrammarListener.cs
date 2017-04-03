@@ -324,6 +324,18 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGroupSuccess([NotNull] DiceGrammarParser.GroupSuccessContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterGroupSort([NotNull] DiceGrammarParser.GroupSortContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicBasic</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_roll"/>.
 	/// </summary>
@@ -395,6 +407,30 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitBasicSuccess([NotNull] DiceGrammarParser.BasicSuccessContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBasicSort([NotNull] DiceGrammarParser.BasicSortContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBasicSort([NotNull] DiceGrammarParser.BasicSortContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicCrit</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBasicCrit([NotNull] DiceGrammarParser.BasicCritContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicCrit</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBasicCrit([NotNull] DiceGrammarParser.BasicCritContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>KeepHigh</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.keep_expr"/>.
@@ -633,5 +669,39 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitNotEquals([NotNull] DiceGrammarParser.NotEqualsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>SortAsc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSortAsc([NotNull] DiceGrammarParser.SortAscContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>SortAsc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSortAsc([NotNull] DiceGrammarParser.SortAscContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>SortDesc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSortDesc([NotNull] DiceGrammarParser.SortDescContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>SortDesc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSortDesc([NotNull] DiceGrammarParser.SortDescContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context);
 }
 } // namespace Dice.Grammar

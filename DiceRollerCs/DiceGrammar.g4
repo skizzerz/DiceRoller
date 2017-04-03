@@ -65,6 +65,7 @@ grouped_roll_inner
 grouped_extras
     : keep_expr # GroupKeep
     | success_expr # GroupSuccess
+    | sort_expr # GroupSort
     ;
 
 basic_roll
@@ -77,6 +78,8 @@ basic_extras
     | explode_expr # BasicExplode
     | keep_expr # BasicKeep
     | success_expr # BasicSuccess
+    | sort_expr # BasicSort
+    | crit_expr # BasicCrit
     ;
 
 keep_expr
@@ -85,7 +88,7 @@ keep_expr
     | T_DROP_HIGH number # DropHigh
     | T_DROP_LOW number # DropLow
     | T_ADVANTAGE # Advantage
-    | T_D # Disadvantage
+    | T_DISADVANTAGE # Disadvantage
     ;
     
 reroll_expr
@@ -117,6 +120,15 @@ explicit_compare_expr
     | T_NOT_EQUALS number # NotEquals
     ;
 
+sort_expr
+    : T_SORT_ASC # SortAsc
+    | T_SORT_DESC # SortDesc
+    ;
+
+crit_expr
+    : T_CRIT compare_expr (T_FAIL compare_expr)?
+    ;
+
 T_DIGIT_STRING : [0-9]+ ;
 T_ALPHA_STRING : [a-zA-Z][a-zA-Z0-9]* ;
 T_STRING : ~[()[\]{}]+ ;
@@ -128,17 +140,25 @@ T_KEEP_HIGH : 'kh' ;
 T_KEEP_LOW : 'kl' ;
 T_DROP_HIGH : 'dh' ;
 T_DROP_LOW : 'dl' ;
-T_ADVANTAGE : 'a' ;
-/* T_DISADVANTAGE would be 'd', which is T_D. As such, no T_DISADVANTAGE is specified */
 
-T_REROLL : 'r' ;
+T_ADVANTAGE : 'ad' ;
+T_DISADVANTAGE : 'da' ;
+
+T_REROLL : 'rr' ;
 T_REROLL_ONCE : 'ro' ;
 
-T_EXPLODE : 'e' ;
-T_COMPOUND : 'c' ;
-T_PENETRATE : 'p' ;
+T_EXPLODE : '!e' ;
+T_COMPOUND : '!c' ;
+T_PENETRATE : '!p' ;
 
+T_CRIT : 'cs' ;
+
+/* this token never appears at the beginning of a modifier, as such it is only one letter.
+ * tokens which appear at the beginning of modifiers are always two letters or more to allow for disambiguation. */
 T_FAIL : 'f' ;
+
+T_SORT_ASC : 'sa' ;
+T_SORT_DESC : 'sd' ;
 
 T_EQUALS : '=' ;
 T_GREATER : '>' ;

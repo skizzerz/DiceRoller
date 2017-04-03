@@ -378,6 +378,20 @@ public partial class DiceGrammarBaseListener : IDiceGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGroupSuccess([NotNull] DiceGrammarParser.GroupSuccessContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterGroupSort([NotNull] DiceGrammarParser.GroupSortContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicBasic</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_roll"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -461,6 +475,34 @@ public partial class DiceGrammarBaseListener : IDiceGrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBasicSuccess([NotNull] DiceGrammarParser.BasicSuccessContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBasicSort([NotNull] DiceGrammarParser.BasicSortContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicSort</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBasicSort([NotNull] DiceGrammarParser.BasicSortContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicCrit</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBasicCrit([NotNull] DiceGrammarParser.BasicCritContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicCrit</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBasicCrit([NotNull] DiceGrammarParser.BasicCritContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>KeepHigh</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.keep_expr"/>.
@@ -739,6 +781,46 @@ public partial class DiceGrammarBaseListener : IDiceGrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitNotEquals([NotNull] DiceGrammarParser.NotEqualsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>SortAsc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSortAsc([NotNull] DiceGrammarParser.SortAscContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>SortAsc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSortAsc([NotNull] DiceGrammarParser.SortAscContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>SortDesc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSortDesc([NotNull] DiceGrammarParser.SortDescContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>SortDesc</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSortDesc([NotNull] DiceGrammarParser.SortDescContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>
