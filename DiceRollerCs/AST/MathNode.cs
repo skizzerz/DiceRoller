@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Dice.Exceptions;
+
 namespace Dice.AST
 {
     /// <summary>
@@ -9,6 +11,8 @@ namespace Dice.AST
     /// </summary>
     public class MathNode : DiceAST
     {
+        private List<DieResult> _values;
+
         /// <summary>
         /// The math operation to be performed
         /// </summary>
@@ -26,13 +30,7 @@ namespace Dice.AST
 
         public override IReadOnlyList<DieResult> Values
         {
-            get
-            {
-                List<DieResult> values = Left.Values.ToList();
-                values.AddRange(Right.Values);
-
-                return values;
-            }
+            get { return _values; }
         }
 
         internal MathNode(MathOp operation, DiceAST left, DiceAST right)
@@ -40,6 +38,7 @@ namespace Dice.AST
             Operation = operation;
             Left = left ?? throw new ArgumentNullException("left");
             Right = right ?? throw new ArgumentNullException("right");
+            _values = new List<DieResult>();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
@@ -60,6 +59,8 @@ namespace Dice.AST
 
         private void DoMath()
         {
+            SpecialDie sd = 0;
+
             switch (Operation)
             {
                 case MathOp.Add:
@@ -67,15 +68,69 @@ namespace Dice.AST
                     break;
                 case MathOp.Subtract:
                     Value = Left.Value - Right.Value;
+                    sd = SpecialDie.Subtract;
                     break;
                 case MathOp.Multiply:
                     Value = Left.Value * Right.Value;
+                    sd = SpecialDie.Multiply;
                     break;
                 case MathOp.Divide:
+                    if (Right.Value == 0)
+                    {
+                        // attempted division by 0, this normally throws a DivideByZeroException,
+                        // except we want all exceptions that can arise from user input to derive from DiceException
+                        throw new DiceDivideByZeroException();
+                    }
                     Value = Left.Value / Right.Value;
+                    sd = SpecialDie.Divide;
                     break;
                 default:
                     throw new InvalidOperationException("Math operation not recognized");
+            }
+
+            // Insert special DieResults to aid in displaying the grouping of these rolls.
+            // Addition is implicit between dice, so no extra results are inserted for that case.
+            // Otherwise, add in parenthesis and the operator used, e.g. 3d6-2d4 with a roll of
+            // 3, 4, 5, 1, and 2 would render as ( 3 4 5 ) - ( 1 2 ) and would likely be displayed as
+            // (3+4+5)-(1+2).
+            _values.Clear();
+            if (Operation == MathOp.Add)
+            {
+                _values.AddRange(Left.Values);
+                _values.AddRange(Right.Values);
+            }
+            else
+            {
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)SpecialDie.OpenParen,
+                    Flags = 0
+                });
+                _values.AddRange(Left.Values);
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)SpecialDie.CloseParen,
+                    Flags = 0
+                });
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)sd,
+                    Flags = 0
+                });
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)SpecialDie.OpenParen,
+                    Flags = 0
+                });
+                _values.AddRange(Right.Values);
             }
         }
     }

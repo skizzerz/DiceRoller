@@ -30,7 +30,7 @@ namespace Dice.AST
         public DiceAST Expression { get; private set; }
 
         /// <summary>
-        /// Values of all kept dice
+        /// All rolled dice. Dropped dice are marked with the DieFlags.Dropped flag
         /// </summary>
         public override IReadOnlyList<DieResult> Values
         {
@@ -80,14 +80,35 @@ namespace Dice.AST
                 if ((KeepType == KeepType.Advantage && Expression.Value > Value)
                     || (KeepType == KeepType.Disadvantage && Expression.Value < Value))
                 {
+                    for (int i = 0; i < _values.Count; i++)
+                    {
+                        _values[i] = new DieResult()
+                        {
+                            DieType = _values[i].DieType,
+                            NumSides = _values[i].NumSides,
+                            Value = _values[i].Value,
+                            Flags = _values[i].Flags | DieFlags.Dropped
+                        };
+                    }
+
                     Value = Expression.Value;
-                    _values = Expression.Values.ToList();
+                    _values.AddRange(Expression.Values);
+                }
+                else
+                {
+                    _values.AddRange(Expression.Values.Select(d => new DieResult()
+                    {
+                        DieType = d.DieType,
+                        NumSides = d.NumSides,
+                        Value = d.Value,
+                        Flags = d.Flags | DieFlags.Dropped
+                    }));
                 }
 
                 return rolls;
             }
 
-            _values = Expression.Values.OrderBy(d => d.Value).ToList();
+            var sortedValues = Expression.Values.OrderBy(d => d.Value).ToList();
             var amount = (int)Amount.Value;
 
             if (amount < 0)
@@ -99,17 +120,44 @@ namespace Dice.AST
             {
                 case KeepType.DropHigh:
                 case KeepType.KeepLow:
-                    _values = _values.Take(_values.Count - amount).ToList();
+                    sortedValues = sortedValues.Take(sortedValues.Count - amount).ToList();
                     break;
                 case KeepType.DropLow:
                 case KeepType.KeepHigh:
-                    _values = _values.Skip(amount).ToList();
+                    sortedValues = sortedValues.Skip(amount).ToList();
                     break;
                 default:
                     throw new InvalidOperationException("Unknown keep type");
             }
 
-            Value = _values.Sum(d => d.Value);
+            Value = sortedValues.Sum(d => d.Value);
+            _values.Clear();
+            foreach (var d in Expression.Values)
+            {
+                if (d.DieType == DieType.Special || d.Flags.HasFlag(DieFlags.Dropped))
+                {
+                    // while we apply drop/keep on grouped die results, special dice are passed as-is
+                    // also if the die was already dropped, we don't try to drop it again
+                    _values.Add(d);
+                    continue;
+                }
+
+                if (sortedValues.Contains(d))
+                {
+                    _values.Add(d);
+                    sortedValues.Remove(d);
+                }
+                else
+                {
+                    _values.Add(new DieResult()
+                    {
+                        DieType = d.DieType,
+                        NumSides = d.NumSides,
+                        Value = d.Value,
+                        Flags = d.Flags | DieFlags.Dropped
+                    });
+                }
+            }
 
             return 0;
         }

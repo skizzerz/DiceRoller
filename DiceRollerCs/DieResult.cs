@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dice.AST
+namespace Dice
 {
     /// <summary>
     /// Contains the result of an individual die roll.
@@ -23,5 +23,9 @@ namespace Dice.AST
         /// What the result of the roll was
         /// </summary>
         public decimal Value;
+        /// <summary>
+        /// Any special flags giving more information about the roll
+        /// </summary>
+        public DieFlags Flags;
     }
 }

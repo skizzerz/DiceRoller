@@ -71,8 +71,12 @@ namespace Dice.AST
             {
                 foreach (var ast in Expressions)
                 {
-                    if (reroll)
+                    if (reroll || run > 0)
                     {
+                        // we want certain variables "fixed" throughout each iteration
+                        // for example, in the group 2{(1d6)d8}, we want to roll 1d6 once and then treat it as if the
+                        // group was 2{3d8} (or whatever the 1d6 rolled); in other words, we don't re-evaluate the 1d6
+                        // every iteration.
                         rolls += ast.Reroll(conf, root, depth + 1);
                     }
                     else
@@ -85,9 +89,36 @@ namespace Dice.AST
                     // However, if the group contains more than one member, or if the group's sole member is another group,
                     // we want to expose the aggregate instead. e.g. {3d6,4d8} should expose 2 final values, and {{3d6+4d8}}
                     // should expose 1 final value.
-                    if (numTimes == 1)
+                    if (Expressions.Count == 1)
                     {
-                        _values = ast.Values.ToList();
+                        if (ast is GroupNode)
+                        {
+                            _values.Add(new DieResult()
+                            {
+                                DieType = DieType.Group,
+                                NumSides = 0,
+                                Value = ast.Value,
+                                Flags = 0
+                            });
+                        }
+                        else
+                        {
+                            _values.Add(new DieResult()
+                            {
+                                DieType = DieType.Special,
+                                NumSides = 0,
+                                Value = (decimal)SpecialDie.OpenParen,
+                                Flags = 0
+                            });
+                            _values.AddRange(ast.Values);
+                            _values.Add(new DieResult()
+                            {
+                                DieType = DieType.Special,
+                                NumSides = 0,
+                                Value = (decimal)SpecialDie.CloseParen,
+                                Flags = 0
+                            });
+                        }
                     }
                     else
                     {
@@ -95,7 +126,8 @@ namespace Dice.AST
                         {
                             DieType = DieType.Group,
                             NumSides = 0,
-                            Value = ast.Value
+                            Value = ast.Value,
+                            Flags = 0
                         });
                     }
 

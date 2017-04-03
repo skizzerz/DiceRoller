@@ -95,9 +95,11 @@ namespace Dice.AST
             {
                 var accum = die;
 
-                if (die.DieType == DieType.Group)
+                if (die.DieType == DieType.Group || die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
                 {
                     // grouped die results can't explode, as we don't know what to explode them to
+                    // special die results can't explode as they aren't actually dice
+                    // dropped dice are no longer part of the resultant expression so should not explode
                     _values.Add(die);
                     continue;
                 }
@@ -138,7 +140,23 @@ namespace Dice.AST
                             break;
                         }
 
-                        result = RollNode.DoRoll(conf, rt, die.NumSides);
+                        var numSides = die.NumSides;
+                        if (ExplodeType == ExplodeType.Penetrate)
+                        {
+                            // if penetrating dice are used, d100p penetrates to d20p,
+                            // and d20p penetrates to d6p (however, the d20p from
+                            // the d100p does not further drop to d6p).
+                            if (numSides == 100)
+                            {
+                                numSides = 20;
+                            }
+                            else if (numSides == 20)
+                            {
+                                numSides = 6;
+                            }
+                        }
+
+                        result = RollNode.DoRoll(conf, rt, numSides, DieFlags.Extra);
                         switch (ExplodeType)
                         {
                             case ExplodeType.Explode:

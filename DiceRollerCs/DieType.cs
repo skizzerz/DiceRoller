@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dice.AST
+namespace Dice
 {
     /// <summary>
     /// How a die result was calculated. See also the RollType enum.
@@ -22,6 +22,11 @@ namespace Dice.AST
         /// <summary>
         /// Die represents a grouped roll. The number of sides is meaningless for this die type.
         /// </summary>
-        Group
+        Group,
+        /// <summary>
+        /// Die is not actually a roll at all, but rather a special marker. The Value
+        /// can be cast into a SpecialDie enum to determine what kind of special marker it is.
+        /// </summary>
+        Special
     }
 }

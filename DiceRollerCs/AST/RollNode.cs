@@ -77,21 +77,21 @@ namespace Dice.AST
                 throw new BadSidesException();
             }
 
-            Value = 0;
             _values.Clear();
 
             for (uint i = 0; i < numDice; i++)
             {
                 var result = DoRoll(conf, RollType, (uint)numSides);
 
-                Value += result.Value;
                 _values.Add(result);
             }
+
+            Value = _values.Sum(d => d.Value);
 
             return (ulong)numDice;
         }
 
-        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, uint numSides)
+        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, uint numSides, DieFlags flags = 0)
         {
             byte[] roll = new byte[4];
             uint sides = numSides;
@@ -143,7 +143,8 @@ namespace Dice.AST
             {
                 DieType = dt,
                 NumSides = numSides,
-                Value = rollAmt
+                Value = rollAmt,
+                Flags = flags
             };
         }
 
