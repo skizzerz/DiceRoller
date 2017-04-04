@@ -108,7 +108,9 @@ namespace Dice.AST
                 return rolls;
             }
 
-            var sortedValues = Expression.Values.OrderBy(d => d.Value).ToList();
+            var sortedValues = Expression.Values
+                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                .OrderBy(d => d.Value).ToList();
             var amount = (int)Amount.Value;
 
             if (amount < 0)

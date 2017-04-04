@@ -57,6 +57,12 @@ namespace Dice
         /// </summary>
         public Action<byte[]> GetRandomBytes { get; set; }
 
+        /// <summary>
+        /// If set, this is the function used to execute macros specified by the roll. If unset, attempting
+        /// to use a macro in the roll will result in an InvalidMacroException being thrown.
+        /// </summary>
+        public Action<MacroContext> ExecuteMacro { get; set; }
+
         public RollerConfig()
         {
             MaxDice = 1000;
@@ -65,6 +71,7 @@ namespace Dice
             MaxRerolls = 100;
             NormalSidesOnly = false;
             GetRandomBytes = null;
+            ExecuteMacro = null;
         }
     }
 }

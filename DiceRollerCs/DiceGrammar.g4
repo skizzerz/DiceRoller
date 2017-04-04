@@ -31,25 +31,30 @@ paren_expr
     ;
 
 number_expr
-    : T_LPAREN math_expr T_RPAREN # NexprParen
-    | number # NexprNumber
+    : T_LPAREN math_expr T_RPAREN # NumberParen
+    | number # NumberNumber
     ;
 
 number
-    : (T_MINUS)? T_DIGIT_STRING # NumberLiteral
+    : T_DIGIT_STRING # NumberLiteral
     | T_LSQUARE T_STRING T_RSQUARE # NumberMacro
     ;
 
 global_function
-    : T_ALPHA_STRING T_LPAREN T_STRING T_RPAREN
+    : T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
     ;
 
 group_function
-    : T_DOT T_ALPHA_STRING T_LPAREN T_STRING T_RPAREN
+    : T_DOT T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
     ;
 
 basic_function
-    : T_DOT T_ALPHA_STRING T_LPAREN T_STRING T_RPAREN
+    : T_DOT T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
+    ;
+
+function_arg
+    : math_expr # FnArgMath
+    | explicit_compare_expr # FnArgComp
     ;
 
 grouped_roll
@@ -103,7 +108,7 @@ explode_expr
     ;
 
 success_expr
-    : explicit_compare_expr (T_FAIL compare_expr)?
+    : explicit_compare_expr (T_FAIL compare_expr)? # SuccessFail
     ;
 
 compare_expr
@@ -112,12 +117,12 @@ compare_expr
     ;
 
 explicit_compare_expr
-    : T_EQUALS number # Equals
-    | T_GREATER number # Greater
-    | T_LESS number # Less
-    | T_GREATER_EQUALS number # GreaterEquals
-    | T_LESS_EQUALS number # LessEquals
-    | T_NOT_EQUALS number # NotEquals
+    : T_EQUALS number # CompEquals
+    | T_GREATER number # CompGreater
+    | T_LESS number # CompLess
+    | T_GREATER_EQUALS number # CompGreaterEquals
+    | T_LESS_EQUALS number # CompLessEquals
+    | T_NOT_EQUALS number # CompNotEquals
     ;
 
 sort_expr
@@ -130,7 +135,7 @@ crit_expr
     | T_CRIT T_FAIL compare_expr # FumbleOnly
     ;
 
-T_DIGIT_STRING : [0-9]+ ;
+T_DIGIT_STRING : '-'? [0-9]+ ('.' [0-9]+)? ;
 T_ALPHA_STRING : [a-zA-Z][a-zA-Z0-9]* ;
 T_STRING : ~[()[\]{}]+ ;
 

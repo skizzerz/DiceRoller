@@ -80,7 +80,31 @@ namespace Dice.AST
 
         private void MarkCrits()
         {
+            Value = Expression.Value;
+            _values.Clear();
 
+            foreach (var die in Expression.Values)
+            {
+                DieFlags flags = 0;
+
+                if (die.DieType == DieType.Special || die.DieType == DieType.Group)
+                {
+                    // we don't skip over dropped dice here since we DO still want to
+                    // mark them as criticals/fumbles as needed.
+                    _values.Add(die);
+                    continue;
+                }
+
+                if (CritComparison?.Compare(die.Value) == true)
+                {
+                    flags |= DieFlags.Critical;
+                }
+
+                if (FumbleComparison?.Compare(die.Value) == true)
+                {
+                    flags |= DieFlags.Fumble;
+                }
+            }
         }
     }
 }

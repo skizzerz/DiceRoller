@@ -39,8 +39,10 @@ namespace Dice.AST
                 throw new ArgumentNullException("expression");
             }
 
-            _comparisons = new List<Tuple<CompareOp, DiceAST>>();
-            _comparisons.Add(new Tuple<CompareOp, DiceAST>(operation, expression));
+            _comparisons = new List<Tuple<CompareOp, DiceAST>>()
+            {
+                new Tuple<CompareOp, DiceAST>(operation, expression)
+            };
         }
 
         internal ComparisonNode(IEnumerable<ComparisonNode> comparisons)

@@ -174,29 +174,29 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitParenGroup([NotNull] DiceGrammarParser.ParenGroupContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>NexprParen</c>
+	/// Enter a parse tree produced by the <c>NumberParen</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterNexprParen([NotNull] DiceGrammarParser.NexprParenContext context);
+	void EnterNumberParen([NotNull] DiceGrammarParser.NumberParenContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>NexprParen</c>
+	/// Exit a parse tree produced by the <c>NumberParen</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitNexprParen([NotNull] DiceGrammarParser.NexprParenContext context);
+	void ExitNumberParen([NotNull] DiceGrammarParser.NumberParenContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>NexprNumber</c>
+	/// Enter a parse tree produced by the <c>NumberNumber</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterNexprNumber([NotNull] DiceGrammarParser.NexprNumberContext context);
+	void EnterNumberNumber([NotNull] DiceGrammarParser.NumberNumberContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>NexprNumber</c>
+	/// Exit a parse tree produced by the <c>NumberNumber</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitNexprNumber([NotNull] DiceGrammarParser.NexprNumberContext context);
+	void ExitNumberNumber([NotNull] DiceGrammarParser.NumberNumberContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>NumberLiteral</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number"/>.
@@ -222,35 +222,65 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitNumberMacro([NotNull] DiceGrammarParser.NumberMacroContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.global_function"/>.
+	/// Enter a parse tree produced by the <c>GlobalFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.global_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterGlobal_function([NotNull] DiceGrammarParser.Global_functionContext context);
+	void EnterGlobalFunction([NotNull] DiceGrammarParser.GlobalFunctionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.global_function"/>.
+	/// Exit a parse tree produced by the <c>GlobalFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.global_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitGlobal_function([NotNull] DiceGrammarParser.Global_functionContext context);
+	void ExitGlobalFunction([NotNull] DiceGrammarParser.GlobalFunctionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.group_function"/>.
+	/// Enter a parse tree produced by the <c>GroupFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.group_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterGroup_function([NotNull] DiceGrammarParser.Group_functionContext context);
+	void EnterGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.group_function"/>.
+	/// Exit a parse tree produced by the <c>GroupFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.group_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitGroup_function([NotNull] DiceGrammarParser.Group_functionContext context);
+	void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.basic_function"/>.
+	/// Enter a parse tree produced by the <c>BasicFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterBasic_function([NotNull] DiceGrammarParser.Basic_functionContext context);
+	void EnterBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.basic_function"/>.
+	/// Exit a parse tree produced by the <c>BasicFunction</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_function"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitBasic_function([NotNull] DiceGrammarParser.Basic_functionContext context);
+	void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>FnArgMath</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.function_arg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFnArgMath([NotNull] DiceGrammarParser.FnArgMathContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>FnArgMath</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.function_arg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFnArgMath([NotNull] DiceGrammarParser.FnArgMathContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>FnArgComp</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.function_arg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFnArgComp([NotNull] DiceGrammarParser.FnArgCompContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>FnArgComp</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.function_arg"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFnArgComp([NotNull] DiceGrammarParser.FnArgCompContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>GroupGroup</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.grouped_roll"/>.
@@ -564,15 +594,17 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitPenetrate([NotNull] DiceGrammarParser.PenetrateContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.success_expr"/>.
+	/// Enter a parse tree produced by the <c>SuccessFail</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.success_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterSuccess_expr([NotNull] DiceGrammarParser.Success_exprContext context);
+	void EnterSuccessFail([NotNull] DiceGrammarParser.SuccessFailContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.success_expr"/>.
+	/// Exit a parse tree produced by the <c>SuccessFail</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.success_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitSuccess_expr([NotNull] DiceGrammarParser.Success_exprContext context);
+	void ExitSuccessFail([NotNull] DiceGrammarParser.SuccessFailContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>CompImplicit</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.compare_expr"/>.
@@ -598,77 +630,77 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitCompExplicit([NotNull] DiceGrammarParser.CompExplicitContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Equals</c>
+	/// Enter a parse tree produced by the <c>CompEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEquals([NotNull] DiceGrammarParser.EqualsContext context);
+	void EnterCompEquals([NotNull] DiceGrammarParser.CompEqualsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>Equals</c>
+	/// Exit a parse tree produced by the <c>CompEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEquals([NotNull] DiceGrammarParser.EqualsContext context);
+	void ExitCompEquals([NotNull] DiceGrammarParser.CompEqualsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Greater</c>
+	/// Enter a parse tree produced by the <c>CompGreater</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterGreater([NotNull] DiceGrammarParser.GreaterContext context);
+	void EnterCompGreater([NotNull] DiceGrammarParser.CompGreaterContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>Greater</c>
+	/// Exit a parse tree produced by the <c>CompGreater</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitGreater([NotNull] DiceGrammarParser.GreaterContext context);
+	void ExitCompGreater([NotNull] DiceGrammarParser.CompGreaterContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>Less</c>
+	/// Enter a parse tree produced by the <c>CompLess</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterLess([NotNull] DiceGrammarParser.LessContext context);
+	void EnterCompLess([NotNull] DiceGrammarParser.CompLessContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>Less</c>
+	/// Exit a parse tree produced by the <c>CompLess</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitLess([NotNull] DiceGrammarParser.LessContext context);
+	void ExitCompLess([NotNull] DiceGrammarParser.CompLessContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>GreaterEquals</c>
+	/// Enter a parse tree produced by the <c>CompGreaterEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterGreaterEquals([NotNull] DiceGrammarParser.GreaterEqualsContext context);
+	void EnterCompGreaterEquals([NotNull] DiceGrammarParser.CompGreaterEqualsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>GreaterEquals</c>
+	/// Exit a parse tree produced by the <c>CompGreaterEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitGreaterEquals([NotNull] DiceGrammarParser.GreaterEqualsContext context);
+	void ExitCompGreaterEquals([NotNull] DiceGrammarParser.CompGreaterEqualsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>LessEquals</c>
+	/// Enter a parse tree produced by the <c>CompLessEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterLessEquals([NotNull] DiceGrammarParser.LessEqualsContext context);
+	void EnterCompLessEquals([NotNull] DiceGrammarParser.CompLessEqualsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>LessEquals</c>
+	/// Exit a parse tree produced by the <c>CompLessEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitLessEquals([NotNull] DiceGrammarParser.LessEqualsContext context);
+	void ExitCompLessEquals([NotNull] DiceGrammarParser.CompLessEqualsContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>NotEquals</c>
+	/// Enter a parse tree produced by the <c>CompNotEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterNotEquals([NotNull] DiceGrammarParser.NotEqualsContext context);
+	void EnterCompNotEquals([NotNull] DiceGrammarParser.CompNotEqualsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>NotEquals</c>
+	/// Exit a parse tree produced by the <c>CompNotEquals</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.explicit_compare_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitNotEquals([NotNull] DiceGrammarParser.NotEqualsContext context);
+	void ExitCompNotEquals([NotNull] DiceGrammarParser.CompNotEqualsContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>SortAsc</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.sort_expr"/>.

@@ -56,7 +56,10 @@
     <Compile Include="AST\CompareOp.cs" />
     <Compile Include="AST\ComparisonNode.cs" />
     <Compile Include="AST\CritNode.cs" />
+    <Compile Include="AST\FunctionNode.cs" />
+    <Compile Include="AST\GroupPartialNode.cs" />
     <Compile Include="AST\LiteralNode.cs" />
+    <Compile Include="AST\MacroNode.cs" />
     <Compile Include="AST\SortDirection.cs" />
     <Compile Include="AST\SortNode.cs" />
     <Compile Include="DieFlags.cs" />
@@ -79,11 +82,16 @@
     <Compile Include="DiceException.cs" />
     <Compile Include="Exceptions\DiceDivideByZeroException.cs" />
     <Compile Include="Exceptions\DiceRecursionException.cs" />
+    <Compile Include="Exceptions\InvalidDiceExprException.cs" />
     <Compile Include="Exceptions\TooManyDiceException.cs" />
+    <Compile Include="FunctionContext.cs" />
+    <Compile Include="FunctionScope.cs" />
     <Compile Include="Grammar\DiceGrammarBaseListener.cs" />
     <Compile Include="Grammar\DiceGrammarLexer.cs" />
     <Compile Include="Grammar\DiceGrammarListener.cs" />
+    <Compile Include="Grammar\DiceGrammarListenerImpl.cs" />
     <Compile Include="Grammar\DiceGrammarParser.cs" />
+    <Compile Include="MacroContext.cs" />
     <Compile Include="Roller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RollerConfig.cs" />

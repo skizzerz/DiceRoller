@@ -98,7 +98,11 @@ namespace Dice.AST
                                 DieType = DieType.Group,
                                 NumSides = 0,
                                 Value = ast.Value,
-                                Flags = 0
+                                // maintain any crit/fumble flags from the underlying dice, combining them together
+                                Flags = ast.Values
+                                    .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                                    .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                                    .Aggregate((d1, d2) => d1 | d2)
                             });
                         }
                         else
@@ -127,7 +131,11 @@ namespace Dice.AST
                             DieType = DieType.Group,
                             NumSides = 0,
                             Value = ast.Value,
-                            Flags = 0
+                            // maintain any crit/fumble flags from the underlying dice, combining them together
+                            Flags = ast.Values
+                                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                                .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                                .Aggregate((d1, d2) => d1 | d2)
                         });
                     }
 
