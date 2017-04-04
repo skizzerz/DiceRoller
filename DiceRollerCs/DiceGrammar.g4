@@ -126,7 +126,8 @@ sort_expr
     ;
 
 crit_expr
-    : T_CRIT compare_expr (T_FAIL compare_expr)?
+    : T_CRIT compare_expr (T_FAIL compare_expr)? # CritFumble
+    | T_CRIT T_FAIL compare_expr # FumbleOnly
     ;
 
 T_DIGIT_STRING : [0-9]+ ;

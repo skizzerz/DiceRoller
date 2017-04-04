@@ -2393,6 +2393,18 @@ public partial class DiceGrammarParser : Parser {
 	}
 
 	public partial class Crit_exprContext : ParserRuleContext {
+		public Crit_exprContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_crit_expr; } }
+	 
+		public Crit_exprContext() { }
+		public virtual void CopyFrom(Crit_exprContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class CritFumbleContext : Crit_exprContext {
 		public ITerminalNode T_CRIT() { return GetToken(DiceGrammarParser.T_CRIT, 0); }
 		public Compare_exprContext[] compare_expr() {
 			return GetRuleContexts<Compare_exprContext>();
@@ -2401,18 +2413,30 @@ public partial class DiceGrammarParser : Parser {
 			return GetRuleContext<Compare_exprContext>(i);
 		}
 		public ITerminalNode T_FAIL() { return GetToken(DiceGrammarParser.T_FAIL, 0); }
-		public Crit_exprContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_crit_expr; } }
+		public CritFumbleContext(Crit_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IDiceGrammarListener typedListener = listener as IDiceGrammarListener;
-			if (typedListener != null) typedListener.EnterCrit_expr(this);
+			if (typedListener != null) typedListener.EnterCritFumble(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IDiceGrammarListener typedListener = listener as IDiceGrammarListener;
-			if (typedListener != null) typedListener.ExitCrit_expr(this);
+			if (typedListener != null) typedListener.ExitCritFumble(this);
+		}
+	}
+	public partial class FumbleOnlyContext : Crit_exprContext {
+		public ITerminalNode T_CRIT() { return GetToken(DiceGrammarParser.T_CRIT, 0); }
+		public ITerminalNode T_FAIL() { return GetToken(DiceGrammarParser.T_FAIL, 0); }
+		public Compare_exprContext compare_expr() {
+			return GetRuleContext<Compare_exprContext>(0);
+		}
+		public FumbleOnlyContext(Crit_exprContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IDiceGrammarListener typedListener = listener as IDiceGrammarListener;
+			if (typedListener != null) typedListener.EnterFumbleOnly(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IDiceGrammarListener typedListener = listener as IDiceGrammarListener;
+			if (typedListener != null) typedListener.ExitFumbleOnly(this);
 		}
 	}
 
@@ -2421,20 +2445,36 @@ public partial class DiceGrammarParser : Parser {
 		Crit_exprContext _localctx = new Crit_exprContext(Context, State);
 		EnterRule(_localctx, 44, RULE_crit_expr);
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 260; Match(T_CRIT);
-			State = 261; compare_expr();
-			State = 264;
+			State = 269;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,32,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,33,Context) ) {
 			case 1:
+				_localctx = new CritFumbleContext(_localctx);
+				EnterOuterAlt(_localctx, 1);
 				{
-				State = 262; Match(T_FAIL);
-				State = 263; compare_expr();
+				State = 260; Match(T_CRIT);
+				State = 261; compare_expr();
+				State = 264;
+				ErrorHandler.Sync(this);
+				switch ( Interpreter.AdaptivePredict(TokenStream,32,Context) ) {
+				case 1:
+					{
+					State = 262; Match(T_FAIL);
+					State = 263; compare_expr();
+					}
+					break;
+				}
 				}
 				break;
-			}
+			case 2:
+				_localctx = new FumbleOnlyContext(_localctx);
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 266; Match(T_CRIT);
+				State = 267; Match(T_FAIL);
+				State = 268; compare_expr();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2479,7 +2519,7 @@ public partial class DiceGrammarParser : Parser {
 
 	private static char[] _serializedATN = {
 		'\x3', '\x608B', '\xA72A', '\x8133', '\xB9ED', '\x417C', '\x3BE7', '\x7786', 
-		'\x5964', '\x3', ')', '\x10D', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
+		'\x5964', '\x3', ')', '\x112', '\x4', '\x2', '\t', '\x2', '\x4', '\x3', 
 		'\t', '\x3', '\x4', '\x4', '\t', '\x4', '\x4', '\x5', '\t', '\x5', '\x4', 
 		'\x6', '\t', '\x6', '\x4', '\a', '\t', '\a', '\x4', '\b', '\t', '\b', 
 		'\x4', '\t', '\t', '\t', '\x4', '\n', '\t', '\n', '\x4', '\v', '\t', '\v', 
@@ -2533,10 +2573,11 @@ public partial class DiceGrammarParser : Parser {
 		'\x16', '\x3', '\x16', '\x3', '\x16', '\x3', '\x16', '\x5', '\x16', '\x101', 
 		'\n', '\x16', '\x3', '\x17', '\x3', '\x17', '\x5', '\x17', '\x105', '\n', 
 		'\x17', '\x3', '\x18', '\x3', '\x18', '\x3', '\x18', '\x3', '\x18', '\x5', 
-		'\x18', '\x10B', '\n', '\x18', '\x3', '\x18', '\x2', '\x5', '\x6', '\b', 
-		'\x18', '\x19', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', 
+		'\x18', '\x10B', '\n', '\x18', '\x3', '\x18', '\x3', '\x18', '\x3', '\x18', 
+		'\x5', '\x18', '\x110', '\n', '\x18', '\x3', '\x18', '\x2', '\x5', '\x6', 
+		'\b', '\x18', '\x19', '\x2', '\x4', '\x6', '\b', '\n', '\f', '\xE', '\x10', 
 		'\x12', '\x14', '\x16', '\x18', '\x1A', '\x1C', '\x1E', ' ', '\"', '$', 
-		'&', '(', '*', ',', '.', '\x2', '\x2', '\x2', '\x125', '\x2', '\x30', 
+		'&', '(', '*', ',', '.', '\x2', '\x2', '\x2', '\x12B', '\x2', '\x30', 
 		'\x3', '\x2', '\x2', '\x2', '\x4', '\x34', '\x3', '\x2', '\x2', '\x2', 
 		'\x6', '\x36', '\x3', '\x2', '\x2', '\x2', '\b', '\x44', '\x3', '\x2', 
 		'\x2', '\x2', '\n', 'X', '\x3', '\x2', '\x2', '\x2', '\f', '_', '\x3', 
@@ -2549,7 +2590,7 @@ public partial class DiceGrammarParser : Parser {
 		'\x2', '\"', '\xDB', '\x3', '\x2', '\x2', '\x2', '$', '\xE9', '\x3', '\x2', 
 		'\x2', '\x2', '&', '\xEB', '\x3', '\x2', '\x2', '\x2', '(', '\xF2', '\x3', 
 		'\x2', '\x2', '\x2', '*', '\x100', '\x3', '\x2', '\x2', '\x2', ',', '\x104', 
-		'\x3', '\x2', '\x2', '\x2', '.', '\x106', '\x3', '\x2', '\x2', '\x2', 
+		'\x3', '\x2', '\x2', '\x2', '.', '\x10F', '\x3', '\x2', '\x2', '\x2', 
 		'\x30', '\x31', '\x5', '\x4', '\x3', '\x2', '\x31', '\x3', '\x3', '\x2', 
 		'\x2', '\x2', '\x32', '\x35', '\x5', '\x6', '\x4', '\x2', '\x33', '\x35', 
 		'\x5', '\x10', '\t', '\x2', '\x34', '\x32', '\x3', '\x2', '\x2', '\x2', 
@@ -2704,10 +2745,14 @@ public partial class DiceGrammarParser : Parser {
 		'\x10A', '\x5', '(', '\x15', '\x2', '\x108', '\x109', '\a', '\x14', '\x2', 
 		'\x2', '\x109', '\x10B', '\x5', '(', '\x15', '\x2', '\x10A', '\x108', 
 		'\x3', '\x2', '\x2', '\x2', '\x10A', '\x10B', '\x3', '\x2', '\x2', '\x2', 
-		'\x10B', '/', '\x3', '\x2', '\x2', '\x2', '#', '\x34', '?', '\x41', 'M', 
-		'O', 'X', '_', '\x62', 'h', '|', '\x84', '\x8A', '\x8E', '\x98', '\x9E', 
-		'\xA6', '\xAC', '\xB3', '\xB8', '\xBE', '\xC1', '\xC9', '\xD5', '\xDB', 
-		'\xDF', '\xE3', '\xE7', '\xE9', '\xEE', '\xF2', '\x100', '\x104', '\x10A',
+		'\x10B', '\x110', '\x3', '\x2', '\x2', '\x2', '\x10C', '\x10D', '\a', 
+		'\x13', '\x2', '\x2', '\x10D', '\x10E', '\a', '\x14', '\x2', '\x2', '\x10E', 
+		'\x110', '\x5', '(', '\x15', '\x2', '\x10F', '\x106', '\x3', '\x2', '\x2', 
+		'\x2', '\x10F', '\x10C', '\x3', '\x2', '\x2', '\x2', '\x110', '/', '\x3', 
+		'\x2', '\x2', '\x2', '$', '\x34', '?', '\x41', 'M', 'O', 'X', '_', '\x62', 
+		'h', '|', '\x84', '\x8A', '\x8E', '\x98', '\x9E', '\xA6', '\xAC', '\xB3', 
+		'\xB8', '\xBE', '\xC1', '\xC9', '\xD5', '\xDB', '\xDF', '\xE3', '\xE7', 
+		'\xE9', '\xEE', '\xF2', '\x100', '\x104', '\x10A', '\x10F',
 	};
 
 	public static readonly ATN _ATN =

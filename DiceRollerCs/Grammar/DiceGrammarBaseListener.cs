@@ -810,17 +810,33 @@ public partial class DiceGrammarBaseListener : IDiceGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSortDesc([NotNull] DiceGrammarParser.SortDescContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// Enter a parse tree produced by the <c>CritFumble</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context) { }
+	public virtual void EnterCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// Exit a parse tree produced by the <c>CritFumble</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context) { }
+	public virtual void ExitCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>FumbleOnly</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFumbleOnly([NotNull] DiceGrammarParser.FumbleOnlyContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>FumbleOnly</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFumbleOnly([NotNull] DiceGrammarParser.FumbleOnlyContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

@@ -694,14 +694,28 @@ public interface IDiceGrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitSortDesc([NotNull] DiceGrammarParser.SortDescContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// Enter a parse tree produced by the <c>CritFumble</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context);
+	void EnterCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DiceGrammarParser.crit_expr"/>.
+	/// Exit a parse tree produced by the <c>CritFumble</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitCrit_expr([NotNull] DiceGrammarParser.Crit_exprContext context);
+	void ExitCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>FumbleOnly</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFumbleOnly([NotNull] DiceGrammarParser.FumbleOnlyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>FumbleOnly</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.crit_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFumbleOnly([NotNull] DiceGrammarParser.FumbleOnlyContext context);
 }
 } // namespace Dice.Grammar

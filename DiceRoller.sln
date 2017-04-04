@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiceRollerC", "DiceRoller\DiceRoller.vcxproj", "{93E35042-A1BB-4A8A-877D-180780D405E7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceRollerCs", "DiceRollerCs\DiceRollerCs.csproj", "{806C407C-D9CC-4456-84C3-F25D810C3154}"
 EndProject
 Global
@@ -17,16 +15,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Debug|x64.ActiveCfg = Debug|x64
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Debug|x64.Build.0 = Debug|x64
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Debug|x86.ActiveCfg = Debug|Win32
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Debug|x86.Build.0 = Debug|Win32
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Release|Any CPU.ActiveCfg = Release|Win32
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Release|x64.ActiveCfg = Release|x64
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Release|x64.Build.0 = Release|x64
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Release|x86.ActiveCfg = Release|Win32
-		{93E35042-A1BB-4A8A-877D-180780D405E7}.Release|x86.Build.0 = Release|Win32
 		{806C407C-D9CC-4456-84C3-F25D810C3154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{806C407C-D9CC-4456-84C3-F25D810C3154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{806C407C-D9CC-4456-84C3-F25D810C3154}.Debug|x64.ActiveCfg = Debug|Any CPU
