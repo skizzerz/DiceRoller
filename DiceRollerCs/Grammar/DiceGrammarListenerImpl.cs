@@ -77,6 +77,76 @@ namespace Dice.Grammar
             Stack.Push(new MacroNode(context.T_STRING().GetText()));
         }
 
+        public override void EnterGroupGroup([NotNull] DiceGrammarParser.GroupGroupContext context)
+        {
+            // add GroupPartialNode to act as a sentinel and accumulator for all group stuff
+            // note that there might be a node after GroupPartialNode on the stack to indicate NumTimes
+            // (said node is rolled into the GroupPartialNode upon parsing the inner group contents)
+            Stack.Push(new GroupPartialNode());
+        }
 
+        public override void ExitGroupInit([NotNull] DiceGrammarParser.GroupInitContext context)
+        {
+            var top = Stack.Pop();
+            var partial = Stack.Pop();
+
+            if (partial is GroupPartialNode)
+            {
+                // no NumTimes was specified
+                ((GroupPartialNode)partial).AddExpression(top);
+                Stack.Push(partial);
+            }
+            else
+            {
+                // NumTimes specified
+                var partial2 = (GroupPartialNode)Stack.Pop();
+                partial2.NumTimes = partial;
+                partial2.AddExpression(top);
+                Stack.Push(partial2);
+            }
+        }
+
+        public override void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context)
+        {
+            var top = Stack.Pop();
+            var partial = (GroupPartialNode)Stack.Pop();
+            partial.AddExpression(top);
+            Stack.Push(partial);
+        }
+
+        public override void ExitGroupKeep([NotNull] DiceGrammarParser.GroupKeepContext context)
+        {
+            var keep = (KeepNode)Stack.Pop();
+            var partial = (GroupPartialNode)keep.Expression;
+            partial.AddKeep(keep);
+            Stack.Push(partial);
+        }
+
+        public override void ExitGroupSuccess([NotNull] DiceGrammarParser.GroupSuccessContext context)
+        {
+            var success = (SuccessNode)Stack.Pop();
+            var partial = (GroupPartialNode)success.Expression;
+            partial.AddSuccess(success.Success);
+            partial.AddFailure(success.Failure);
+            Stack.Push(partial);
+        }
+
+        public override void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context)
+        {
+            var sort = (SortNode)Stack.Pop();
+            var partial = (GroupPartialNode)sort.Expression;
+            partial.AddSort(sort);
+            Stack.Push(partial);
+        }
+
+        public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
+        {
+            // we will have N function arguments at the top of the stack, followed by the GroupPartialNode
+            // note that arguments are popped in reverse order, so we'll need to reverse them into normal order
+            // before passing them along to our FunctionNode. Certain functions are hardcoded into aliases for
+            // other node types, and those are handled here as well (keephighest, keeplowest, drophighest, droplowest,
+            // success, failure, sortasc, and sortdesc)
+            
+        }
     }
 }

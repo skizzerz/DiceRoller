@@ -33,7 +33,7 @@ namespace Dice.AST
         /// <summary>
         /// The dice being rolled.
         /// </summary>
-        public DiceAST Expression { get; private set; }
+        public DiceAST Expression { get; internal set; }
 
         public override IReadOnlyList<DieResult> Values
         {

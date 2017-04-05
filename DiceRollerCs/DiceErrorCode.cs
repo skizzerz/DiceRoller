@@ -60,5 +60,10 @@ namespace Dice
         /// </summary>
         [Description("No function named {0} is registered for the current scope.")]
         NoSuchFunction = 9,
+        /// <summary>
+        /// Incorrect number of arguments passed to internal function {0}.
+        /// </summary>
+        [Description("Incorrect number of arguments passed to internal function {0}.")]
+        IncorrectArity = 10,
     }
 }

@@ -30,7 +30,7 @@ namespace Dice.AST
         /// <summary>
         /// Underlying roll expression.
         /// </summary>
-        public DiceAST Expression { get; private set; }
+        public DiceAST Expression { get; internal set; }
 
         /// <summary>
         /// Number of successes, only valid if Evaluated is true.

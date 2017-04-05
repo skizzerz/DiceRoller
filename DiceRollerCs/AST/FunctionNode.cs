@@ -17,6 +17,9 @@ namespace Dice.AST
         /// </summary>
         public FunctionContext Context { get; private set; }
 
+        internal FunctionTiming Timing;
+        private Action<FunctionContext> Function;
+
         public override IReadOnlyList<DieResult> Values
         {
             get { return Context.Values ?? Context.Expression?.Values ?? new List<DieResult>(); }
@@ -25,6 +28,15 @@ namespace Dice.AST
         internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, DiceAST expression)
         {
             Context = new FunctionContext(scope, name, arguments, expression);
+
+            try
+            {
+                (Timing, Function) = FunctionRegistry.Callbacks[(name, scope)];
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new DiceException(DiceErrorCode.NoSuchFunction, name);
+            }
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
@@ -57,18 +69,7 @@ namespace Dice.AST
 
         private void CallFunction()
         {
-            Action<FunctionContext> fn;
-
-            try
-            {
-                fn = FunctionRegistry.Callbacks[(Context.Name, Context.Scope)].callback;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new DiceException(DiceErrorCode.NoSuchFunction, Context.Name);
-            }
-
-            fn(Context);
+            Function(Context);
             Value = Context.Value;
         }
     }

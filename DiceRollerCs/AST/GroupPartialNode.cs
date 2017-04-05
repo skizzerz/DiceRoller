@@ -12,6 +12,7 @@ namespace Dice.AST
     /// </summary>
     public class GroupPartialNode : DiceAST
     {
+        public DiceAST NumTimes { get; internal set; }
         public List<DiceAST> GroupExpressions { get; private set; }
         // a GroupNode can have at most SortNode attached to it,
         // however any number of KeepNodes and success/failure Comparisons can be applied.
@@ -33,6 +34,7 @@ namespace Dice.AST
             Success = new List<ComparisonNode>();
             Failure = new List<ComparisonNode>();
             Functions = new List<FunctionNode>();
+            NumTimes = null;
         }
 
         internal void AddExpression(DiceAST expression)
@@ -71,12 +73,22 @@ namespace Dice.AST
 
         internal void AddSuccess(ComparisonNode comp)
         {
-            Success.Add(comp ?? throw new ArgumentNullException("comp"));
+            if (comp == null)
+            {
+                return;
+            }
+
+            Success.Add(comp);
         }
 
         internal void AddFailure(ComparisonNode comp)
         {
-            Failure.Add(comp ?? throw new ArgumentNullException("comp"));
+            if (comp == null)
+            {
+                return;
+            }
+
+            Failure.Add(comp);
         }
 
         internal void AddFunction(FunctionNode fn)
@@ -87,9 +99,12 @@ namespace Dice.AST
         /// <summary>
         /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree
         /// </summary>
+        /// <param name="numTimes">Expression to roll the group some number of times, may be null</param>
         /// <returns></returns>
         internal DiceAST CreateGroupNode()
         {
+            var group = new GroupNode(NumTimes, GroupExpressions);
+
 
         }
 

@@ -19,7 +19,7 @@ namespace Dice.AST
         /// <summary>
         /// The expression to reroll
         /// </summary>
-        public DiceAST Expression { get; private set; }
+        public DiceAST Expression { get; internal set; }
 
         /// <summary>
         /// Maximum number of times to reroll, or 0 if unlimited rerolls are allowed

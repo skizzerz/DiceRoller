@@ -30,7 +30,7 @@ namespace Dice.AST
         /// <summary>
         /// The underlying dice expression to mark crits and fumbles on.
         /// </summary>
-        public DiceAST Expression { get; private set; }
+        public DiceAST Expression { get; internal set; }
 
         public override IReadOnlyList<DieResult> Values
         {
