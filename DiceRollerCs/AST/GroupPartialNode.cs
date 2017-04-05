@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     /// <summary>
@@ -48,14 +46,14 @@ namespace Dice.AST
             {
                 if (Keep.Count > 0)
                 {
-                    throw new InvalidDiceExprException("Cannot apply advantage/disadvantage onto a roll with a keep/drop expression");
+                    throw new DiceException(DiceErrorCode.NoAdvantageKeep);
                 }
 
                 haveAdvantage = true;
             }
             else if (haveAdvantage)
             {
-                throw new InvalidDiceExprException("Cannot apply a keep/drop expression onto a roll with advantage/disadvantage");
+                throw new DiceException(DiceErrorCode.NoAdvantageKeep);
             }
 
             Keep.Add(keep ?? throw new ArgumentNullException("keep"));
@@ -65,7 +63,7 @@ namespace Dice.AST
         {
             if (Sort != null)
             {
-                throw new InvalidDiceExprException("Cannot add more than one sort expression to a roll");
+                throw new DiceException(DiceErrorCode.TooManySort);
             }
 
             Sort = sort ?? throw new ArgumentNullException("sort");

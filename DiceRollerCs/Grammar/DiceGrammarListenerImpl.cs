@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Dice.AST;
-using Dice.Exceptions;
 
 // DiceGrammarListener.cs is taken by the auto-generated IDiceGrammarListener interface
 // so we needed a different filename here

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     /// <summary>
@@ -132,7 +130,7 @@ namespace Dice.AST
 
                         if (rolls > conf.MaxDice)
                         {
-                            throw new TooManyDiceException(conf.MaxDice);
+                            throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
                         }
 
                         if (rolls > conf.MaxRerolls)

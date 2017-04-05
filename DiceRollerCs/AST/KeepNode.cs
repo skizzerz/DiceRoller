@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     /// <summary>
@@ -115,7 +113,7 @@ namespace Dice.AST
 
             if (amount < 0)
             {
-                throw new BadDiceException();
+                throw new DiceException(DiceErrorCode.NegativeDice);
             }
 
             switch (KeepType)

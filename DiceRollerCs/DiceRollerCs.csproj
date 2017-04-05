@@ -45,6 +45,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,6 +65,8 @@
     <Compile Include="AST\MacroNode.cs" />
     <Compile Include="AST\SortDirection.cs" />
     <Compile Include="AST\SortNode.cs" />
+    <Compile Include="DiceErrorCode.cs" />
+    <Compile Include="DiceFunctionAttribute.cs" />
     <Compile Include="DieFlags.cs" />
     <Compile Include="DieResult.cs" />
     <Compile Include="DieType.cs" />
@@ -77,15 +82,12 @@
     <Compile Include="AST\RollNode.cs" />
     <Compile Include="AST\RollType.cs" />
     <Compile Include="AST\SuccessNode.cs" />
-    <Compile Include="Exceptions\BadDiceException.cs" />
-    <Compile Include="Exceptions\BadSidesException.cs" />
     <Compile Include="DiceException.cs" />
-    <Compile Include="Exceptions\DiceDivideByZeroException.cs" />
-    <Compile Include="Exceptions\DiceRecursionException.cs" />
-    <Compile Include="Exceptions\InvalidDiceExprException.cs" />
-    <Compile Include="Exceptions\TooManyDiceException.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FunctionContext.cs" />
+    <Compile Include="FunctionRegistry.cs" />
     <Compile Include="FunctionScope.cs" />
+    <Compile Include="FunctionTiming.cs" />
     <Compile Include="Grammar\DiceGrammarBaseListener.cs" />
     <Compile Include="Grammar\DiceGrammarLexer.cs" />
     <Compile Include="Grammar\DiceGrammarListener.cs" />

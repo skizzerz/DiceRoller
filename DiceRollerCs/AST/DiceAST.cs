@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     /// <summary>
@@ -38,14 +36,14 @@ namespace Dice.AST
         {
             if (depth > conf.MaxRecursionDepth)
             {
-                throw new DiceRecursionException(conf.MaxRecursionDepth);
+                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
             }
 
             ulong rolls = EvaluateInternal(conf, root, depth);
 
             if (rolls > conf.MaxDice)
             {
-                throw new TooManyDiceException(conf.MaxDice);
+                throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
             }
 
             Evaluated = true;
@@ -69,14 +67,14 @@ namespace Dice.AST
 
             if (depth > conf.MaxRecursionDepth)
             {
-                throw new DiceRecursionException(conf.MaxRecursionDepth);
+                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
             }
 
             ulong rolls = RerollInternal(conf, root, depth);
 
             if (rolls > conf.MaxDice)
             {
-                throw new TooManyDiceException(conf.MaxDice);
+                throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
             }
 
             return rolls;

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     public class RollNode : DiceAST
@@ -64,17 +62,17 @@ namespace Dice.AST
 
             if (numDice < 0)
             {
-                throw new BadDiceException();
+                throw new DiceException(DiceErrorCode.NegativeDice);
             }
 
             if (numSides < 1 || numSides > conf.MaxSides)
             {
-                throw new BadSidesException(conf.MaxSides);
+                throw new DiceException(DiceErrorCode.BadSides, conf.MaxSides);
             }
 
             if (conf.NormalSidesOnly && !_normalSides.Contains(numSides))
             {
-                throw new BadSidesException();
+                throw new DiceException(DiceErrorCode.WrongSides);
             }
 
             _values.Clear();

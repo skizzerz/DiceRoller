@@ -36,7 +36,40 @@ namespace Dice.AST
                 rolls += arg.Evaluate(conf, root, depth + 1);
             }
 
+            CallFunction();
 
+            return rolls;
+        }
+
+        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        {
+            ulong rolls = Context.Expression?.Reroll(conf, root, depth + 1) ?? 0;
+
+            foreach (var arg in Context.Arguments)
+            {
+                rolls += arg.Reroll(conf, root, depth + 1);
+            }
+
+            CallFunction();
+
+            return rolls;
+        }
+
+        private void CallFunction()
+        {
+            Action<FunctionContext> fn;
+
+            try
+            {
+                fn = FunctionRegistry.Callbacks[(Context.Name, Context.Scope)].callback;
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new DiceException(DiceErrorCode.NoSuchFunction, Context.Name);
+            }
+
+            fn(Context);
+            Value = Context.Value;
         }
     }
 }

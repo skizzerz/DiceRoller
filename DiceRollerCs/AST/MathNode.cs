@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Dice.Exceptions;
-
 namespace Dice.AST
 {
     /// <summary>
@@ -79,7 +77,7 @@ namespace Dice.AST
                     {
                         // attempted division by 0, this normally throws a DivideByZeroException,
                         // except we want all exceptions that can arise from user input to derive from DiceException
-                        throw new DiceDivideByZeroException();
+                        throw new DiceException(DiceErrorCode.DivideByZero);
                     }
                     Value = Left.Value / Right.Value;
                     sd = SpecialDie.Divide;
