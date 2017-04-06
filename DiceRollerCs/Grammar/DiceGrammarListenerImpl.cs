@@ -85,6 +85,12 @@ namespace Dice.Grammar
             Stack.Push(new GroupPartialNode());
         }
 
+        public override void ExitGroupGroup([NotNull] DiceGrammarParser.GroupGroupContext context)
+        {
+            var partial = (GroupPartialNode)Stack.Pop();
+            Stack.Push(partial.CreateGroupNode());
+        }
+
         public override void ExitGroupInit([NotNull] DiceGrammarParser.GroupInitContext context)
         {
             var top = Stack.Pop();
@@ -145,8 +151,152 @@ namespace Dice.Grammar
             // note that arguments are popped in reverse order, so we'll need to reverse them into normal order
             // before passing them along to our FunctionNode. Certain functions are hardcoded into aliases for
             // other node types, and those are handled here as well (keephighest, keeplowest, drophighest, droplowest,
-            // success, failure, sortasc, and sortdesc)
-            
+            // advantage, disadvantage, success, failure, sortasc, and sortdesc)
+            List<DiceAST> args = new List<DiceAST>();
+            DiceAST top = Stack.Pop();
+
+            while (!(top is GroupPartialNode))
+            {
+                args.Add(top);
+                top = Stack.Pop();
+            }
+
+            // top is our Partial node, and has already been popped off the stack
+            args.Reverse();
+            var partial = (GroupPartialNode)top;
+
+            // check for a built-in function
+            var fname = context.T_ALPHA_STRING().GetText().ToLower();
+            switch (fname)
+            {
+                case "keephighest":
+                    if (args.Count != 1)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args[0] is ComparisonNode)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.KeepHigh, args[0], partial));
+                    break;
+                case "keeplowest":
+                    if (args.Count != 1)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args[0] is ComparisonNode)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.KeepLow, args[0], partial));
+                    break;
+                case "drophighest":
+                    if (args.Count != 1)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args[0] is ComparisonNode)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.DropHigh, args[0], partial));
+                    break;
+                case "droplowest":
+                    if (args.Count != 1)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args[0] is ComparisonNode)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.DropLow, args[0], partial));
+                    break;
+                case "advantage":
+                    if (args.Count != 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.Advantage, null, partial));
+                    break;
+                case "disadvantage":
+                    if (args.Count != 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    partial.AddKeep(new KeepNode(KeepType.Disadvantage, null, partial));
+                    break;
+                case "success":
+                    if (args.Count == 0 || args.Count > 2)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args[0] is ComparisonNode)
+                    {
+                        partial.AddSuccess((ComparisonNode)args[0]);
+                    }
+                    else
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    if (args.Count == 2 && args[1] is ComparisonNode)
+                    {
+                        partial.AddFailure((ComparisonNode)args[1]);
+                    }
+                    else if (args.Count == 2)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    break;
+                case "failure":
+                    if (args.Count != 1)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (!(args[0] is ComparisonNode))
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    partial.AddFailure((ComparisonNode)args[0]);
+                    break;
+                case "sortasc":
+                    if (args.Count != 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    partial.AddSort(new SortNode(SortDirection.Ascending, partial));
+                    break;
+                case "sortdesc":
+                    if (args.Count != 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    partial.AddSort(new SortNode(SortDirection.Descending, partial));
+                    break;
+                default:
+                    partial.AddFunction(new FunctionNode(FunctionScope.Group, fname, args, partial));
+                    break;
+            }
+
+            Stack.Push(partial);
         }
     }
 }

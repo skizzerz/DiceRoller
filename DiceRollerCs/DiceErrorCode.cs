@@ -65,5 +65,10 @@ namespace Dice
         /// </summary>
         [Description("Incorrect number of arguments passed to internal function {0}.")]
         IncorrectArity = 10,
+        /// <summary>
+        /// Incorrect argument type passed to internal function {0}.
+        /// </summary>
+        [Description("Incorrect argument type passed to internal function {0}.")]
+        IncorrectArgType = 11,
     }
 }

@@ -38,9 +38,22 @@ namespace Dice.AST
         internal KeepNode(KeepType keepType, DiceAST amount, DiceAST expression)
         {
             KeepType = keepType;
-            Amount = amount ?? throw new ArgumentNullException("amount");
             Expression = expression ?? throw new ArgumentNullException("expression");
             _values = new List<DieResult>();
+
+            if (keepType == KeepType.Advantage || keepType == KeepType.Disadvantage)
+            {
+                if (amount != null)
+                {
+                    throw new ArgumentException("amount must be null if keep type is advantage or disadvantage");
+                }
+
+                Amount = null;
+            }
+            else
+            {
+                Amount = amount ?? throw new ArgumentNullException("amount");
+            }
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
