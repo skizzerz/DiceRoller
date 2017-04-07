@@ -149,11 +149,12 @@ namespace Dice.AST
                         }
 
                         var numSides = die.NumSides;
-                        if (ExplodeType == ExplodeType.Penetrate)
+                        if (ExplodeType == ExplodeType.Penetrate && Comparison == null)
                         {
                             // if penetrating dice are used, d100p penetrates to d20p,
                             // and d20p penetrates to d6p (however, the d20p from
                             // the d100p does not further drop to d6p).
+                            // only do this if a custom comparison expression was not used.
                             if (numSides == 100)
                             {
                                 numSides = 20;
