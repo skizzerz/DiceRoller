@@ -132,7 +132,7 @@ sort_expr
 
 crit_expr
     : T_CRIT compare_expr (T_FAIL compare_expr)? # CritFumble
-    | T_CRIT T_FAIL compare_expr # FumbleOnly
+    | T_CRITFAIL compare_expr # FumbleOnly
     ;
 
 T_DIGIT_STRING : '-'? [0-9]+ ('.' [0-9]+)? ;
@@ -158,6 +158,7 @@ T_COMPOUND : '!c' ;
 T_PENETRATE : '!p' ;
 
 T_CRIT : 'cs' ;
+T_CRITFAIL : 'cf' ;
 
 /* this token never appears at the beginning of a modifier, as such it is only one letter.
  * tokens which appear at the beginning of modifiers are always two letters or more to allow for disambiguation. */
