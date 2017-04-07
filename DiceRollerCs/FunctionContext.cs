@@ -46,12 +46,12 @@ namespace Dice
         /// </summary>
         public List<DieResult> Values { get; set; }
         
-        internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, DiceAST expression)
+        internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
         {
             Scope = scope;
             Name = name ?? throw new ArgumentNullException("name");
             Arguments = arguments ?? throw new ArgumentNullException("arguments");
-            Expression = expression;
+            Expression = null;
             Values = null;
 
             if (Arguments.Any(d => d == null))

@@ -47,12 +47,50 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal SuccessNode(DiceAST expression, ComparisonNode success, ComparisonNode failure)
+        internal SuccessNode(ComparisonNode success, ComparisonNode failure)
         {
-            Expression = expression ?? throw new ArgumentNullException("expression");
-            Success = success ?? throw new ArgumentNullException("success");
+            Expression = null;
+            Success = success;
             Failure = failure;
+            if (success == null && failure == null)
+            {
+                throw new ArgumentException("success and failure cannot both be null");
+            }
             _values = new List<DieResult>();
+        }
+
+        internal void AddSuccess(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                throw new ArgumentNullException("comp");
+            }
+
+            if (Success == null)
+            {
+                Success = comp;
+            }
+            else
+            {
+                Success.Add(comp);
+            }
+        }
+
+        internal void AddFailure(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                throw new ArgumentNullException("comp");
+            }
+
+            if (Failure == null)
+            {
+                Failure = comp;
+            }
+            else
+            {
+                Failure.Add(comp);
+            }
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)

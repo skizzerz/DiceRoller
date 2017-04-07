@@ -75,5 +75,15 @@ namespace Dice
         /// </summary>
         [Description("When defining failures, must also define at least one success.")]
         InvalidSuccess = 12,
+        /// <summary>
+        /// Cannot mix reroll types on a roll.
+        /// </summary>
+        [Description("Cannot mix reroll types on a roll.")]
+        MixedReroll = 13,
+        /// <summary>
+        /// Cannot mix explosion types on a roll.
+        /// </summary>
+        [Description("Cannot mix explosion types on a roll.")]
+        MixedExplode = 14,
     }
 }

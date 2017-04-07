@@ -40,12 +40,12 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal ExplodeNode(ExplodeType explodeType, bool compound, ComparisonNode comparison, DiceAST expression)
+        internal ExplodeNode(ExplodeType explodeType, bool compound, ComparisonNode comparison)
         {
             ExplodeType = explodeType;
             Compound = compound;
             Comparison = comparison;
-            Expression = expression ?? throw new ArgumentNullException("expression");
+            Expression = null;
             _values = new List<DieResult>();
         }
 

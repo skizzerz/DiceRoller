@@ -31,10 +31,10 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal RerollNode(uint maxRerolls, DiceAST expression, ComparisonNode comparison)
+        internal RerollNode(uint maxRerolls, ComparisonNode comparison)
         {
             Comparison = comparison ?? throw new ArgumentNullException("comparison");
-            Expression = expression ?? throw new ArgumentNullException("expression");
+            Expression = null;
             MaxRerolls = maxRerolls;
             _values = new List<DieResult>();
         }

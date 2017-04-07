@@ -25,9 +25,9 @@ namespace Dice.AST
             get { return Context.Values ?? Context.Expression?.Values ?? new List<DieResult>(); }
         }
 
-        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, DiceAST expression)
+        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
         {
-            Context = new FunctionContext(scope, name, arguments, expression);
+            Context = new FunctionContext(scope, name, arguments);
 
             try
             {

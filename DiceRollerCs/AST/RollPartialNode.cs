@@ -17,10 +17,8 @@ namespace Dice.AST
         public SortNode Sort { get; private set; }
         public RerollNode RerollNode { get; private set; }
         public ExplodeNode Explode { get; private set; }
-        public List<ComparisonNode> Critical { get; private set; }
-        public List<ComparisonNode> Fumble { get; private set; }
-        public List<ComparisonNode> Success { get; private set; }
-        public List<ComparisonNode> Failure { get; private set; }
+        public CritNode Critical { get; private set; }
+        public SuccessNode Success { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
 
         private bool haveAdvantage = false;
@@ -34,10 +32,8 @@ namespace Dice.AST
             Sort = null;
             RerollNode = null;
             Explode = null;
-            Critical = new List<ComparisonNode>();
-            Fumble = new List<ComparisonNode>();
-            Success = new List<ComparisonNode>();
-            Failure = new List<ComparisonNode>();
+            Critical = null;
+            Success = null;
             Functions = new List<FunctionNode>();
         }
 
@@ -72,62 +68,84 @@ namespace Dice.AST
 
         internal void AddReroll(RerollNode reroll)
         {
-            if (RerollNode != null)
+            if (reroll == null)
             {
-                throw new DiceException(DiceErrorCode.TooManyReroll);
+                throw new ArgumentNullException("reroll");
             }
 
-            RerollNode = reroll ?? throw new ArgumentNullException("reroll");
+            if (RerollNode != null && RerollNode.MaxRerolls != reroll.MaxRerolls)
+            {
+                throw new DiceException(DiceErrorCode.MixedReroll);
+            }
+
+            if (RerollNode == null)
+            {
+                RerollNode = reroll;
+            }
+            else
+            {
+                RerollNode.Comparison.Add(reroll.Comparison);
+            }
         }
 
         internal void AddExplode(ExplodeNode explode)
         {
-            if (Explode != null)
+            if (explode == null)
             {
-                throw new DiceException(DiceErrorCode.TooManyExplode);
+                throw new ArgumentNullException("explode");
             }
 
-            Explode = explode ?? throw new ArgumentNullException("explode");
+            if (Explode != null && (Explode.ExplodeType != explode.ExplodeType || Explode.Compound != explode.Compound))
+            {
+                throw new DiceException(DiceErrorCode.MixedExplode);
+            }
+
+            if (Explode == null)
+            {
+                Explode = explode;
+            }
+            else
+            {
+                Explode.Comparison.Add(explode.Comparison);
+            }
         }
 
-        internal void AddCritical(ComparisonNode comp)
+        internal void AddCritical(CritNode crit)
         {
-            if (comp == null)
+            if (crit == null)
             {
-                return;
+                throw new ArgumentNullException("crit");
             }
 
-            Critical.Add(comp);
+            if (Critical == null)
+            {
+                Critical = crit;
+                return;
+            }
+            else
+            {
+                Critical.AddCritical(crit.Critical);
+                Critical.AddFumble(crit.Fumble);
+            }
         }
 
-        internal void AddFumble(ComparisonNode comp)
+        internal void AddSuccess(SuccessNode success)
         {
-            if (comp == null)
+            if (success == null)
             {
-                return;
+                throw new ArgumentNullException("success");
             }
 
-            Fumble.Add(comp);
-        }
-
-        internal void AddSuccess(ComparisonNode comp)
-        {
-            if (comp == null)
+            if (Success == null)
             {
+                Success = success;
                 return;
             }
-
-            Success.Add(comp);
-        }
-
-        internal void AddFailure(ComparisonNode comp)
-        {
-            if (comp == null)
+            else
             {
-                return;
+                Success.AddSuccess(success.Success);
+                Success.AddFailure(success.Failure);
             }
-
-            Failure.Add(comp);
         }
 
         internal void AddFunction(FunctionNode fn)
@@ -165,39 +183,22 @@ namespace Dice.AST
             }
             AddFunctionNodes(FunctionTiming.AfterKeep, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref roll);
-            if (Success.Count == 0 && Failure.Count > 0)
+            if (Success != null)
             {
-                throw new DiceException(DiceErrorCode.InvalidSuccess);
-            }
-            ComparisonNode succ = null;
-            ComparisonNode fail = null;
-            if (Success.Count > 0)
-            {
-                succ = new ComparisonNode(Success);
-            }
-            if (Failure.Count > 0)
-            {
-                fail = new ComparisonNode(Failure);
-            }
-            if (succ != null)
-            {
-                roll = new SuccessNode(roll, succ, fail);
+                if (Success.Success.Comparisons.Count() == 0 && Success.Failure.Comparisons.Count() > 0)
+                {
+                    throw new DiceException(DiceErrorCode.InvalidSuccess);
+                }
+
+                Success.Expression = roll;
+                roll = Success;
             }
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref roll);
-            ComparisonNode crit = null;
-            ComparisonNode fumb = null;
-            if (Critical.Count > 0)
+            if (Critical != null)
             {
-                crit = new ComparisonNode(Critical);
-            }
-            if (Fumble.Count > 0)
-            {
-                fumb = new ComparisonNode(Fumble);
-            }
-            if (crit != null || fumb != null)
-            {
-                roll = new CritNode(roll, crit, fumb);
+                Critical.Expression = roll;
+                roll = Critical;
             }
             AddFunctionNodes(FunctionTiming.AfterCrit, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSort, ref roll);

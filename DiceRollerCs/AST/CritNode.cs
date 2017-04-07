@@ -19,13 +19,13 @@ namespace Dice.AST
         /// What gets marked as a crit. It is possible for a roll to be marked as both a crit
         /// as well as a fumble. Can be null.
         /// </summary>
-        public ComparisonNode CritComparison { get; private set; }
+        public ComparisonNode Critical { get; private set; }
 
         /// <summary>
         /// What gets marked as a fumble. It is possible for a roll to be marked as both a crit
         /// as well as a fumble. Can be null.
         /// </summary>
-        public ComparisonNode FumbleComparison { get; private set; }
+        public ComparisonNode Fumble { get; private set; }
 
         /// <summary>
         /// The underlying dice expression to mark crits and fumbles on.
@@ -37,11 +37,11 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal CritNode(DiceAST expression, ComparisonNode crit, ComparisonNode fumble)
+        internal CritNode(ComparisonNode crit, ComparisonNode fumble)
         {
-            Expression = expression ?? throw new ArgumentNullException("expression");
-            CritComparison = crit;
-            FumbleComparison = fumble;
+            Expression = null;
+            Critical = crit;
+            Fumble = fumble;
             _values = new List<DieResult>();
 
             if (crit == null && fumble == null)
@@ -50,11 +50,45 @@ namespace Dice.AST
             }
         }
 
+        internal void AddCritical(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                throw new ArgumentNullException("comp");
+            }
+
+            if (Critical == null)
+            {
+                Critical = comp;
+            }
+            else
+            {
+                Critical.Add(comp);
+            }
+        }
+
+        internal void AddFumble(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                throw new ArgumentNullException("comp");
+            }
+
+            if (Fumble == null)
+            {
+                Fumble = comp;
+            }
+            else
+            {
+                Fumble.Add(comp);
+            }
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             ulong rolls = Expression.Evaluate(conf, root, depth + 1);
-            rolls += CritComparison?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += FumbleComparison?.Evaluate(conf, root, depth + 1) ?? 0;
+            rolls += Critical?.Evaluate(conf, root, depth + 1) ?? 0;
+            rolls += Fumble?.Evaluate(conf, root, depth + 1) ?? 0;
             MarkCrits();
 
             return rolls;
@@ -64,14 +98,14 @@ namespace Dice.AST
         {
             ulong rolls = Expression.Reroll(conf, root, depth + 1);
 
-            if (CritComparison?.Evaluated == false)
+            if (Critical?.Evaluated == false)
             {
-                rolls += CritComparison.Evaluate(conf, root, depth + 1);
+                rolls += Critical.Evaluate(conf, root, depth + 1);
             }
 
-            if (FumbleComparison?.Evaluated == false)
+            if (Fumble?.Evaluated == false)
             {
-                rolls += FumbleComparison.Evaluate(conf, root, depth + 1);
+                rolls += Fumble.Evaluate(conf, root, depth + 1);
             }
 
             MarkCrits();
@@ -85,12 +119,12 @@ namespace Dice.AST
             _values.Clear();
             DieFlags mask = 0;
 
-            if (CritComparison != null)
+            if (Critical != null)
             {
                 mask |= DieFlags.Critical;
             }
 
-            if (FumbleComparison != null)
+            if (Fumble != null)
             {
                 mask |= DieFlags.Fumble;
             }
@@ -107,12 +141,12 @@ namespace Dice.AST
                     continue;
                 }
 
-                if (CritComparison?.Compare(die.Value) == true)
+                if (Critical?.Compare(die.Value) == true)
                 {
                     flags |= DieFlags.Critical;
                 }
 
-                if (FumbleComparison?.Compare(die.Value) == true)
+                if (Fumble?.Compare(die.Value) == true)
                 {
                     flags |= DieFlags.Fumble;
                 }

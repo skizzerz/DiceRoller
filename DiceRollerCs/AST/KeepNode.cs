@@ -35,10 +35,10 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal KeepNode(KeepType keepType, DiceAST amount, DiceAST expression)
+        internal KeepNode(KeepType keepType, DiceAST amount)
         {
             KeepType = keepType;
-            Expression = expression ?? throw new ArgumentNullException("expression");
+            Expression = null;
             _values = new List<DieResult>();
 
             if (keepType == KeepType.Advantage || keepType == KeepType.Disadvantage)

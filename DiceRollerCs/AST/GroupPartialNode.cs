@@ -18,8 +18,7 @@ namespace Dice.AST
         // however any number of KeepNodes and success/failure Comparisons can be applied.
         public List<KeepNode> Keep { get; private set; }
         public SortNode Sort { get; private set; }
-        public List<ComparisonNode> Success { get; private set; }
-        public List<ComparisonNode> Failure { get; private set; }
+        public SuccessNode Success { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
 
         private bool haveAdvantage = false;
@@ -31,8 +30,7 @@ namespace Dice.AST
             GroupExpressions = new List<DiceAST>();
             Keep = new List<KeepNode>();
             Sort = null;
-            Success = new List<ComparisonNode>();
-            Failure = new List<ComparisonNode>();
+            Success = null;
             Functions = new List<FunctionNode>();
             NumTimes = null;
         }
@@ -71,24 +69,23 @@ namespace Dice.AST
             Sort = sort ?? throw new ArgumentNullException("sort");
         }
 
-        internal void AddSuccess(ComparisonNode comp)
+        internal void AddSuccess(SuccessNode success)
         {
-            if (comp == null)
+            if (success == null)
             {
-                return;
+                throw new ArgumentNullException("success");
             }
 
-            Success.Add(comp);
-        }
-
-        internal void AddFailure(ComparisonNode comp)
-        {
-            if (comp == null)
+            if (Success == null)
             {
+                Success = success;
                 return;
             }
-
-            Failure.Add(comp);
+            else
+            {
+                Success.AddSuccess(success.Success);
+                Success.AddFailure(success.Failure);
+            }
         }
 
         internal void AddFunction(FunctionNode fn)
@@ -117,23 +114,15 @@ namespace Dice.AST
             }
             AddFunctionNodes(FunctionTiming.AfterKeep, ref group);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
-            if (Success.Count == 0 && Failure.Count > 0)
+            if (Success != null)
             {
-                throw new DiceException(DiceErrorCode.InvalidSuccess);
-            }
-            ComparisonNode succ = null;
-            ComparisonNode fail = null;
-            if (Success.Count > 0)
-            {
-                succ = new ComparisonNode(Success);
-            }
-            if (Failure.Count > 0)
-            {
-                fail = new ComparisonNode(Failure);
-            }
-            if (succ != null)
-            {
-                group = new SuccessNode(group, succ, fail);
+                if (Success.Success.Comparisons.Count() == 0 && Success.Failure.Comparisons.Count() > 0)
+                {
+                    throw new DiceException(DiceErrorCode.InvalidSuccess);
+                }
+
+                Success.Expression = group;
+                group = Success;
             }
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref group);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref group);

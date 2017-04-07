@@ -88,8 +88,39 @@ namespace Dice.Grammar
         public override void ExitGroupGroup([NotNull] DiceGrammarParser.GroupGroupContext context)
         {
             // our stack looks like a GroupPartialNode followed by all group_extras and group_functions
-            #error THIS NEEDS TO BE REDONE
+            List<DiceAST> groupNodes = new List<DiceAST>();
+            for (int i = 0; i < context.grouped_extras().Length + context.group_function().Length; i++)
+            {
+                groupNodes.Add(Stack.Pop());
+            }
+
+            groupNodes.Reverse();
             var partial = (GroupPartialNode)Stack.Pop();
+
+            foreach (var node in groupNodes)
+            {
+                if (node is KeepNode)
+                {
+                    partial.AddKeep((KeepNode)node);
+                }
+                else if (node is SuccessNode)
+                {
+                    partial.AddSuccess((SuccessNode)node);
+                }
+                else if (node is SortNode)
+                {
+                    partial.AddSort((SortNode)node);
+                }
+                else if (node is FunctionNode)
+                {
+                    partial.AddFunction((FunctionNode)node);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unexpected node type when resolving group node");
+                }
+            }
+
             Stack.Push(partial.CreateGroupNode());
         }
 
@@ -124,23 +155,19 @@ namespace Dice.Grammar
 
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
         {
-            // we will have N function arguments at the top of the stack, followed by the GroupPartialNode
+            // we will have N function arguments at the top of the stack
             // note that arguments are popped in reverse order, so we'll need to reverse them into normal order
             // before passing them along to our FunctionNode. Certain functions are hardcoded into aliases for
             // other node types, and those are handled here as well (keephighest, keeplowest, drophighest, droplowest,
             // advantage, disadvantage, success, failure, sortasc, and sortdesc)
             List<DiceAST> args = new List<DiceAST>();
-            DiceAST top = Stack.Pop();
 
-            while (!(top is GroupPartialNode))
+            for (int i = 0; i < context.function_arg().Length; i++)
             {
-                args.Add(top);
-                top = Stack.Pop();
+                args.Add(Stack.Pop());
             }
 
-            // top is our Partial node, and has already been popped off the stack
             args.Reverse();
-            var partial = (GroupPartialNode)top;
 
             // check for a built-in function
             var fname = context.T_ALPHA_STRING().GetText().ToLower();
@@ -157,7 +184,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.KeepHigh, args[0], partial));
+                    Stack.Push(new KeepNode(KeepType.KeepHigh, args[0]));
                     break;
                 case "keeplowest":
                     if (args.Count != 1)
@@ -170,7 +197,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.KeepLow, args[0], partial));
+                    Stack.Push(new KeepNode(KeepType.KeepLow, args[0]));
                     break;
                 case "drophighest":
                     if (args.Count != 1)
@@ -183,7 +210,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.DropHigh, args[0], partial));
+                    Stack.Push(new KeepNode(KeepType.DropHigh, args[0]));
                     break;
                 case "droplowest":
                     if (args.Count != 1)
@@ -196,7 +223,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.DropLow, args[0], partial));
+                    Stack.Push(new KeepNode(KeepType.DropLow, args[0]));
                     break;
                 case "advantage":
                     if (args.Count != 0)
@@ -204,7 +231,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.Advantage, null, partial));
+                    Stack.Push(new KeepNode(KeepType.Advantage, null));
                     break;
                 case "disadvantage":
                     if (args.Count != 0)
@@ -212,7 +239,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    partial.AddKeep(new KeepNode(KeepType.Disadvantage, null, partial));
+                    Stack.Push(new KeepNode(KeepType.Disadvantage, null));
                     break;
                 case "success":
                     if (args.Count == 0 || args.Count > 2)
@@ -220,20 +247,11 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    if (args[0] is ComparisonNode)
+                    if (args[0] is ComparisonNode && (args.Count == 1 || args[1] is ComparisonNode))
                     {
-                        partial.AddSuccess((ComparisonNode)args[0]);
+                        Stack.Push(new SuccessNode((ComparisonNode)args[0], args.Count == 1 ? null : (ComparisonNode)args[1]));
                     }
                     else
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    if (args.Count == 2 && args[1] is ComparisonNode)
-                    {
-                        partial.AddFailure((ComparisonNode)args[1]);
-                    }
-                    else if (args.Count == 2)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
@@ -250,7 +268,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    partial.AddFailure((ComparisonNode)args[0]);
+                    Stack.Push(new SuccessNode(null, (ComparisonNode)args[0]));
                     break;
                 case "sortasc":
                     if (args.Count != 0)
@@ -258,7 +276,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    partial.AddSort(new SortNode(SortDirection.Ascending, partial));
+                    Stack.Push(new SortNode(SortDirection.Ascending));
                     break;
                 case "sortdesc":
                     if (args.Count != 0)
@@ -266,14 +284,12 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    partial.AddSort(new SortNode(SortDirection.Descending, partial));
+                    Stack.Push(new SortNode(SortDirection.Descending));
                     break;
                 default:
-                    partial.AddFunction(new FunctionNode(FunctionScope.Group, fname, args, partial));
+                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args));
                     break;
             }
-
-            Stack.Push(partial);
         }
     }
 }

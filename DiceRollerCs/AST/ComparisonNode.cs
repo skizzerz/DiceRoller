@@ -59,6 +59,11 @@ namespace Dice.AST
             }
         }
 
+        internal void Add(ComparisonNode comparison)
+        {
+            _comparisons.AddRange(comparison.Comparisons);
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             // this doesn't increase depth as there is no actual logic that a ComparisonNode itself performs

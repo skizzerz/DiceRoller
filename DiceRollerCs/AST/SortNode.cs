@@ -28,10 +28,10 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal SortNode(SortDirection direction, DiceAST expression)
+        internal SortNode(SortDirection direction)
         {
             Direction = direction;
-            Expression = expression ?? throw new ArgumentNullException("expression");
+            Expression = null;
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
