@@ -84,6 +84,16 @@ namespace Dice
         /// Cannot mix explosion types on a roll.
         /// </summary>
         [Description("Cannot mix explosion types on a roll.")]
-        MixedExplode = 14,
+        MixedExplodeType = 14,
+        /// <summary>
+        /// The number of rerolls must be either 0 or a positive integer.
+        /// </summary>
+        [Description("The number of rerolls must be either 0 or a positive integer.")]
+        BadRerollCount = 15,
+        /// <summary>
+        /// Cannot mix explosions on max results with explosions on fixed comparisons.
+        /// </summary>
+        [Description("Cannot mix explosions on max results with explosions on fixed comparisons.")]
+        MixedExplodeComp = 16,
     }
 }

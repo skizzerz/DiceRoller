@@ -97,7 +97,7 @@ namespace Dice.AST
 
             if (Explode != null && (Explode.ExplodeType != explode.ExplodeType || Explode.Compound != explode.Compound))
             {
-                throw new DiceException(DiceErrorCode.MixedExplode);
+                throw new DiceException(DiceErrorCode.MixedExplodeType);
             }
 
             if (Explode == null)
@@ -106,7 +106,7 @@ namespace Dice.AST
             }
             else
             {
-                Explode.Comparison.Add(explode.Comparison);
+                Explode.AddComparison(explode.Comparison);
             }
         }
 
@@ -157,7 +157,7 @@ namespace Dice.AST
         /// Creates the RollNode subtree
         /// </summary>
         /// <returns></returns>
-        internal DiceAST CreateGroupNode()
+        internal DiceAST CreateRollNode()
         {
             DiceAST roll = Roll;
             AddFunctionNodes(FunctionTiming.First, ref roll);

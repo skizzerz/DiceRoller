@@ -49,6 +49,16 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        internal void AddComparison(ComparisonNode comp)
+        {
+            if (Comparison == null)
+            {
+                throw new DiceException(DiceErrorCode.MixedExplodeComp);
+            }
+
+            Comparison.Add(comp ?? throw new ArgumentNullException("comp"));
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             ulong rolls = Comparison?.Evaluate(conf, root, depth + 1) ?? 0;
