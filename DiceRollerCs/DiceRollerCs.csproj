@@ -63,6 +63,7 @@
     <Compile Include="AST\GroupPartialNode.cs" />
     <Compile Include="AST\LiteralNode.cs" />
     <Compile Include="AST\MacroNode.cs" />
+    <Compile Include="AST\RollPartialNode.cs" />
     <Compile Include="AST\SortDirection.cs" />
     <Compile Include="AST\SortNode.cs" />
     <Compile Include="DiceErrorCode.cs" />

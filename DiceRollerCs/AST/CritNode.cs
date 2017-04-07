@@ -42,6 +42,7 @@ namespace Dice.AST
             Expression = expression ?? throw new ArgumentNullException("expression");
             CritComparison = crit;
             FumbleComparison = fumble;
+            _values = new List<DieResult>();
 
             if (crit == null && fumble == null)
             {
@@ -82,6 +83,17 @@ namespace Dice.AST
         {
             Value = Expression.Value;
             _values.Clear();
+            DieFlags mask = 0;
+
+            if (CritComparison != null)
+            {
+                mask |= DieFlags.Critical;
+            }
+
+            if (FumbleComparison != null)
+            {
+                mask |= DieFlags.Fumble;
+            }
 
             foreach (var die in Expression.Values)
             {
@@ -104,6 +116,17 @@ namespace Dice.AST
                 {
                     flags |= DieFlags.Fumble;
                 }
+
+                _values.Add(new DieResult()
+                {
+                    DieType = die.DieType,
+                    NumSides = die.NumSides,
+                    Value = die.Value,
+                    // strip any existing crit/fumble flag off and use ours,
+                    // assuming a comparison was defined for it.
+                    // (we may have an existing flag if the die rolled min or max value)
+                    Flags = (die.Flags & ~mask) | flags
+                });
             }
         }
     }

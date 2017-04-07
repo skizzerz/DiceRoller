@@ -70,5 +70,10 @@ namespace Dice
         /// </summary>
         [Description("Incorrect argument type passed to internal function {0}.")]
         IncorrectArgType = 11,
+        /// <summary>
+        /// When defining failures, must also define at least one success.
+        /// </summary>
+        [Description("When defining failures, must also define at least one success.")]
+        InvalidSuccess = 12,
     }
 }

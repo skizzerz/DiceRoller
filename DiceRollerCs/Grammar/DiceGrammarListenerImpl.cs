@@ -87,6 +87,8 @@ namespace Dice.Grammar
 
         public override void ExitGroupGroup([NotNull] DiceGrammarParser.GroupGroupContext context)
         {
+            // our stack looks like a GroupPartialNode followed by all group_extras and group_functions
+            #error THIS NEEDS TO BE REDONE
             var partial = (GroupPartialNode)Stack.Pop();
             Stack.Push(partial.CreateGroupNode());
         }
@@ -117,31 +119,6 @@ namespace Dice.Grammar
             var top = Stack.Pop();
             var partial = (GroupPartialNode)Stack.Pop();
             partial.AddExpression(top);
-            Stack.Push(partial);
-        }
-
-        public override void ExitGroupKeep([NotNull] DiceGrammarParser.GroupKeepContext context)
-        {
-            var keep = (KeepNode)Stack.Pop();
-            var partial = (GroupPartialNode)keep.Expression;
-            partial.AddKeep(keep);
-            Stack.Push(partial);
-        }
-
-        public override void ExitGroupSuccess([NotNull] DiceGrammarParser.GroupSuccessContext context)
-        {
-            var success = (SuccessNode)Stack.Pop();
-            var partial = (GroupPartialNode)success.Expression;
-            partial.AddSuccess(success.Success);
-            partial.AddFailure(success.Failure);
-            Stack.Push(partial);
-        }
-
-        public override void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context)
-        {
-            var sort = (SortNode)Stack.Pop();
-            var partial = (GroupPartialNode)sort.Expression;
-            partial.AddSort(sort);
             Stack.Push(partial);
         }
 

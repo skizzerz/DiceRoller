@@ -33,7 +33,7 @@ namespace Dice
         /// The dice expression this function is attached to, or null
         /// if this is a global function call.
         /// </summary>
-        public DiceAST Expression { get; private set; }
+        public DiceAST Expression { get; internal set; }
 
         /// <summary>
         /// The result of this function call.

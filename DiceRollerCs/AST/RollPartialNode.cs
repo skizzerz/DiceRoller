@@ -10,14 +10,15 @@ namespace Dice.AST
     /// An ephemeral node used in construction of the AST. Once the AST
     /// is fully constructed, no nodes of this type should exist in it.
     /// </summary>
-    public class GroupPartialNode : DiceAST
+    public class RollPartialNode : DiceAST
     {
-        public DiceAST NumTimes { get; internal set; }
-        public List<DiceAST> GroupExpressions { get; private set; }
-        // a GroupNode can have at most SortNode attached to it,
-        // however any number of KeepNodes and success/failure Comparisons can be applied.
+        public RollNode Roll { get; internal set; }
         public List<KeepNode> Keep { get; private set; }
         public SortNode Sort { get; private set; }
+        public RerollNode RerollNode { get; private set; }
+        public ExplodeNode Explode { get; private set; }
+        public List<ComparisonNode> Critical { get; private set; }
+        public List<ComparisonNode> Fumble { get; private set; }
         public List<ComparisonNode> Success { get; private set; }
         public List<ComparisonNode> Failure { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
@@ -26,20 +27,18 @@ namespace Dice.AST
 
         public override IReadOnlyList<DieResult> Values => throw new InvalidOperationException("This node should not exist in an AST");
 
-        internal GroupPartialNode()
+        internal RollPartialNode(RollNode roll)
         {
-            GroupExpressions = new List<DiceAST>();
+            Roll = roll ?? throw new ArgumentNullException("roll");
             Keep = new List<KeepNode>();
             Sort = null;
+            RerollNode = null;
+            Explode = null;
+            Critical = new List<ComparisonNode>();
+            Fumble = new List<ComparisonNode>();
             Success = new List<ComparisonNode>();
             Failure = new List<ComparisonNode>();
             Functions = new List<FunctionNode>();
-            NumTimes = null;
-        }
-
-        internal void AddExpression(DiceAST expression)
-        {
-            GroupExpressions.Add(expression ?? throw new ArgumentNullException("expression"));
         }
 
         internal void AddKeep(KeepNode keep)
@@ -71,6 +70,46 @@ namespace Dice.AST
             Sort = sort ?? throw new ArgumentNullException("sort");
         }
 
+        internal void AddReroll(RerollNode reroll)
+        {
+            if (RerollNode != null)
+            {
+                throw new DiceException(DiceErrorCode.TooManyReroll);
+            }
+
+            RerollNode = reroll ?? throw new ArgumentNullException("reroll");
+        }
+
+        internal void AddExplode(ExplodeNode explode)
+        {
+            if (Explode != null)
+            {
+                throw new DiceException(DiceErrorCode.TooManyExplode);
+            }
+
+            Explode = explode ?? throw new ArgumentNullException("explode");
+        }
+
+        internal void AddCritical(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                return;
+            }
+
+            Critical.Add(comp);
+        }
+
+        internal void AddFumble(ComparisonNode comp)
+        {
+            if (comp == null)
+            {
+                return;
+            }
+
+            Fumble.Add(comp);
+        }
+
         internal void AddSuccess(ComparisonNode comp)
         {
             if (comp == null)
@@ -97,26 +136,35 @@ namespace Dice.AST
         }
 
         /// <summary>
-        /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree
+        /// Creates the RollNode subtree
         /// </summary>
-        /// <param name="numTimes">Expression to roll the group some number of times, may be null</param>
         /// <returns></returns>
         internal DiceAST CreateGroupNode()
         {
-            DiceAST group = new GroupNode(NumTimes, GroupExpressions);
-            AddFunctionNodes(FunctionTiming.First, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeExplode, ref group);
-            AddFunctionNodes(FunctionTiming.AfterExplode, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeReroll, ref group);
-            AddFunctionNodes(FunctionTiming.AfterReroll, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeKeep, ref group);
+            DiceAST roll = Roll;
+            AddFunctionNodes(FunctionTiming.First, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeExplode, ref roll);
+            if (Explode != null)
+            {
+                Explode.Expression = roll;
+                roll = Explode;
+            }
+            AddFunctionNodes(FunctionTiming.AfterExplode, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeReroll, ref roll);
+            if (RerollNode != null)
+            {
+                RerollNode.Expression = roll;
+                roll = RerollNode;
+            }
+            AddFunctionNodes(FunctionTiming.AfterReroll, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeKeep, ref roll);
             foreach (var k in Keep)
             {
-                k.Expression = group;
-                group = k;
+                k.Expression = roll;
+                roll = k;
             }
-            AddFunctionNodes(FunctionTiming.AfterKeep, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
+            AddFunctionNodes(FunctionTiming.AfterKeep, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeSuccess, ref roll);
             if (Success.Count == 0 && Failure.Count > 0)
             {
                 throw new DiceException(DiceErrorCode.InvalidSuccess);
@@ -133,21 +181,35 @@ namespace Dice.AST
             }
             if (succ != null)
             {
-                group = new SuccessNode(group, succ, fail);
+                roll = new SuccessNode(roll, succ, fail);
             }
-            AddFunctionNodes(FunctionTiming.AfterSuccess, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeCrit, ref group);
-            AddFunctionNodes(FunctionTiming.AfterCrit, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeSort, ref group);
+            AddFunctionNodes(FunctionTiming.AfterSuccess, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeCrit, ref roll);
+            ComparisonNode crit = null;
+            ComparisonNode fumb = null;
+            if (Critical.Count > 0)
+            {
+                crit = new ComparisonNode(Critical);
+            }
+            if (Fumble.Count > 0)
+            {
+                fumb = new ComparisonNode(Fumble);
+            }
+            if (crit != null || fumb != null)
+            {
+                roll = new CritNode(roll, crit, fumb);
+            }
+            AddFunctionNodes(FunctionTiming.AfterCrit, ref roll);
+            AddFunctionNodes(FunctionTiming.BeforeSort, ref roll);
             if (Sort != null)
             {
-                Sort.Expression = group;
-                group = Sort;
+                Sort.Expression = roll;
+                roll = Sort;
             }
-            AddFunctionNodes(FunctionTiming.AfterSort, ref group);
-            AddFunctionNodes(FunctionTiming.Last, ref group);
+            AddFunctionNodes(FunctionTiming.AfterSort, ref roll);
+            AddFunctionNodes(FunctionTiming.Last, ref roll);
 
-            return group;
+            return roll;
         }
 
         private void AddFunctionNodes(FunctionTiming timing, ref DiceAST node)
