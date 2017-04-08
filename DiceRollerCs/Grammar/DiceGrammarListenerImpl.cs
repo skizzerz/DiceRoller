@@ -439,12 +439,21 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    if (!(args[0] is LiteralNode) || args.Skip(1).OfType<ComparisonNode>().Count() < args.Count)
+                    if (!(args[0] is LiteralNode || args[0] is MacroNode) || args.Skip(1).OfType<ComparisonNode>().Count() < args.Count)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    var maxRerolls = ((LiteralNode)args[0]).Value;
+                    decimal maxRerolls;
+                    if (args[0] is LiteralNode)
+                    {
+                        maxRerolls = ((LiteralNode)args[0]).Value;
+                    }
+                    else
+                    {
+                        maxRerolls = ((MacroNode)args[0]).Execute();
+                    }
+
                     if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > UInt32.MaxValue)
                     {
                         throw new DiceException(DiceErrorCode.BadRerollCount, fname);

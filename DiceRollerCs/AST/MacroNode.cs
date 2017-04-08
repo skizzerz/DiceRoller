@@ -27,6 +27,12 @@ namespace Dice.AST
             Context = new MacroContext(param);
         }
 
+        internal decimal Execute()
+        {
+            EvaluateInternal(null, null, 0);
+            return Value;
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             conf.ExecuteMacro(Context);
