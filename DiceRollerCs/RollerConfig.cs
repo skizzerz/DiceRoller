@@ -11,22 +11,21 @@ namespace Dice
         /// <summary>
         /// The maximum number of dice that may be rolled, including dice
         /// rolled due to rerolls or exploding dice. Exceeding this limit
-        /// will result in a TooManyDiceException being thrown.
+        /// will result in a DiceException being thrown.
         /// Default: 1,000
         /// </summary>
         public uint MaxDice { get; set; }
 
         /// <summary>
         /// The maximum number of sides that any individual die can have.
-        /// Exceeding this limit will result in a BadSidesException being thrown.
+        /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 10,000
         /// </summary>
         public uint MaxSides { get; set; }
 
         /// <summary>
         /// The maximum amount of nesting that can happen in dice expressions.
-        /// Certain dice constructs use multiple levels. Exceeding this limit
-        /// will result in a DiceRecursionException being thrown.
+        /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 20
         /// </summary>
         public ushort MaxRecursionDepth { get; set; }

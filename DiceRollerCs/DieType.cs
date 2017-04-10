@@ -24,6 +24,10 @@ namespace Dice
         /// </summary>
         Group,
         /// <summary>
+        /// Die represents a literal number. The number of sides is meaningless for this die type.
+        /// </summary>
+        Literal,
+        /// <summary>
         /// Die is not actually a roll at all, but rather a special marker. The Value
         /// can be cast into a SpecialDie enum to determine what kind of special marker it is.
         /// </summary>

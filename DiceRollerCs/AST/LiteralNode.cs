@@ -11,14 +11,26 @@ namespace Dice.AST
     /// </summary>
     public class LiteralNode : DiceAST
     {
+        private List<DieResult> _values;
+
         public override IReadOnlyList<DieResult> Values
         {
-            get { return new List<DieResult>(); }
+            get { return _values; }
         }
 
         internal LiteralNode(decimal value)
         {
             Value = value;
+            _values = new List<DieResult>()
+            {
+                new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = value,
+                    Flags = 0
+                }
+            };
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
