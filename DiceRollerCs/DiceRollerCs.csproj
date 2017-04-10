@@ -95,6 +95,7 @@
     <Compile Include="Grammar\DiceGrammarListenerImpl.cs" />
     <Compile Include="Grammar\DiceGrammarParser.cs" />
     <Compile Include="MacroContext.cs" />
+    <Compile Include="ResultType.cs" />
     <Compile Include="Roller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RollerConfig.cs" />
