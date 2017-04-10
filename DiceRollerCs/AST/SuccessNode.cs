@@ -131,7 +131,7 @@ namespace Dice.AST
 
             foreach (var die in Values)
             {
-                if (die.Flags.HasFlag(DieFlags.Dropped))
+                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
                 {
                     _values.Add(die);
                     continue;

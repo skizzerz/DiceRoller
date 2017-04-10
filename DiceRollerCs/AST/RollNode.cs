@@ -81,6 +81,16 @@ namespace Dice.AST
             {
                 var result = DoRoll(conf, RollType, (uint)numSides);
 
+                if (i > 0)
+                {
+                    _values.Add(new DieResult()
+                    {
+                        DieType = DieType.Special,
+                        NumSides = 0,
+                        Value = (decimal)SpecialDie.Add,
+                        Flags = 0
+                    });
+                }
                 _values.Add(result);
             }
 

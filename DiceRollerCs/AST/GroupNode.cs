@@ -66,6 +66,7 @@ namespace Dice.AST
             ulong rolls = 0;
             ushort numTimes = (ushort)NumTimes.Value;
             Value = 0;
+            bool first = true;
 
             for (ushort run = 0; run < numTimes; run++)
             {
@@ -82,6 +83,21 @@ namespace Dice.AST
                     else
                     {
                         rolls += ast.Evaluate(conf, root, depth + 1);
+                    }
+
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        _values.Add(new DieResult()
+                        {
+                            DieType = DieType.Special,
+                            NumSides = 0,
+                            Value = (decimal)SpecialDie.Add,
+                            Flags = 0
+                        });
                     }
 
                     // If the group contains exactly one member, we want to expose all dice rolled in the subtree

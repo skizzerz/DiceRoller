@@ -63,6 +63,7 @@ namespace Dice.AST
             {
                 case MathOp.Add:
                     Value = Left.Value + Right.Value;
+                    sd = SpecialDie.Add;
                     break;
                 case MathOp.Subtract:
                     Value = Left.Value - Right.Value;
@@ -87,17 +88,100 @@ namespace Dice.AST
             }
 
             // Insert special DieResults to aid in displaying the grouping of these rolls.
-            // Addition is implicit between dice, so no extra results are inserted for that case.
-            // Otherwise, add in parenthesis and the operator used, e.g. 3d6-2d4 with a roll of
-            // 3, 4, 5, 1, and 2 would render as ( 3 4 5 ) - ( 1 2 ) and would likely be displayed as
-            // (3+4+5)-(1+2).
+            // Add in parenthesis and the operator used, e.g. 3d6-2d4 with a roll of
+            // 3, 4, 5, 1, and 2 would render as ( 3 + 4 + 5 ) - ( 1 + 2 ).
+            // Parenthesis are not added if one side has only one child.
             _values.Clear();
-            if (Operation == MathOp.Add)
+            bool addLeftParen = Left.Values.Count != 1;
+            bool addRightParen = Left.Values.Count != 1;
+
+            if (addLeftParen)
             {
-                _values.AddRange(Left.Values);
-                _values.AddRange(Right.Values);
+                var ml = Left as MathNode;
+                var gl = Left as GroupNode;
+                var rl = Left as RollNode;
+
+                if (ml != null)
+                {
+                    // don't add parens unless it is required to make the order of operations match the tree
+                    // (such as an add underneath a multiply)
+                    if (Operation == MathOp.Add
+                        || Operation == MathOp.Subtract
+                        || ml.Operation == MathOp.Multiply
+                        || ml.Operation == MathOp.Divide)
+                    {
+                        addLeftParen = false;
+                    }
+                }
+                else if (gl != null)
+                {
+                    // group nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
+                    if (Operation == MathOp.Add || Operation == MathOp.Subtract)
+                    {
+                        addLeftParen = false;
+                    }
+                    // the gnarly mess below is testing if the group node is already wrapped in a single set of parens
+                    // if it is, then we don't add another set. So, we check for (1+2+3) and don't turn that into ((1+2+3)), but
+                    // we DO turn (1+2)+(3+4) into ((1+2)+(3+4)) unless we're adding/subtracting (which is caught above).
+                    else if (gl.Values[0].DieType == DieType.Special
+                        && ((SpecialDie)gl.Values[0].Value) == SpecialDie.OpenParen
+                        && gl.Values[gl.Values.Count - 1].DieType == DieType.Special
+                        && ((SpecialDie)gl.Values[gl.Values.Count - 1].Value) == SpecialDie.CloseParen
+                        && gl.Values.Count(d => d.DieType == DieType.Special && ((SpecialDie)d.Value) == SpecialDie.OpenParen) == 1)
+                    {
+                        addLeftParen = false;
+                    }
+                }
+                else if (rl != null)
+                {
+                    // roll nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
+                    if (Operation == MathOp.Add || Operation == MathOp.Subtract)
+                    {
+                        addLeftParen = false;
+                    }
+                }
             }
-            else
+
+            // mostly the same as above, except with extra consideration given to the right side for subtraction/division
+            // to ensure that such things ARE wrapped in parens
+            if (addRightParen)
+            {
+                var mr = Right as MathNode;
+                var gr = Right as GroupNode;
+                var rr = Right as RollNode;
+
+                if (mr != null)
+                {
+                    if (Operation == MathOp.Add || mr.Operation == MathOp.Multiply)
+                    {
+                        addRightParen = false;
+                    }
+                }
+                else if (gr != null)
+                {
+                    if (Operation == MathOp.Add)
+                    {
+                        addRightParen = false;
+                    }
+                    else if (gr.Values[0].DieType == DieType.Special
+                        && ((SpecialDie)gr.Values[0].Value) == SpecialDie.OpenParen
+                        && gr.Values[gr.Values.Count - 1].DieType == DieType.Special
+                        && ((SpecialDie)gr.Values[gr.Values.Count - 1].Value) == SpecialDie.CloseParen
+                        && gr.Values.Count(d => d.DieType == DieType.Special && ((SpecialDie)d.Value) == SpecialDie.OpenParen) == 1)
+                    {
+                        addRightParen = false;
+                    }
+                }
+                else if (rr != null)
+                {
+                    if (Operation == MathOp.Add)
+                    {
+                        addRightParen = false;
+                    }
+                }
+            }
+
+            if (addLeftParen)
             {
                 _values.Add(new DieResult()
                 {
@@ -106,7 +190,10 @@ namespace Dice.AST
                     Value = (decimal)SpecialDie.OpenParen,
                     Flags = 0
                 });
-                _values.AddRange(Left.Values);
+            }
+            _values.AddRange(Left.Values);
+            if (addLeftParen)
+            {
                 _values.Add(new DieResult()
                 {
                     DieType = DieType.Special,
@@ -114,13 +201,18 @@ namespace Dice.AST
                     Value = (decimal)SpecialDie.CloseParen,
                     Flags = 0
                 });
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)sd,
-                    Flags = 0
-                });
+            }
+
+            _values.Add(new DieResult()
+            {
+                DieType = DieType.Special,
+                NumSides = 0,
+                Value = (decimal)sd,
+                Flags = 0
+            });
+
+            if (addRightParen)
+            {
                 _values.Add(new DieResult()
                 {
                     DieType = DieType.Special,
@@ -128,7 +220,17 @@ namespace Dice.AST
                     Value = (decimal)SpecialDie.OpenParen,
                     Flags = 0
                 });
-                _values.AddRange(Right.Values);
+            }
+            _values.AddRange(Right.Values);
+            if (addRightParen)
+            {
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)SpecialDie.CloseParen,
+                    Flags = 0
+                });
             }
         }
     }
