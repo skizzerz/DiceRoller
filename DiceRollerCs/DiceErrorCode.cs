@@ -95,5 +95,10 @@ namespace Dice
         /// </summary>
         [Description("Cannot mix explosions on max results with explosions on fixed comparisons.")]
         MixedExplodeComp = 16,
+        /// <summary>
+        /// The specified macro does not exist.
+        /// </summary>
+        [Description("The specified macro does not exist.")]
+        InvalidMacro = 17,
     }
 }

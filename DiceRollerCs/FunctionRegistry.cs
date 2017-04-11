@@ -13,11 +13,11 @@ namespace Dice
     /// </summary>
     public static class FunctionRegistry
     {
-        internal static Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, Action<FunctionContext> callback)> Callbacks;
+        internal static Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)> Callbacks;
 
         static FunctionRegistry()
         {
-            Callbacks = new Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, Action<FunctionContext> callback)>();
+            Callbacks = new Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)>();
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace Dice
                     var paras = m.GetParameters();
                     if (m.ReturnType != typeof(void) || paras.Length != 1 || paras[0].ParameterType != typeof(FunctionContext))
                     {
-                        throw new InvalidOperationException("A DiceFunctionAttribute can only be applied to an Action<FunctionContext>");
+                        throw new InvalidOperationException("A DiceFunctionAttribute can only be applied to a FunctionCallback");
                     }
 
-                    var callback = (Action<FunctionContext>)m.CreateDelegate(typeof(Action<FunctionContext>));
+                    var callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback));
 
                     switch (attr.Scope)
                     {
@@ -77,17 +77,17 @@ namespace Dice
                     var paras = m.GetParameters();
                     if (m.ReturnType != typeof(void) || paras.Length != 1 || paras[0].ParameterType != typeof(FunctionContext))
                     {
-                        throw new InvalidOperationException("A DiceFunctionAttribute can only be applied to an Action<FunctionContext>");
+                        throw new InvalidOperationException("A DiceFunctionAttribute can only be applied to a FunctionCallback");
                     }
 
-                    Action<FunctionContext> callback;
+                    FunctionCallback callback;
                     if (m.IsStatic)
                     {
-                        callback = (Action<FunctionContext>)m.CreateDelegate(typeof(Action<FunctionContext>));
+                        callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback));
                     }
                     else
                     {
-                        callback = (Action<FunctionContext>)m.CreateDelegate(typeof(Action<FunctionContext>), obj);
+                        callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback), obj);
                     }
 
                     switch (attr.Scope)
@@ -116,7 +116,7 @@ namespace Dice
         /// <param name="callback">Callback to invoke for this function</param>
         /// <param name="scope">Scope in which function is valid</param>
         /// <param name="timing">Timing of function execution</param>
-        public static void RegisterFunction(string name, Action<FunctionContext> callback, FunctionScope scope = FunctionScope.Global, FunctionTiming timing = FunctionTiming.Last)
+        public static void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope = FunctionScope.Global, FunctionTiming timing = FunctionTiming.Last)
         {
             if (name == null)
             {

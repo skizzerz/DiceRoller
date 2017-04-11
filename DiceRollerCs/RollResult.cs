@@ -12,7 +12,7 @@ namespace Dice
     /// Holds the result of a roll, allowing easy access to the total result
     /// as well as the individual die results of the roll.
     /// </summary>
-    public class RollResult
+    public class RollResult : IEnumerable<DieResult>
     {
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.

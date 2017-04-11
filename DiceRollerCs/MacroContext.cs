@@ -31,6 +31,7 @@ namespace Dice
 
         internal MacroContext(string param)
         {
+            Value = Decimal.MinValue;
             Values = new List<DieResult>();
             Param = param;
         }

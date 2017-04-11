@@ -66,6 +66,7 @@
     <Compile Include="AST\RollPartialNode.cs" />
     <Compile Include="AST\SortDirection.cs" />
     <Compile Include="AST\SortNode.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="DiceErrorCode.cs" />
     <Compile Include="DiceFunctionAttribute.cs" />
     <Compile Include="DieFlags.cs" />

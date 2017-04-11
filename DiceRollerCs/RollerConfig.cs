@@ -58,9 +58,9 @@ namespace Dice
 
         /// <summary>
         /// If set, this is the function used to execute macros specified by the roll. If unset, attempting
-        /// to use a macro in the roll will result in an InvalidMacroException being thrown.
+        /// to use a macro in the roll will result in a DiceException being thrown.
         /// </summary>
-        public Action<MacroContext> ExecuteMacro { get; set; }
+        public MacroCallback ExecuteMacro { get; set; }
 
         public RollerConfig()
         {

@@ -14,15 +14,13 @@ namespace Dice
     public static class Roller
     {
         /// <summary>
-        /// Configuration for this Roller, such as maximum number of dice, sides, and nesting depth.
-        /// It can also control which grammar is used to parse dice expressions, in the event a custom
-        /// grammar is desirable.
+        /// Default configuration for this Roller, such as maximum number of dice, sides, and nesting depth.
         /// </summary>
-        public static RollerConfig Config { get; set; }
+        public static RollerConfig DefaultConfig { get; set; }
 
         static Roller()
         {
-            Config = new RollerConfig();
+            DefaultConfig = new RollerConfig();
         }
 
         /// <summary>
@@ -30,8 +28,9 @@ namespace Dice
         /// the documentation for more details on the formatting for this string.
         /// </summary>
         /// <param name="diceExpr">Dice expression to roll.</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Roll(string diceExpr)
+        public static RollResult Roll(string diceExpr, RollerConfig config = null)
         {
             
         }
