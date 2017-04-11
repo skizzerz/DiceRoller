@@ -50,6 +50,16 @@ namespace Dice.AST
             }
         }
 
+        public override string ToString()
+        {
+            string res = String.Empty;
+
+            if (Critical != null)
+            {
+
+            }
+        }
+
         internal void AddCritical(ComparisonNode comp)
         {
             if (comp == null)
