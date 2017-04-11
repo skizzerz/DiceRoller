@@ -111,7 +111,7 @@ namespace Dice.AST
 
             foreach (var c in Comparisons)
             {
-                rolls += c.Item2.Evaluate(conf, root, depth);
+                rolls += c.expr.Evaluate(conf, root, depth);
             }
 
             return rolls;
@@ -123,7 +123,7 @@ namespace Dice.AST
 
             foreach (var c in Comparisons)
             {
-                rolls += c.Item2.Reroll(conf, root, depth);
+                rolls += c.expr.Reroll(conf, root, depth);
             }
 
             return rolls;
@@ -133,20 +133,20 @@ namespace Dice.AST
         {
             return Comparisons.Any(c =>
             {
-                switch (c.Item1)
+                switch (c.op)
                 {
                     case CompareOp.Equals:
-                        return theirValue == c.Item2.Value;
+                        return theirValue == c.expr.Value;
                     case CompareOp.GreaterEquals:
-                        return theirValue >= c.Item2.Value;
+                        return theirValue >= c.expr.Value;
                     case CompareOp.GreaterThan:
-                        return theirValue > c.Item2.Value;
+                        return theirValue > c.expr.Value;
                     case CompareOp.LessEquals:
-                        return theirValue <= c.Item2.Value;
+                        return theirValue <= c.expr.Value;
                     case CompareOp.LessThan:
-                        return theirValue < c.Item2.Value;
+                        return theirValue < c.expr.Value;
                     case CompareOp.NotEquals:
-                        return theirValue != c.Item2.Value;
+                        return theirValue != c.expr.Value;
                     default:
                         throw new InvalidOperationException("Unknown Comparison Operation");
                 }

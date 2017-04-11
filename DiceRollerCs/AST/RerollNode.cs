@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,17 +27,51 @@ namespace Dice.AST
         /// </summary>
         public uint MaxRerolls { get; private set; }
 
+        /// <summary>
+        /// If this node was generated via the rerollN() function, this contains the expression used for N.
+        /// Otherwise, this is null.
+        /// </summary>
+        public DiceAST MaxRerollsExpr { get; private set; }
+
         public override IReadOnlyList<DieResult> Values
         {
             get { return _values; }
         }
 
-        internal RerollNode(uint maxRerolls, ComparisonNode comparison)
+        internal RerollNode(uint maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
         {
             Comparison = comparison ?? throw new ArgumentNullException("comparison");
             Expression = null;
             MaxRerolls = maxRerolls;
+            MaxRerollsExpr = maxRerollsExpr;
             _values = new List<DieResult>();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder(".");
+
+            if (MaxRerollsExpr != null)
+            {
+                sb.AppendFormat("rerollN({0}, ", MaxRerollsExpr.ToString());
+            }
+            else if (MaxRerolls == 1)
+            {
+                sb.Append("rerollOnce(");
+            }
+            else if (MaxRerolls == 0)
+            {
+                sb.Append("reroll(");
+            }
+            else
+            {
+                throw new InvalidOperationException("MaxRerolls was not 0 or 1 and MaxRerollsExpr is null, this should never happen.");
+            }
+
+            sb.Append(Comparison.ToString());
+            sb.Append(")");
+
+            return sb.ToString();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)

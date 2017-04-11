@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,6 +55,39 @@ namespace Dice.AST
             {
                 Amount = amount ?? throw new ArgumentNullException("amount");
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder(".");
+
+            switch (KeepType)
+            {
+                case KeepType.KeepHigh:
+                    sb.Append("keepHigh");
+                    break;
+                case KeepType.KeepLow:
+                    sb.Append("keepLow");
+                    break;
+                case KeepType.DropHigh:
+                    sb.Append("dropHigh");
+                    break;
+                case KeepType.DropLow:
+                    sb.Append("dropLow");
+                    break;
+                case KeepType.Advantage:
+                    sb.Append("advantage");
+                    break;
+                case KeepType.Disadvantage:
+                    sb.Append("disadvantage");
+                    break;
+                default:
+                    throw new InvalidOperationException("Unrecognized KeepType");
+            }
+
+            sb.AppendFormat("({0})", Expression?.ToString() ?? String.Empty);
+
+            return sb.ToString();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -45,6 +46,28 @@ namespace Dice.AST
             {
                 throw new ArgumentException("A dice group must contain at least one expression", "exprs");
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (NumTimes != null)
+            {
+                if (NumTimes is LiteralNode || NumTimes is MacroNode)
+                {
+                    sb.Append(NumTimes.ToString());
+                }
+                else
+                {
+                    sb.AppendFormat("({0})", NumTimes.ToString());
+                }
+            }
+
+            sb.Append("{");
+            sb.Append(String.Join(", ", Expressions.Select(o => o.ToString())));
+            sb.Append("}");
+
+            return sb.ToString();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)

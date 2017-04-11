@@ -459,7 +459,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.BadRerollCount, fname);
                     }
 
-                    Stack.Push(new RerollNode((uint)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>())));
+                    Stack.Push(new RerollNode((uint)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
                     break;
                 case "rerollonce":
                     if (args.Count == 0)
@@ -595,33 +595,30 @@ namespace Dice.Grammar
                     Stack.Push(new KeepNode(KeepType.Disadvantage, null));
                     break;
                 case "success":
-                    if (args.Count == 0 || args.Count > 2)
+                    if (args.Count == 0)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    if (args[0] is ComparisonNode && (args.Count == 1 || args[1] is ComparisonNode))
-                    {
-                        Stack.Push(new SuccessNode((ComparisonNode)args[0], args.Count == 1 ? null : (ComparisonNode)args[1]));
-                    }
-                    else
+                    if (args.OfType<ComparisonNode>().Count() < args.Count)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
+                    Stack.Push(new SuccessNode(new ComparisonNode(args.Cast<ComparisonNode>()), null));
                     break;
                 case "failure":
-                    if (args.Count != 1)
+                    if (args.Count == 0)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    if (!(args[0] is ComparisonNode))
+                    if (args.OfType<ComparisonNode>().Count() < args.Count)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    Stack.Push(new SuccessNode(null, (ComparisonNode)args[0]));
+                    Stack.Push(new SuccessNode(null, new ComparisonNode(args.Cast<ComparisonNode>())));
                     break;
                 case "critical":
                     if (args.Count == 0)

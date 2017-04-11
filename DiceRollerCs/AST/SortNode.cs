@@ -34,6 +34,19 @@ namespace Dice.AST
             Expression = null;
         }
 
+        public override string ToString()
+        {
+            switch (Direction)
+            {
+                case SortDirection.Ascending:
+                    return ".sortAsc()";
+                case SortDirection.Descending:
+                    return ".sortDesc()";
+                default:
+                    throw new InvalidOperationException("Unexpected SortDirection");
+            }
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             var rolls = Expression.Evaluate(conf, root, depth + 1);

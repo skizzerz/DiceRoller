@@ -59,6 +59,19 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat(".success({0})", Success.ToString());
+
+            if (Failure != null)
+            {
+                sb.AppendFormat(".failure({0})", Failure.ToString());
+            }
+
+            return sb.ToString();
+        }
+
         internal void AddSuccess(ComparisonNode comp)
         {
             if (comp == null)

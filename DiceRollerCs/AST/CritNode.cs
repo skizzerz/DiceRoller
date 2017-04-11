@@ -52,12 +52,19 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            string res = String.Empty;
+            StringBuilder sb = new StringBuilder();
 
             if (Critical != null)
             {
-
+                sb.AppendFormat(".critical({0})", Critical.ToString());
             }
+
+            if (Fumble != null)
+            {
+                sb.AppendFormat(".fumble({0})", Fumble.ToString());
+            }
+
+            return sb.ToString();
         }
 
         internal void AddCritical(ComparisonNode comp)

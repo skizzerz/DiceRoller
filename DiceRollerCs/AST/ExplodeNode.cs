@@ -49,6 +49,40 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder(".");
+
+            switch (ExplodeType)
+            {
+                case ExplodeType.Explode:
+                    if (Compound)
+                    {
+                        sb.Append("compound(");
+                    }
+                    else
+                    {
+                        sb.Append("explode(");
+                    }
+                    break;
+                case ExplodeType.Penetrate:
+                    if (Compound)
+                    {
+                        sb.Append("compoundPenetrate(");
+                    }
+                    else
+                    {
+                        sb.Append("penetrate(");
+                    }
+                    break;
+            }
+
+            sb.Append(Comparison.ToString());
+            sb.Append(")");
+
+            return sb.ToString();
+        }
+
         internal void AddComparison(ComparisonNode comp)
         {
             if (Comparison == null)

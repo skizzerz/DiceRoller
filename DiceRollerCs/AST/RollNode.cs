@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -23,6 +24,7 @@ namespace Dice.AST
         /// <summary>
         /// How many sides does each die have? Decimals are truncated.
         /// Invalid numbers (according to roller config) throw a BadSidesException.
+        /// May be null in the case of standard fudge dice.
         /// </summary>
         public DiceAST NumSides { get; private set; }
         /// <summary>
@@ -38,13 +40,52 @@ namespace Dice.AST
             RollType = rollType;
             _values = new List<DieResult>();
             NumDice = numDice ?? throw new ArgumentNullException("numDice");
-            NumSides = numSides ?? throw new ArgumentNullException("numSides");
+            NumSides = numSides;
+
+            if (numSides == null && rollType != RollType.Fudge)
+            {
+                throw new ArgumentNullException("numSides");
+            }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (NumDice is LiteralNode || NumDice is MacroNode)
+            {
+                sb.Append(NumDice.ToString());
+            }
+            else
+            {
+                sb.AppendFormat("({0})", NumDice.ToString());
+            }
+
+            sb.Append("d");
+
+            if (RollType == RollType.Fudge)
+            {
+                sb.Append("F");
+            }
+
+            if (NumSides != null)
+            {
+                if (NumSides is LiteralNode || NumSides is MacroNode)
+                {
+                    sb.Append(NumSides.ToString());
+                }
+                else
+                {
+                    sb.AppendFormat("({0})", NumSides.ToString());
+                }
+            }
+
+            return sb.ToString();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             ulong rolls = NumDice.Evaluate(conf, root, depth + 1);
-            rolls += NumSides.Evaluate(conf, root, depth + 1);
+            rolls += NumSides?.Evaluate(conf, root, depth + 1) ?? 0;
             rolls += Roll(conf, root, depth, false);
 
             return rolls;
@@ -58,7 +99,7 @@ namespace Dice.AST
         private ulong Roll(RollerConfig conf, DiceAST root, uint depth, bool reroll)
         {
             var numDice = (long)NumDice.Value;
-            var numSides = (long)NumSides.Value;
+            var numSides = (long)(NumSides?.Value ?? 1);
 
             if (numDice < 0)
             {

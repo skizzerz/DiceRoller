@@ -148,6 +148,51 @@ namespace Dice.AST
             }
         }
 
+        // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder("GPARTIAL<<");
+            if (NumTimes != null)
+            {
+                if (NumTimes is LiteralNode || NumTimes is MacroNode)
+                {
+                    sb.Append(NumTimes.ToString());
+                }
+                else
+                {
+                    sb.AppendFormat("({0})", NumTimes.ToString());
+                }
+            }
+
+            sb.Append("{");
+            sb.Append(String.Join(", ", GroupExpressions.Select(o => o.ToString())));
+            sb.Append("}");
+
+            foreach (var k in Keep)
+            {
+                sb.Append(k.ToString());
+            }
+
+            if (Sort != null)
+            {
+                sb.Append(Sort.ToString());
+            }
+
+            if (Success != null)
+            {
+                sb.Append(Success.ToString());
+            }
+
+            foreach (var f in Functions)
+            {
+                sb.Append(f.ToString());
+            }
+
+            sb.Append(">>");
+
+            return sb.ToString();
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");

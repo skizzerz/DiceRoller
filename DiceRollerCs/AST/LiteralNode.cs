@@ -33,6 +33,11 @@ namespace Dice.AST
             };
         }
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             return 0;

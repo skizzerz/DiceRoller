@@ -27,6 +27,11 @@ namespace Dice.AST
             Context = new MacroContext(param);
         }
 
+        public override string ToString()
+        {
+            return String.Format("[{0}]", Context.Param);
+        }
+
         internal decimal Execute()
         {
             EvaluateInternal(null, null, 0);

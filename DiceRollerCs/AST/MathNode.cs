@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,6 +38,57 @@ namespace Dice.AST
             Left = left ?? throw new ArgumentNullException("left");
             Right = right ?? throw new ArgumentNullException("right");
             _values = new List<DieResult>();
+        }
+
+        public override string ToString()
+        {
+            // This logic is necessarily different from DoMath below since we cannot inspect Values.
+            // Furthermore, children already have their own grouping, so parens are only necessary if we're trying
+            // to break order of operations with nested math nodes
+            StringBuilder sb = new StringBuilder();
+
+            if (Left is MathNode ml
+                && (Operation == MathOp.Multiply || Operation == MathOp.Divide)
+                && (ml.Operation == MathOp.Add || ml.Operation == MathOp.Subtract))
+            {
+                sb.AppendFormat("({0})", Left.ToString());
+            }
+            else
+            {
+                sb.Append(Left.ToString());
+            }
+
+            switch (Operation)
+            {
+                case MathOp.Add:
+                    sb.Append(" + ");
+                    break;
+                case MathOp.Subtract:
+                    sb.Append(" - ");
+                    break;
+                case MathOp.Multiply:
+                    sb.Append(" * ");
+                    break;
+                case MathOp.Divide:
+                    sb.Append(" / ");
+                    break;
+                default:
+                    throw new InvalidOperationException("Unrecognized MathOp");
+            }
+
+            if (Right is MathNode mr
+                && (Operation == MathOp.Divide
+                    || Operation == MathOp.Subtract
+                    || (Operation == MathOp.Multiply && (mr.Operation == MathOp.Add || mr.Operation == MathOp.Subtract))))
+            {
+                sb.AppendFormat("({0})", Right.ToString());
+            }
+            else
+            {
+                sb.Append(Right.ToString());
+            }
+
+            return sb.ToString();
         }
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
@@ -97,11 +149,7 @@ namespace Dice.AST
 
             if (addLeftParen)
             {
-                var ml = Left as MathNode;
-                var gl = Left as GroupNode;
-                var rl = Left as RollNode;
-
-                if (ml != null)
+                if (Left is MathNode ml)
                 {
                     // don't add parens unless it is required to make the order of operations match the tree
                     // (such as an add underneath a multiply)
@@ -113,7 +161,7 @@ namespace Dice.AST
                         addLeftParen = false;
                     }
                 }
-                else if (gl != null)
+                else if (Left is GroupNode gl)
                 {
                     // group nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
                     if (Operation == MathOp.Add || Operation == MathOp.Subtract)
@@ -132,7 +180,7 @@ namespace Dice.AST
                         addLeftParen = false;
                     }
                 }
-                else if (rl != null)
+                else if (Left is RollNode rl)
                 {
                     // roll nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
                     if (Operation == MathOp.Add || Operation == MathOp.Subtract)
@@ -146,18 +194,14 @@ namespace Dice.AST
             // to ensure that such things ARE wrapped in parens
             if (addRightParen)
             {
-                var mr = Right as MathNode;
-                var gr = Right as GroupNode;
-                var rr = Right as RollNode;
-
-                if (mr != null)
+                if (Right is MathNode mr)
                 {
                     if (Operation == MathOp.Add || mr.Operation == MathOp.Multiply)
                     {
                         addRightParen = false;
                     }
                 }
-                else if (gr != null)
+                else if (Right is GroupNode gr)
                 {
                     if (Operation == MathOp.Add)
                     {
@@ -172,7 +216,7 @@ namespace Dice.AST
                         addRightParen = false;
                     }
                 }
-                else if (rr != null)
+                else if (Right is RollNode rr)
                 {
                     if (Operation == MathOp.Add)
                     {

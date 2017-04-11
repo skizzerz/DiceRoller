@@ -39,6 +39,22 @@ namespace Dice.AST
             }
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (Context.Scope != FunctionScope.Global)
+            {
+                sb.Append(".");
+            }
+
+            sb.Append(Context.Name);
+            sb.Append("(");
+            sb.Append(String.Join(", ", Context.Arguments.Select(o => o.ToString())));
+            sb.Append(")");
+
+            return sb.ToString();
+        }
+
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
             ulong rolls = Context.Expression?.Evaluate(conf, root, depth + 1) ?? 0;

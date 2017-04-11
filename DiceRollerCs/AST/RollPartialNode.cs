@@ -37,6 +37,52 @@ namespace Dice.AST
             Functions = new List<FunctionNode>();
         }
 
+        // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder("RPARTIAL<<");
+            sb.Append(Roll.ToString());
+
+            if (RerollNode != null)
+            {
+                sb.Append(RerollNode.ToString());
+            }
+
+            if (Explode != null)
+            {
+                sb.Append(Explode.ToString());
+            }
+
+            if (Success != null)
+            {
+                sb.Append(Success.ToString());
+            }
+
+            foreach (var k in Keep)
+            {
+                sb.Append(k.ToString());
+            }
+
+            if (Critical != null)
+            {
+                sb.Append(Critical.ToString());
+            }
+
+            if (Sort != null)
+            {
+                sb.Append(Sort.ToString());
+            }
+
+            foreach (var f in Functions)
+            {
+                sb.Append(f.ToString());
+            }
+
+            sb.Append(">>");
+
+            return sb.ToString();
+        }
+
         internal void AddKeep(KeepNode keep)
         {
             if (keep.KeepType == KeepType.Advantage || keep.KeepType == KeepType.Disadvantage)
