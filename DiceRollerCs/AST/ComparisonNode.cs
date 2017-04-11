@@ -8,14 +8,14 @@ namespace Dice.AST
 {
     public class ComparisonNode : DiceAST
     {
-        private List<Tuple<CompareOp, DiceAST>> _comparisons;
+        private List<(CompareOp op, DiceAST expr)> _comparisons;
 
         /// <summary>
         /// The list of comparisons to evaluate against; each comparison
         /// is evaluated independently. As long as one comparison succeeds,
         /// the entire node is considered a success.
         /// </summary>
-        public IEnumerable<Tuple<CompareOp, DiceAST>> Comparisons
+        public IEnumerable<(CompareOp op, DiceAST expr)> Comparisons
         {
             get { return _comparisons; }
         }
@@ -39,15 +39,15 @@ namespace Dice.AST
                 throw new ArgumentNullException("expression");
             }
 
-            _comparisons = new List<Tuple<CompareOp, DiceAST>>()
+            _comparisons = new List<(CompareOp op, DiceAST expr)>()
             {
-                new Tuple<CompareOp, DiceAST>(operation, expression)
+                (operation, expression)
             };
         }
 
         internal ComparisonNode(IEnumerable<ComparisonNode> comparisons)
         {
-            _comparisons = new List<Tuple<CompareOp, DiceAST>>();
+            _comparisons = new List<(CompareOp op, DiceAST expr)>();
             foreach (var c in comparisons)
             {
                 _comparisons.AddRange(c.Comparisons);
@@ -57,6 +57,44 @@ namespace Dice.AST
             {
                 throw new ArgumentException("Must have at least one comparison when aggregating ComparisonNodes");
             }
+        }
+
+        public override string ToString()
+        {
+            List<string> comps = new List<string>();
+            foreach (var comp in _comparisons)
+            {
+                string c;
+
+                switch (comp.op)
+                {
+                    case CompareOp.Equals:
+                        c = "=";
+                        break;
+                    case CompareOp.GreaterEquals:
+                        c = ">=";
+                        break;
+                    case CompareOp.GreaterThan:
+                        c = ">";
+                        break;
+                    case CompareOp.LessEquals:
+                        c = "<=";
+                        break;
+                    case CompareOp.LessThan:
+                        c = "<";
+                        break;
+                    case CompareOp.NotEquals:
+                        c = "!=";
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown CompareOp");
+                }
+
+                c += comp.expr.Value.ToString();
+                comps.Add(c);
+            }
+
+            return String.Join(", ", comps);
         }
 
         internal void Add(ComparisonNode comparison)

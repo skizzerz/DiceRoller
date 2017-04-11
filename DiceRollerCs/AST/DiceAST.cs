@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Text;
+using System.Collections.Generic;
+
 
 namespace Dice.AST
 {
@@ -24,6 +27,13 @@ namespace Dice.AST
         /// If no dice were rolled, this will be an empty list.
         /// </summary>
         public abstract IReadOnlyList<DieResult> Values { get; }
+
+        /// <summary>
+        /// Retrieves a normalized representation of the dice expression.
+        /// This may differ from the exact string that was typed in by the user.
+        /// </summary>
+        /// <returns></returns>
+        public abstract override string ToString();
 
         /// <summary>
         /// Evaluates the node, causing it to store its result in Value.

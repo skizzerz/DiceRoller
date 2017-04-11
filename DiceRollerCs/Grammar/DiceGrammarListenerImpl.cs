@@ -623,6 +623,32 @@ namespace Dice.Grammar
 
                     Stack.Push(new SuccessNode(null, (ComparisonNode)args[0]));
                     break;
+                case "critical":
+                    if (args.Count == 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    Stack.Push(new CritNode(new ComparisonNode(args.Cast<ComparisonNode>()), null));
+                    break;
+                case "fumble":
+                    if (args.Count == 0)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                    }
+
+                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    {
+                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                    }
+
+                    Stack.Push(new CritNode(null, new ComparisonNode(args.Cast<ComparisonNode>())));
+                    break;
                 case "sortasc":
                     if (args.Count != 0)
                     {
