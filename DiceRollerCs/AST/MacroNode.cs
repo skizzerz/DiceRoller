@@ -40,8 +40,29 @@ namespace Dice.AST
 
         protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
         {
+            if (conf.ExecuteMacro == null)
+            {
+                throw new DiceException(DiceErrorCode.InvalidMacro);
+            }
+
             conf.ExecuteMacro(Context);
             Value = Context.Value;
+
+            if (Context.Value == Decimal.MinValue)
+            {
+                throw new DiceException(DiceErrorCode.InvalidMacro);
+            }
+
+            if (Context.Values.Count == 0)
+            {
+                Context.Values.Add(new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = Context.Value,
+                    Flags = DieFlags.Macro
+                });
+            }
 
             return 0;
         }

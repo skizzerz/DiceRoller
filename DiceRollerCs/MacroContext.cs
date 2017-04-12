@@ -19,7 +19,8 @@ namespace Dice
 
         /// <summary>
         /// If the macro rolls any dice, it should add their results to this list.
-        /// If the macro does not roll dice, this need not be touched.
+        /// If the macro does not roll dice, this need not be touched. If empty,
+        /// a Literal DieResult will be inserted with its value set to Value.
         /// </summary>
         public List<DieResult> Values;
 

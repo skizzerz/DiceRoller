@@ -37,6 +37,10 @@ namespace Dice
         /// Indicates the die was added due to an explosion or reroll,
         /// and was not one of the original dice rolled
         /// </summary>
-        Extra = 32
+        Extra = 32,
+        /// <summary>
+        /// Indicates the die was generated as part of a macro.
+        /// </summary>
+        Macro = 64
     }
 }
