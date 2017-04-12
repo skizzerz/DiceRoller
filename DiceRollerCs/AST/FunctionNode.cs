@@ -87,6 +87,11 @@ namespace Dice.AST
         {
             Function(Context);
             Value = Context.Value;
+
+            if (Context.Value == Decimal.MinValue)
+            {
+                throw new InvalidOperationException("Function callback did not modify context.Value");
+            }
         }
     }
 }

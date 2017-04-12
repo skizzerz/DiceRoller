@@ -52,6 +52,7 @@ namespace Dice
             Name = name ?? throw new ArgumentNullException("name");
             Arguments = arguments ?? throw new ArgumentNullException("arguments");
             Expression = null;
+            Value = Decimal.MinValue;
             Values = null;
 
             if (Arguments.Any(d => d == null))
