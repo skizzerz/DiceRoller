@@ -35,8 +35,5 @@ namespace Dice
         {
             ErrorCode = error;
         }
-
-        protected DiceException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
     }
 }
