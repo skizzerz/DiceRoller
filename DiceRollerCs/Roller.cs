@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
 
 using Dice.Grammar;
 
@@ -32,7 +33,7 @@ namespace Dice
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr, RollerConfig config = null)
         {
-            
+            var lexer = new DiceGrammarLexer(new AntlrInputStream(diceExpr));
         }
     }
 }
