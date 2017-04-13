@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
@@ -51,34 +52,33 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(".");
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             switch (ExplodeType)
             {
                 case ExplodeType.Explode:
                     if (Compound)
                     {
-                        sb.Append("compound(");
+                        sb.Append(".compound");
                     }
                     else
                     {
-                        sb.Append("explode(");
+                        sb.Append(".explode");
                     }
                     break;
                 case ExplodeType.Penetrate:
                     if (Compound)
                     {
-                        sb.Append("compoundPenetrate(");
+                        sb.Append(".compoundPenetrate");
                     }
                     else
                     {
-                        sb.Append("penetrate(");
+                        sb.Append(".penetrate");
                     }
                     break;
             }
 
-            sb.Append(Comparison.ToString());
-            sb.Append(")");
+            sb.AppendFormat("({0})", Comparison?.ToString() ?? String.Empty);
 
             return sb.ToString();
         }
@@ -116,10 +116,11 @@ namespace Dice.AST
             return rolls;
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
         private long DoExplode(RollerConfig conf)
         {
             long rolls = 0;
-            Func<DieResult, bool> shouldExplode;
+            Func<DieResult, bool> shouldExplode, shouldExplode2;
             Value = 0;
             ValueType = ResultType.Total;
             _values.Clear();
@@ -127,10 +128,28 @@ namespace Dice.AST
             if (Comparison != null)
             {
                 shouldExplode = d => Comparison.Compare(d.Value);
+
+                if (ExplodeType == ExplodeType.Penetrate)
+                {
+                    shouldExplode2 = d => Comparison.Compare(d.Value + 1);
+                }
+                else
+                {
+                    shouldExplode2 = shouldExplode;
+                }
             }
             else
             {
                 shouldExplode = d => d.Value == d.NumSides;
+
+                if (ExplodeType == ExplodeType.Penetrate)
+                {
+                    shouldExplode2 = d => d.Value + 1 == d.NumSides;
+                }
+                else
+                {
+                    shouldExplode2 = shouldExplode;
+                }
             }
 
 
@@ -143,6 +162,7 @@ namespace Dice.AST
                     // special die results can't explode as they aren't actually dice
                     // dropped dice are no longer part of the resultant expression so should not explode
                     _values.Add(die);
+
                     continue;
                 }
 
@@ -220,9 +240,16 @@ namespace Dice.AST
                         }
                         else
                         {
+                            _values.Add(new DieResult()
+                            {
+                                DieType = DieType.Special,
+                                NumSides = 0,
+                                Value = (decimal)SpecialDie.Add,
+                                Flags = 0
+                            });
                             _values.Add(result);
                         }
-                    } while (shouldExplode(result));
+                    } while (shouldExplode2(result));
 
                     if (Compound)
                     {

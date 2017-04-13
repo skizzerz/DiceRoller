@@ -60,34 +60,34 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(".");
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             switch (KeepType)
             {
                 case KeepType.KeepHigh:
-                    sb.Append("keepHigh");
+                    sb.Append(".keepHigh");
                     break;
                 case KeepType.KeepLow:
-                    sb.Append("keepLow");
+                    sb.Append(".keepLow");
                     break;
                 case KeepType.DropHigh:
-                    sb.Append("dropHigh");
+                    sb.Append(".dropHigh");
                     break;
                 case KeepType.DropLow:
-                    sb.Append("dropLow");
+                    sb.Append(".dropLow");
                     break;
                 case KeepType.Advantage:
-                    sb.Append("advantage");
+                    sb.Append(".advantage");
                     break;
                 case KeepType.Disadvantage:
-                    sb.Append("disadvantage");
+                    sb.Append(".disadvantage");
                     break;
                 default:
-                    sb.Append("<<UNKNOWN KEEP>>");
+                    sb.Append(".<<UNKNOWN KEEP>>");
                     break;
             }
 
-            sb.AppendFormat("({0})", Expression?.ToString() ?? String.Empty);
+            sb.AppendFormat("({0})", Amount.ToString());
 
             return sb.ToString();
         }
