@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 
 using Dice.Grammar;
 
@@ -33,7 +34,18 @@ namespace Dice
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr, RollerConfig config = null)
         {
+            // parse diceExpr
             var lexer = new DiceGrammarLexer(new AntlrInputStream(diceExpr));
+            var parser = new DiceGrammarParser(new CommonTokenStream(lexer));
+            var tree = parser.input();
+            var walker = new ParseTreeWalker();
+            var listener = new DiceGrammarListener();
+            walker.Walk(listener, tree);
+
+            // evaluate diceExpr
+            var root = listener.Root;
+            var numRolls = root.Evaluate(config, root, 0);
+
         }
     }
 }

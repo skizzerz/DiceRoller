@@ -90,6 +90,8 @@ namespace Dice.AST
             ushort numTimes = (ushort)NumTimes.Value;
             Value = 0;
             bool first = true;
+            bool haveTotal = false;
+            bool haveRoll = false;
 
             for (ushort run = 0; run < numTimes; run++)
             {
@@ -179,7 +181,27 @@ namespace Dice.AST
                     }
 
                     Value += ast.Value;
+                    // we make our final ValueType successes if *all* underlying expressions in this group which actually contain rolls are success types
+                    // (and if there are actually rolls)
+                    if (ast.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+                    {
+                        haveRoll = true;
+
+                        if (ast.ValueType == ResultType.Total)
+                        {
+                            haveTotal = true;
+                        }
+                    }
                 }
+            }
+
+            if (!haveRoll || haveTotal)
+            {
+                ValueType = ResultType.Total;
+            }
+            else
+            {
+                ValueType = ResultType.Successes;
             }
 
             return rolls;

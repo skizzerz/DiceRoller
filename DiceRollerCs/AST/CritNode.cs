@@ -133,6 +133,7 @@ namespace Dice.AST
         private void MarkCrits()
         {
             Value = Expression.Value;
+            ValueType = Expression.ValueType;
             _values.Clear();
             DieFlags mask = 0;
 

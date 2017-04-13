@@ -119,6 +119,7 @@ namespace Dice.AST
             if (KeepType == KeepType.Advantage || KeepType == KeepType.Disadvantage)
             {
                 Value = Expression.Value;
+                ValueType = Expression.ValueType;
                 _values = Expression.Values.ToList();
                 var rolls = Expression.Reroll(conf, root, depth + 1);
 
@@ -177,7 +178,16 @@ namespace Dice.AST
                     throw new InvalidOperationException("Unknown keep type");
             }
 
-            Value = sortedValues.Sum(d => d.Value);
+            if (Expression.ValueType == ResultType.Total)
+            {
+                Value = sortedValues.Sum(d => d.Value);
+                ValueType = ResultType.Total;
+            }
+            else
+            {
+                Value = sortedValues.Sum(d => d.Flags.HasFlag(DieFlags.Success) ? 1 : (d.Flags.HasFlag(DieFlags.Failure) ? -1 : 0));
+                ValueType = ResultType.Successes;
+            }
             _values.Clear();
             foreach (var d in Expression.Values)
             {

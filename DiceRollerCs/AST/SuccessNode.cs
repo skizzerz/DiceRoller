@@ -179,6 +179,7 @@ namespace Dice.AST
             }
 
             Value = Successes - Failures;
+            ValueType = ResultType.Successes;
         }
     }
 }

@@ -41,6 +41,11 @@ namespace Dice
         public decimal Value { get; set; }
 
         /// <summary>
+        /// What sort of value the function call returns.
+        /// </summary>
+        public ResultType ValueType { get; set; }
+
+        /// <summary>
         /// If dice rolls need to be exposed, set Values to them.
         /// If null, the underlying dice rolls of Expression (if any) are used.
         /// </summary>
@@ -53,6 +58,7 @@ namespace Dice
             Arguments = arguments ?? throw new ArgumentNullException("arguments");
             Expression = null;
             Value = Decimal.MinValue;
+            ValueType = ResultType.Total;
             Values = null;
 
             if (Arguments.Any(d => d == null))

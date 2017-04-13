@@ -68,6 +68,7 @@ namespace Dice.AST
             List<DieResult> temp = new List<DieResult>();
             _values.Clear();
             Value = Expression.Value;
+            ValueType = Expression.ValueType;
 
             foreach (var die in Expression.Values)
             {

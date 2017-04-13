@@ -139,6 +139,39 @@ namespace Dice.AST
                     throw new InvalidOperationException("Math operation not recognized");
             }
 
+            // we maintain a ValueType of successes only if all sides which contain actual rolls have a successes ValueType
+            bool haveTotal = false;
+            bool haveRoll = false;
+
+            if (Left.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+            {
+                haveRoll = true;
+
+                if (Left.ValueType == ResultType.Total)
+                {
+                    haveTotal = true;
+                }
+            }
+
+            if (Right.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+            {
+                haveRoll = true;
+
+                if (Right.ValueType == ResultType.Total)
+                {
+                    haveTotal = true;
+                }
+            }
+
+            if (!haveRoll || haveTotal)
+            {
+                ValueType = ResultType.Total;
+            }
+            else
+            {
+                ValueType = ResultType.Successes;
+            }
+
             // Insert special DieResults to aid in displaying the grouping of these rolls.
             // Add in parenthesis and the operator used, e.g. 3d6-2d4 with a roll of
             // 3, 4, 5, 1, and 2 would render as ( 3 + 4 + 5 ) - ( 1 + 2 ).

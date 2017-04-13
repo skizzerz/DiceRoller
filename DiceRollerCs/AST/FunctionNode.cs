@@ -87,6 +87,7 @@ namespace Dice.AST
         {
             Function(Context);
             Value = Context.Value;
+            ValueType = Context.ValueType;
 
             if (Context.Value == Decimal.MinValue)
             {

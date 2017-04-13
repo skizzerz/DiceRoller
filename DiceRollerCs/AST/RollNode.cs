@@ -136,6 +136,7 @@ namespace Dice.AST
             }
 
             Value = _values.Sum(d => d.Value);
+            ValueType = ResultType.Total;
 
             return (ulong)numDice;
         }

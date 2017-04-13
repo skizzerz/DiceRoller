@@ -79,7 +79,6 @@ namespace Dice.AST
             var rolls = Comparison.Evaluate(conf, root, depth + 1);
             rolls += Expression.Evaluate(conf, root, depth + 1);
             rolls += MaybeReroll(conf, root, depth);
-            Value = Expression.Value;
 
             return rolls;
         }
@@ -88,7 +87,6 @@ namespace Dice.AST
         {
             var rolls = Expression.Reroll(conf, root, depth + 1);
             rolls += MaybeReroll(conf, root, depth);
-            Value = Expression.Value;
 
             return rolls;
         }
@@ -150,7 +148,18 @@ namespace Dice.AST
                 _values.Add(reroll);
             }
 
-            Value = _values.Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped)).Sum(d => d.Value);
+            var dice = _values.Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped));
+
+            if (Expression.ValueType == ResultType.Total)
+            {
+                Value = dice.Sum(d => d.Value);
+                ValueType = ResultType.Total;
+            }
+            else
+            {
+                Value = dice.Sum(d => d.Flags.HasFlag(DieFlags.Success) ? 1 : (d.Flags.HasFlag(DieFlags.Failure) ? -1 : 0));
+                ValueType = ResultType.Successes;
+            }
 
             return rolls;
         }

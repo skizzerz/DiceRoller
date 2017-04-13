@@ -47,6 +47,7 @@ namespace Dice.AST
 
             conf.ExecuteMacro(Context);
             Value = Context.Value;
+            ValueType = Context.ValueType;
 
             if (Context.Value == Decimal.MinValue)
             {

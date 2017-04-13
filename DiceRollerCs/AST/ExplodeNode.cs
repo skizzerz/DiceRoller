@@ -121,6 +121,7 @@ namespace Dice.AST
             ulong rolls = 0;
             Func<DieResult, bool> shouldExplode;
             Value = 0;
+            ValueType = ResultType.Total;
             _values.Clear();
 
             if (Comparison != null)
@@ -137,9 +138,8 @@ namespace Dice.AST
             {
                 var accum = die;
 
-                if (die.DieType == DieType.Group || die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
+                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
                 {
-                    // grouped die results can't explode, as we don't know what to explode them to
                     // special die results can't explode as they aren't actually dice
                     // dropped dice are no longer part of the resultant expression so should not explode
                     _values.Add(die);
@@ -155,10 +155,12 @@ namespace Dice.AST
                     case DieType.Fudge:
                         rt = RollType.Fudge;
                         break;
+                    case DieType.Group: // we can't explode on groups, so throw an exception
                     default:
                         throw new InvalidOperationException("Unsupported die type for explosion");
                 }
 
+                Value += die.Value;
                 if (shouldExplode(die))
                 {
                     if (!Compound)
@@ -211,6 +213,7 @@ namespace Dice.AST
                                 throw new InvalidOperationException("Unknown explosion type");
                         }
 
+                        Value += result.Value;
                         if (Compound)
                         {
                             accum.Value += result.Value;

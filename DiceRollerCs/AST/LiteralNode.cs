@@ -21,6 +21,7 @@ namespace Dice.AST
         internal LiteralNode(decimal value)
         {
             Value = value;
+            ValueType = ResultType.Total;
             _values = new List<DieResult>()
             {
                 new DieResult()
