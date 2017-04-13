@@ -13,12 +13,8 @@ namespace Dice
     /// </summary>
     public static class FunctionRegistry
     {
-        internal static Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)> Callbacks;
-
-        static FunctionRegistry()
-        {
-            Callbacks = new Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)>();
-        }
+        internal static Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)> Callbacks
+            = new Dictionary<(string name, FunctionScope scope), (FunctionTiming timing, FunctionCallback callback)>();
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
@@ -110,20 +106,40 @@ namespace Dice
         }
 
         /// <summary>
+        /// Registers the specified global callback to the given name
+        /// </summary>
+        /// <param name="name">Function name</param>
+        /// <param name="callback">Callback to invoke for this function</param>
+        public static void RegisterFunction(string name, FunctionCallback callback)
+        {
+            RegisterFunction(name, callback, FunctionScope.Global, FunctionTiming.Last);
+        }
+
+        /// <summary>
+        /// Registers the specified callback to the given name
+        /// </summary>
+        /// <param name="name">Function name</param>
+        /// <param name="callback">Callback to invoke for this function</param>
+        public static void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope)
+        {
+            RegisterFunction(name, callback, scope, FunctionTiming.Last);
+        }
+
+        /// <summary>
         /// Registers the specified callback to the given name
         /// </summary>
         /// <param name="name">Function name</param>
         /// <param name="callback">Callback to invoke for this function</param>
         /// <param name="scope">Scope in which function is valid</param>
         /// <param name="timing">Timing of function execution</param>
-        public static void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope = FunctionScope.Global, FunctionTiming timing = FunctionTiming.Last)
+        public static void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope, FunctionTiming timing)
         {
             if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
 
-            if (name == String.Empty)
+            if (name.Length == 0)
             {
                 throw new ArgumentException("Function name cannot be empty", "name");
             }

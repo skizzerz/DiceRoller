@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
@@ -73,7 +74,8 @@ namespace Dice.AST
                     sb.Append(" / ");
                     break;
                 default:
-                    throw new InvalidOperationException("Unrecognized MathOp");
+                    sb.Append("<<UNKNOWN MATH>>");
+                    break;
             }
 
             if (Right is MathNode mr
@@ -91,22 +93,23 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Left.Evaluate(conf, root, depth + 1) + Right.Evaluate(conf, root, depth + 1);
+            long rolls = Left.Evaluate(conf, root, depth + 1) + Right.Evaluate(conf, root, depth + 1);
             DoMath();
 
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Left.Reroll(conf, root, depth + 1) + Right.Reroll(conf, root, depth + 1);
+            long rolls = Left.Reroll(conf, root, depth + 1) + Right.Reroll(conf, root, depth + 1);
             DoMath();
 
             return rolls;
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
         private void DoMath()
         {
             SpecialDie sd = 0;
@@ -213,7 +216,7 @@ namespace Dice.AST
                         addLeftParen = false;
                     }
                 }
-                else if (Left is RollNode rl)
+                else if (Left is RollNode)
                 {
                     // roll nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
                     if (Operation == MathOp.Add || Operation == MathOp.Subtract)
@@ -249,7 +252,7 @@ namespace Dice.AST
                         addRightParen = false;
                     }
                 }
-                else if (Right is RollNode rr)
+                else if (Right is RollNode)
                 {
                     if (Operation == MathOp.Add)
                     {

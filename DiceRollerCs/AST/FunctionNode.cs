@@ -12,6 +12,8 @@ namespace Dice.AST
     /// </summary>
     public class FunctionNode : DiceAST
     {
+        private List<DieResult> _values;
+
         /// <summary>
         /// The context for this function call
         /// </summary>
@@ -22,12 +24,13 @@ namespace Dice.AST
 
         public override IReadOnlyList<DieResult> Values
         {
-            get { return Context.Values ?? Context.Expression?.Values ?? new List<DieResult>(); }
+            get { return _values; }
         }
 
         internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
         {
             Context = new FunctionContext(scope, name, arguments);
+            _values = new List<DieResult>();
 
             try
             {
@@ -55,9 +58,9 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Context.Expression?.Evaluate(conf, root, depth + 1) ?? 0;
+            long rolls = Context.Expression?.Evaluate(conf, root, depth + 1) ?? 0;
 
             foreach (var arg in Context.Arguments)
             {
@@ -69,9 +72,9 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Context.Expression?.Reroll(conf, root, depth + 1) ?? 0;
+            long rolls = Context.Expression?.Reroll(conf, root, depth + 1) ?? 0;
 
             foreach (var arg in Context.Arguments)
             {
@@ -88,6 +91,26 @@ namespace Dice.AST
             Function(Context);
             Value = Context.Value;
             ValueType = Context.ValueType;
+            _values.Clear();
+
+            if (Context.Values != null)
+            {
+                _values.AddRange(Context.Values);
+            }
+            else if (Context.Expression?.Values != null)
+            {
+                _values.AddRange(Context.Expression.Values);
+            }
+            else
+            {
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = Context.Value,
+                    Flags = DieFlags.Macro // this techincally isn't a macro but it is acting like one if Values is empty, ergo set this flag
+                });
+            }
 
             if (Context.Value == Decimal.MinValue)
             {

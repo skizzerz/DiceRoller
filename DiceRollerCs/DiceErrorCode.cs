@@ -16,6 +16,11 @@ namespace Dice
     public enum DiceErrorCode
     {
         /// <summary>
+        /// An unknown error has occurred.
+        /// </summary>
+        [Description("An unknown error has occurred.")]
+        Unknown = 0,
+        /// <summary>
         /// A negative number of dice cannot be rolled.
         /// </summary>
         [Description("A negative number of dice cannot be rolled.")]

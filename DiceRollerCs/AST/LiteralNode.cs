@@ -39,12 +39,12 @@ namespace Dice.AST
             return Value.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             return 0;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             return 0;
         }

@@ -11,7 +11,7 @@ namespace Dice.AST
     /// </summary>
     public class SortNode : DiceAST
     {
-        public List<DieResult> _values;
+        private List<DieResult> _values;
 
         /// <summary>
         /// The order the dice are sorted in
@@ -32,6 +32,7 @@ namespace Dice.AST
         {
             Direction = direction;
             Expression = null;
+            _values = new List<DieResult>();
         }
 
         public override string ToString()
@@ -43,11 +44,11 @@ namespace Dice.AST
                 case SortDirection.Descending:
                     return ".sortDesc()";
                 default:
-                    throw new InvalidOperationException("Unexpected SortDirection");
+                    return ".<<UNKNOWN SORT>>()";
             }
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Expression.Evaluate(conf, root, depth + 1);
             DoSort();
@@ -55,7 +56,7 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Expression.Reroll(conf, root, depth + 1);
             DoSort();

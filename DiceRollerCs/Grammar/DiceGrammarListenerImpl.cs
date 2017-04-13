@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Antlr4.Runtime.Misc;
+
 using Dice.AST;
 
 // DiceGrammarListener.cs is taken by the auto-generated IDiceGrammarListener interface
@@ -11,6 +13,7 @@ using Dice.AST;
 
 namespace Dice.Grammar
 {
+    [CLSCompliant(false)]
     public class DiceGrammarListener : DiceGrammarBaseListener
     {
         // holds the state of the current parse tree, the bottom of the stack is the root of the AST,
@@ -153,6 +156,7 @@ namespace Dice.Grammar
             Stack.Push(partial);
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Just a big switch, not complex")]
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -398,6 +402,7 @@ namespace Dice.Grammar
             Stack.Push(partial.CreateRollNode());
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Just a big switch, not complex")]
         public override void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -454,12 +459,12 @@ namespace Dice.Grammar
                         maxRerolls = ((MacroNode)args[0]).Execute();
                     }
 
-                    if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > UInt32.MaxValue)
+                    if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > Int32.MaxValue)
                     {
                         throw new DiceException(DiceErrorCode.BadRerollCount, fname);
                     }
 
-                    Stack.Push(new RerollNode((uint)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
+                    Stack.Push(new RerollNode((int)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
                     break;
                 case "rerollonce":
                     if (args.Count == 0)

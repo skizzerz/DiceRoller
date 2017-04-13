@@ -8,14 +8,14 @@ namespace Dice.AST
 {
     public class ComparisonNode : DiceAST
     {
-        private List<(CompareOp op, DiceAST expr)> _comparisons;
+        private List<Comparison> _comparisons;
 
         /// <summary>
         /// The list of comparisons to evaluate against; each comparison
         /// is evaluated independently. As long as one comparison succeeds,
         /// the entire node is considered a success.
         /// </summary>
-        public IEnumerable<(CompareOp op, DiceAST expr)> Comparisons
+        public IEnumerable<Comparison> Comparisons
         {
             get { return _comparisons; }
         }
@@ -39,15 +39,15 @@ namespace Dice.AST
                 throw new ArgumentNullException("expression");
             }
 
-            _comparisons = new List<(CompareOp op, DiceAST expr)>()
+            _comparisons = new List<Comparison>()
             {
-                (operation, expression)
+                new Comparison(operation, expression)
             };
         }
 
         internal ComparisonNode(IEnumerable<ComparisonNode> comparisons)
         {
-            _comparisons = new List<(CompareOp op, DiceAST expr)>();
+            _comparisons = new List<Comparison>();
             foreach (var c in comparisons)
             {
                 _comparisons.AddRange(c.Comparisons);
@@ -87,7 +87,8 @@ namespace Dice.AST
                         c = "!=";
                         break;
                     default:
-                        throw new InvalidOperationException("Unknown CompareOp");
+                        c = "<<INVALID COMPAREOP>>";
+                        break;
                 }
 
                 c += comp.expr.Value.ToString();
@@ -102,11 +103,11 @@ namespace Dice.AST
             _comparisons.AddRange(comparison.Comparisons);
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             // this doesn't increase depth as there is no actual logic that a ComparisonNode itself performs
             // (in other words, the Expression can be viewed as the ComparisonNode's evaluation)
-            ulong rolls = 0;
+            long rolls = 0;
             Value = 0;
 
             foreach (var c in Comparisons)
@@ -117,9 +118,9 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = 0;
+            long rolls = 0;
 
             foreach (var c in Comparisons)
             {

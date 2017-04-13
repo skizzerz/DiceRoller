@@ -48,14 +48,14 @@ namespace Dice.AST
         /// <param name="root">Root of the AST</param>
         /// <param name="depth">Current recursion depth</param>
         /// <returns>Total number of rolls taken to evaluate this subtree</returns>
-        internal ulong Evaluate(RollerConfig conf, DiceAST root, uint depth)
+        internal long Evaluate(RollerConfig conf, DiceAST root, int depth)
         {
             if (depth > conf.MaxRecursionDepth)
             {
                 throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
             }
 
-            ulong rolls = EvaluateInternal(conf, root, depth);
+            long rolls = EvaluateInternal(conf, root, depth);
 
             if (rolls > conf.MaxDice)
             {
@@ -74,7 +74,7 @@ namespace Dice.AST
         /// <param name="root">AST root</param>
         /// <param name="depth">Recursion depth</param>
         /// <returns>Number of dice rolls performed</returns>
-        internal ulong Reroll(RollerConfig conf, DiceAST root, uint depth)
+        internal long Reroll(RollerConfig conf, DiceAST root, int depth)
         {
             if (!Evaluated)
             {
@@ -86,7 +86,7 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
             }
 
-            ulong rolls = RerollInternal(conf, root, depth);
+            long rolls = RerollInternal(conf, root, depth);
 
             if (rolls > conf.MaxDice)
             {
@@ -96,7 +96,7 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected abstract ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth);
-        protected abstract ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth);
+        protected abstract long EvaluateInternal(RollerConfig conf, DiceAST root, int depth);
+        protected abstract long RerollInternal(RollerConfig conf, DiceAST root, int depth);
     }
 }

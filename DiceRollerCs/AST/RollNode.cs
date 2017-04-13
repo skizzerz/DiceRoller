@@ -9,7 +9,7 @@ namespace Dice.AST
     public class RollNode : DiceAST
     {
         private List<DieResult> _values;
-        private readonly long[] _normalSides = new long[] { 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
+        private static readonly long[] _normalSides = new long[] { 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
         private static RNGCryptoServiceProvider _rand = new RNGCryptoServiceProvider();
 
         /// <summary>
@@ -82,45 +82,40 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = NumDice.Evaluate(conf, root, depth + 1);
+            long rolls = NumDice.Evaluate(conf, root, depth + 1);
             rolls += NumSides?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Roll(conf, root, depth, false);
+            rolls += Roll(conf);
 
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            return Roll(conf, root, depth, true);
+            return Roll(conf);
         }
 
-        private ulong Roll(RollerConfig conf, DiceAST root, uint depth, bool reroll)
+        private long Roll(RollerConfig conf)
         {
-            var numDice = (long)NumDice.Value;
-            var numSides = (long)(NumSides?.Value ?? 1);
+            long numDice = (long)NumDice.Value;
+            long numSides = (long)(NumSides?.Value ?? 1);
 
             if (numDice < 0)
             {
                 throw new DiceException(DiceErrorCode.NegativeDice);
             }
 
-            if (numSides < 1 || numSides > conf.MaxSides)
+            if (numDice > conf.MaxDice)
             {
-                throw new DiceException(DiceErrorCode.BadSides, conf.MaxSides);
-            }
-
-            if (conf.NormalSidesOnly && !_normalSides.Contains(numSides))
-            {
-                throw new DiceException(DiceErrorCode.WrongSides);
+                throw new DiceException(DiceErrorCode.TooManyDice);
             }
 
             _values.Clear();
 
-            for (uint i = 0; i < numDice; i++)
+            for (int i = 0; i < numDice; i++)
             {
-                var result = DoRoll(conf, RollType, (uint)numSides);
+                var result = DoRoll(conf, RollType, (int)numSides);
 
                 if (i > 0)
                 {
@@ -138,13 +133,23 @@ namespace Dice.AST
             Value = _values.Sum(d => d.Value);
             ValueType = ResultType.Total;
 
-            return (ulong)numDice;
+            return numDice;
         }
 
-        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, uint numSides, DieFlags flags = 0)
+        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, int numSides, DieFlags flags = 0)
         {
+            if (numSides < 1 || numSides > conf.MaxSides)
+            {
+                throw new DiceException(DiceErrorCode.BadSides, conf.MaxSides);
+            }
+
+            if (conf.NormalSidesOnly && !_normalSides.Contains(numSides))
+            {
+                throw new DiceException(DiceErrorCode.WrongSides);
+            }
+
             byte[] roll = new byte[4];
-            uint sides = numSides;
+            uint sides = (uint)numSides;
             DieType dt;
 
             switch (rollType)

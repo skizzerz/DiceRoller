@@ -14,21 +14,21 @@ namespace Dice
         /// will result in a DiceException being thrown.
         /// Default: 1,000
         /// </summary>
-        public uint MaxDice { get; set; }
+        public int MaxDice { get; set; }
 
         /// <summary>
         /// The maximum number of sides that any individual die can have.
         /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 10,000
         /// </summary>
-        public uint MaxSides { get; set; }
+        public int MaxSides { get; set; }
 
         /// <summary>
         /// The maximum amount of nesting that can happen in dice expressions.
         /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 20
         /// </summary>
-        public ushort MaxRecursionDepth { get; set; }
+        public short MaxRecursionDepth { get; set; }
 
         /// <summary>
         /// The maximum amount of times a die can be rerolled, either due to
@@ -37,7 +37,7 @@ namespace Dice
         /// (no exception is thrown).
         /// Default: 100
         /// </summary>
-        public uint MaxRerolls { get; set; }
+        public int MaxRerolls { get; set; }
 
         /// <summary>
         /// If true, only standard dice sizes (d2, d3, d4, d6, d8, d10, d12, d20, d100, d1,000, d10,000)

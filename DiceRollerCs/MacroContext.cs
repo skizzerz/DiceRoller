@@ -15,30 +15,30 @@ namespace Dice
         /// <summary>
         /// The overall value of the macro.
         /// </summary>
-        public decimal Value;
+        public decimal Value { get; set; }
 
         /// <summary>
         /// What sort of value the macro returns.
         /// </summary>
-        public ResultType ValueType;
+        public ResultType ValueType { get; set; }
 
         /// <summary>
         /// If the macro rolls any dice, it should add their results to this list.
-        /// If the macro does not roll dice, this need not be touched. If empty,
+        /// If the macro does not roll dice, this need not be touched. If null or empty,
         /// a Literal DieResult will be inserted with its value set to Value.
         /// </summary>
-        public List<DieResult> Values;
+        public IEnumerable<DieResult> Values { get; set; }
 
         /// <summary>
         /// The parameter passed to the macro. The function is responsible for
         /// parsing this into something usable.
         /// </summary>
-        public readonly string Param;
+        public string Param { get; private set; }
 
         internal MacroContext(string param)
         {
             Value = Decimal.MinValue;
-            Values = new List<DieResult>();
+            Values = null;
             ValueType = ResultType.Total;
             Param = param;
         }

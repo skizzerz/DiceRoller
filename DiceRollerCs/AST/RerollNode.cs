@@ -25,7 +25,7 @@ namespace Dice.AST
         /// <summary>
         /// Maximum number of times to reroll, or 0 if unlimited rerolls are allowed
         /// </summary>
-        public uint MaxRerolls { get; private set; }
+        public int MaxRerolls { get; private set; }
 
         /// <summary>
         /// If this node was generated via the rerollN() function, this contains the expression used for N.
@@ -38,7 +38,7 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal RerollNode(uint maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
+        internal RerollNode(int maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
         {
             Comparison = comparison ?? throw new ArgumentNullException("comparison");
             Expression = null;
@@ -65,7 +65,8 @@ namespace Dice.AST
             }
             else
             {
-                throw new InvalidOperationException("MaxRerolls was not 0 or 1 and MaxRerollsExpr is null, this should never happen.");
+                // MaxRerolls was not 0 or 1 and MaxRerollsExpr is null, this should never happen.
+                sb.Append("<<UNKNOWN REROLL>>(");
             }
 
             sb.Append(Comparison.ToString());
@@ -74,27 +75,27 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Comparison.Evaluate(conf, root, depth + 1);
             rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += MaybeReroll(conf, root, depth);
+            rolls += MaybeReroll(conf);
 
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Expression.Reroll(conf, root, depth + 1);
-            rolls += MaybeReroll(conf, root, depth);
+            rolls += MaybeReroll(conf);
 
             return rolls;
         }
 
-        private ulong MaybeReroll(RollerConfig conf, DiceAST root, uint depth)
+        private long MaybeReroll(RollerConfig conf)
         {
-            ulong rolls = 0;
-            uint rerolls = 0;
+            long rolls = 0;
+            int rerolls = 0;
             var maxRerolls = MaxRerolls == 0 ? conf.MaxRerolls : Math.Min(MaxRerolls, conf.MaxRerolls);
             _values.Clear();
 

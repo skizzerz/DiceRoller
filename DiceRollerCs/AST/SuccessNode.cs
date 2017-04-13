@@ -35,12 +35,12 @@ namespace Dice.AST
         /// <summary>
         /// Number of successes, only valid if Evaluated is true.
         /// </summary>
-        public uint Successes { get; private set; }
+        public int Successes { get; private set; }
 
         /// <summary>
         /// Number of failures, only valid if Evaluated is true.
         /// </summary>
-        public uint Failures { get; private set; }
+        public int Failures { get; private set; }
 
         public override IReadOnlyList<DieResult> Values
         {
@@ -106,9 +106,9 @@ namespace Dice.AST
             }
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Expression.Evaluate(conf, root, depth + 1);
+            long rolls = Expression.Evaluate(conf, root, depth + 1);
             rolls += Success.Evaluate(conf, root, depth + 1);
             rolls += Failure?.Evaluate(conf, root, depth + 1) ?? 0;
 
@@ -117,9 +117,9 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Expression.Reroll(conf, root, depth + 1);
+            long rolls = Expression.Reroll(conf, root, depth + 1);
 
             if (!Success.Evaluated)
             {

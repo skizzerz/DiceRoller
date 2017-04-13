@@ -101,9 +101,9 @@ namespace Dice.AST
             }
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Expression.Evaluate(conf, root, depth + 1);
+            long rolls = Expression.Evaluate(conf, root, depth + 1);
             rolls += Critical?.Evaluate(conf, root, depth + 1) ?? 0;
             rolls += Fumble?.Evaluate(conf, root, depth + 1) ?? 0;
             MarkCrits();
@@ -111,9 +111,9 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Expression.Reroll(conf, root, depth + 1);
+            long rolls = Expression.Reroll(conf, root, depth + 1);
 
             if (Critical?.Evaluated == false)
             {

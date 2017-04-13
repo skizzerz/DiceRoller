@@ -10,7 +10,7 @@ namespace Dice.AST
     /// An ephemeral node used in construction of the AST. Once the AST
     /// is fully constructed, no nodes of this type should exist in it.
     /// </summary>
-    public class RollPartialNode : DiceAST
+    internal class RollPartialNode : DiceAST
     {
         public RollNode Roll { get; internal set; }
         public List<KeepNode> Keep { get; private set; }
@@ -268,12 +268,12 @@ namespace Dice.AST
             }
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");
         }

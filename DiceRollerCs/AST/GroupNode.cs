@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
@@ -70,23 +71,24 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = NumTimes.Evaluate(conf, root, depth + 1);
+            long rolls = NumTimes.Evaluate(conf, root, depth + 1);
 
             rolls += Roll(conf, root, depth, false);
 
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             return Roll(conf, root, depth, true);
         }
 
-        internal ulong Roll(RollerConfig conf, DiceAST root, uint depth, bool reroll)
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
+        internal long Roll(RollerConfig conf, DiceAST root, int depth, bool reroll)
         {
-            ulong rolls = 0;
+            long rolls = 0;
             ushort numTimes = (ushort)NumTimes.Value;
             Value = 0;
             bool first = true;

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
@@ -82,7 +83,8 @@ namespace Dice.AST
                     sb.Append("disadvantage");
                     break;
                 default:
-                    throw new InvalidOperationException("Unrecognized KeepType");
+                    sb.Append("<<UNKNOWN KEEP>>");
+                    break;
             }
 
             sb.AppendFormat("({0})", Expression?.ToString() ?? String.Empty);
@@ -90,7 +92,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Amount.Evaluate(conf, root, depth + 1);
             rolls += Expression.Evaluate(conf, root, depth + 1);
@@ -99,9 +101,9 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = 0;
+            long rolls = 0;
 
             if (!Amount.Evaluated)
             {
@@ -114,7 +116,8 @@ namespace Dice.AST
             return rolls;
         }
 
-        private ulong ApplyKeep(RollerConfig conf, DiceAST root, uint depth)
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
+        private long ApplyKeep(RollerConfig conf, DiceAST root, int depth)
         {
             if (KeepType == KeepType.Advantage || KeepType == KeepType.Disadvantage)
             {

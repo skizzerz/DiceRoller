@@ -93,32 +93,32 @@ namespace Dice.AST
             Comparison.Add(comp ?? throw new ArgumentNullException("comp"));
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = Comparison?.Evaluate(conf, root, depth + 1) ?? 0;
+            long rolls = Comparison?.Evaluate(conf, root, depth + 1) ?? 0;
             rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += DoExplode(conf, root, depth);
+            rolls += DoExplode(conf);
 
             return rolls;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            ulong rolls = 0;
+            long rolls = 0;
             if (Comparison?.Evaluated == false)
             {
                 rolls += Comparison.Evaluate(conf, root, depth + 1);
             }
 
             rolls += Expression.Reroll(conf, root, depth + 1);
-            rolls += DoExplode(conf, root, depth);
+            rolls += DoExplode(conf);
 
             return rolls;
         }
 
-        private ulong DoExplode(RollerConfig conf, DiceAST root, uint depth)
+        private long DoExplode(RollerConfig conf)
         {
-            ulong rolls = 0;
+            long rolls = 0;
             Func<DieResult, bool> shouldExplode;
             Value = 0;
             ValueType = ResultType.Total;

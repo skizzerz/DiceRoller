@@ -12,6 +12,8 @@ namespace Dice.AST
     /// </summary>
     public class MacroNode : DiceAST
     {
+        private List<DieResult> _values;
+
         /// <summary>
         /// Macro context passed to the executor function. The executor fills this out.
         /// </summary>
@@ -19,12 +21,13 @@ namespace Dice.AST
 
         public override IReadOnlyList<DieResult> Values
         {
-            get { return Context.Values; }
+            get { return _values; }
         }
 
         internal MacroNode(string param)
         {
             Context = new MacroContext(param);
+            _values = new List<DieResult>();
         }
 
         public override string ToString()
@@ -38,7 +41,7 @@ namespace Dice.AST
             return Value;
         }
 
-        protected override ulong EvaluateInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             if (conf.ExecuteMacro == null)
             {
@@ -54,9 +57,15 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.InvalidMacro);
             }
 
-            if (Context.Values.Count == 0)
+            _values.Clear();
+            if (Context.Values != null)
             {
-                Context.Values.Add(new DieResult()
+                _values.AddRange(Context.Values);
+            }
+
+            if (_values.Count == 0)
+            {
+                _values.Add(new DieResult()
                 {
                     DieType = DieType.Literal,
                     NumSides = 0,
@@ -68,7 +77,7 @@ namespace Dice.AST
             return 0;
         }
 
-        protected override ulong RerollInternal(RollerConfig conf, DiceAST root, uint depth)
+        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             // Macros are currently only evaluated once. This may change in the future
             // once it is more understood what these can be used for.
