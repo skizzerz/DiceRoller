@@ -37,15 +37,23 @@ namespace Dice
             // parse diceExpr
             var lexer = new DiceGrammarLexer(new AntlrInputStream(diceExpr));
             var parser = new DiceGrammarParser(new CommonTokenStream(lexer));
-            var tree = parser.input();
             var walker = new ParseTreeWalker();
             var listener = new DiceGrammarListener();
-            walker.Walk(listener, tree);
+
+            try
+            {
+                walker.Walk(listener, parser.input());
+            }
+            catch (RecognitionException e)
+            {
+                throw new DiceException(DiceErrorCode.ParseError, e.Message, e);
+            }
 
             // evaluate diceExpr
             var root = listener.Root;
             var numRolls = root.Evaluate(config, root, 0);
 
+            return new RollResult(root);
         }
     }
 }

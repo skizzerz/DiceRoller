@@ -100,5 +100,10 @@ namespace Dice
         /// </summary>
         [Description("The specified macro does not exist.")]
         InvalidMacro = 17,
+        /// <summary>
+        /// Error processing the dice expression: {0}
+        /// </summary>
+        [Description("Error processing the dice expression: {0}")]
+        ParseError = 18,
     }
 }

@@ -39,12 +39,14 @@ namespace Dice
         /// </summary>
         public DiceAST RollRoot { get; private set; }
 
-        internal RollResult(ResultType resultType, decimal value, IReadOnlyList<DieResult> values, DiceAST rollRoot)
+        internal RollResult(DiceAST rollRoot)
         {
-            ResultType = resultType;
-            Value = value;
-            Values = values ?? throw new ArgumentNullException("values");
             RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
+            // cache some commonly-referenced information directly in this class instead of requiring
+            // the user to drill down into RollRoot for everything
+            ResultType = rollRoot.ValueType;
+            Value = rollRoot.Value;
+            Values = rollRoot.Values;
         }
     }
 }
