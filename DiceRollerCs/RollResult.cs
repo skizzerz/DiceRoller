@@ -39,7 +39,12 @@ namespace Dice
         /// </summary>
         public DiceAST RollRoot { get; private set; }
 
-        internal RollResult(DiceAST rollRoot)
+        /// <summary>
+        /// The number of dice rolls that were needed to fully evaluate this expression.
+        /// </summary>
+        public int NumRolls { get; private set; }
+
+        internal RollResult(DiceAST rollRoot, int numRolls)
         {
             RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
             // cache some commonly-referenced information directly in this class instead of requiring
@@ -47,6 +52,7 @@ namespace Dice
             ResultType = rollRoot.ValueType;
             Value = rollRoot.Value;
             Values = rollRoot.Values;
+            NumRolls = numRolls;
         }
     }
 }

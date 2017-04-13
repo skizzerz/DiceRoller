@@ -74,7 +74,7 @@ namespace Dice
             var root = listener.Root;
             var numRolls = root.Evaluate(config, root, 0);
 
-            return new RollResult(root);
+            return new RollResult(root, (int)numRolls);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Dice.AST
     public class RollNode : DiceAST
     {
         private List<DieResult> _values;
-        private static readonly long[] _normalSides = new long[] { 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
+        private static readonly long[] _normalSides = new long[] { 1, 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
         private static RNGCryptoServiceProvider _rand = new RNGCryptoServiceProvider();
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Dice.AST
             } while (!IsFairRoll(roll, sides));
 
             // rollAmt is a number from 0 to sides-1, need to convert to a proper number
-            uint rollAmt = BitConverter.ToUInt32(roll, 0) % sides;
+            int rollAmt = (int)(BitConverter.ToUInt32(roll, 0) % sides);
 
             // first, mark if this was a critical or fumble. This may be overridden later by a CritNode.
             if (rollAmt == 0)
@@ -201,7 +201,7 @@ namespace Dice.AST
                     break;
                 case RollType.Fudge:
                     // normalize back into -numSides to +numSides
-                    rollAmt -= (sides - 1) / 2;
+                    rollAmt -= ((int)sides - 1) / 2;
                     break;
             }
 
