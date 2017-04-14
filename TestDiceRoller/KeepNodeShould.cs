@@ -54,5 +54,34 @@ namespace TestDiceRoller
             var node = new KeepNode(KeepType.Disadvantage, null) { Expression = _1d20 };
             EvaluateNode(node, AdvantageConf, 2, "1d20.disadvantage() => 2 + 19* => 2");
         }
+
+        [TestMethod]
+        public void ThrowNegativeDice_WhenKeepingNegativeDice()
+        {
+            var node = new KeepNode(KeepType.KeepHigh, MinusOne) { Expression = _4d6 };
+            EvaluateNode(node, StatConf, DiceErrorCode.NegativeDice);
+        }
+
+        [TestMethod]
+        public void CountSuccesses_WhenKeepingSuccessDice()
+        {
+            var success = new SuccessNode(greaterEqual5, equal1) { Expression = _4d6 };
+            var node = new KeepNode(KeepType.DropLow, One) { Expression = success };
+            EvaluateNode(node, StatConf, 4, "4d6.success(>=5).failure(=1).dropLowest(1) => $5 + 3 + $6! + 1!* => 2 successes");
+        }
+
+        [TestMethod]
+        public void Successfully_AllowDroppingMoreDiceThanExist()
+        {
+            var node = new KeepNode(KeepType.DropHigh, Five) { Expression = _4d6 };
+            EvaluateNode(node, StatConf, 4, "4d6.dropHighest(5) => 5* + 3* + 6!* + 1!* => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_AllowKeepingZeroDice()
+        {
+            var node = new KeepNode(KeepType.KeepHigh, Zero) { Expression = _4d6 };
+            EvaluateNode(node, StatConf, 4, "4d6.keepHighest(0) => 5* + 3* + 6!* + 1!* => 0");
+        }
     }
 }

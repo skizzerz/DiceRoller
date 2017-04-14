@@ -107,13 +107,7 @@ namespace Dice.AST
                     continue;
                 }
 
-                _values.Add(new DieResult()
-                {
-                    DieType = die.DieType,
-                    NumSides = die.NumSides,
-                    Value = die.Value,
-                    Flags = die.Flags | DieFlags.Dropped
-                });
+                _values.Add(die.Drop());
 
                 rolls++;
                 rerolls++;
@@ -141,13 +135,7 @@ namespace Dice.AST
                         Flags = 0
                     });
 
-                    _values.Add(new DieResult()
-                    {
-                        DieType = reroll.DieType,
-                        NumSides = reroll.NumSides,
-                        Value = reroll.Value,
-                        Flags = reroll.Flags | DieFlags.Dropped
-                    });
+                    _values.Add(reroll.Drop());
 
                     rolls++;
                     rerolls++;

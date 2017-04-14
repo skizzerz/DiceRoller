@@ -94,11 +94,11 @@ namespace Dice
                 {
                     if (die.Flags.HasFlag(DieFlags.Success))
                     {
-                        sb.Append("+");
+                        sb.Append("$");
                     }
                     else if (die.Flags.HasFlag(DieFlags.Failure))
                     {
-                        sb.Append("~");
+                        sb.Append("#");
                     }
 
                     sb.Append(die.Value);
@@ -120,7 +120,14 @@ namespace Dice
 
             if (ResultType == ResultType.Successes)
             {
-                sb.Append(" successes");
+                if (Value == 1)
+                {
+                    sb.Append(" success");
+                }
+                else
+                {
+                    sb.Append(" successes");
+                }
             }
 
             return sb.ToString();

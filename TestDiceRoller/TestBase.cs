@@ -79,7 +79,9 @@ namespace TestDiceRoller
         protected static readonly RollNode _1dF20 = new RollNode(RollType.Fudge, One, Twenty);
 
         protected static readonly ComparisonNode equal20 = new ComparisonNode(CompareOp.Equals, Twenty);
+        protected static readonly ComparisonNode equal1 = new ComparisonNode(CompareOp.Equals, One);
         protected static readonly ComparisonNode less5 = new ComparisonNode(CompareOp.LessThan, Five);
+        protected static readonly ComparisonNode greaterEqual5 = new ComparisonNode(CompareOp.GreaterEquals, Five);
 
         /// <summary>
         /// Evaluates the node and asserts that the number of rolls and result match what is expected.

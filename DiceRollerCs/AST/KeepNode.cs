@@ -131,13 +131,7 @@ namespace Dice.AST
                 {
                     for (int i = 0; i < _values.Count; i++)
                     {
-                        _values[i] = new DieResult()
-                        {
-                            DieType = _values[i].DieType,
-                            NumSides = _values[i].NumSides,
-                            Value = _values[i].Value,
-                            Flags = _values[i].Flags | DieFlags.Dropped
-                        };
+                        _values[i] = _values[i].Drop();
                     }
 
                     Value = Expression.Value;
@@ -160,13 +154,7 @@ namespace Dice.AST
                         Flags = 0
                     });
 
-                    _values.AddRange(Expression.Values.Select(d => new DieResult()
-                    {
-                        DieType = d.DieType,
-                        NumSides = d.NumSides,
-                        Value = d.Value,
-                        Flags = d.Flags | DieFlags.Dropped
-                    }));
+                    _values.AddRange(Expression.Values.Select(d => d.Drop()));
                 }
 
                 return rolls;
@@ -228,13 +216,7 @@ namespace Dice.AST
                 }
                 else
                 {
-                    _values.Add(new DieResult()
-                    {
-                        DieType = d.DieType,
-                        NumSides = d.NumSides,
-                        Value = d.Value,
-                        Flags = d.Flags | DieFlags.Dropped
-                    });
+                    _values.Add(d.Drop());
                 }
             }
 

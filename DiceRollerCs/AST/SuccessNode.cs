@@ -61,7 +61,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
             sb.AppendFormat(".success({0})", Success.ToString());
 
             if (Failure != null)
@@ -108,6 +108,11 @@ namespace Dice.AST
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
+            if (Success == null)
+            {
+                throw new DiceException(DiceErrorCode.InvalidSuccess);
+            }
+
             long rolls = Expression.Evaluate(conf, root, depth + 1);
             rolls += Success.Evaluate(conf, root, depth + 1);
             rolls += Failure?.Evaluate(conf, root, depth + 1) ?? 0;
@@ -119,6 +124,11 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
+            if (Success == null)
+            {
+                throw new DiceException(DiceErrorCode.InvalidSuccess);
+            }
+
             long rolls = Expression.Reroll(conf, root, depth + 1);
 
             if (!Success.Evaluated)
@@ -142,7 +152,7 @@ namespace Dice.AST
             Failures = 0;
             _values.Clear();
 
-            foreach (var die in Values)
+            foreach (var die in Expression.Values)
             {
                 if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
                 {
@@ -153,24 +163,12 @@ namespace Dice.AST
                 if (Success.Compare(die.Value))
                 {
                     Successes++;
-                    _values.Add(new DieResult()
-                    {
-                        DieType = die.DieType,
-                        NumSides = die.NumSides,
-                        Value = die.Value,
-                        Flags = die.Flags | DieFlags.Success
-                    });
+                    _values.Add(die.Success());
                 }
                 else if (Failure?.Compare(die.Value) == true)
                 {
                     Failures++;
-                    _values.Add(new DieResult()
-                    {
-                        DieType = die.DieType,
-                        NumSides = die.NumSides,
-                        Value = die.Value,
-                        Flags = die.Flags | DieFlags.Failure
-                    });
+                    _values.Add(die.Failure());
                 }
                 else
                 {

@@ -29,6 +29,54 @@ namespace Dice
         /// </summary>
         public DieFlags Flags { get; set; }
 
+        /// <summary>
+        /// Mark a die as a success
+        /// </summary>
+        /// <param name="die"></param>
+        /// <returns></returns>
+        public DieResult Success()
+        {
+            return new DieResult()
+            {
+                DieType = DieType,
+                NumSides = NumSides,
+                Value = Value,
+                Flags = (Flags & ~DieFlags.Failure) | DieFlags.Success
+            };
+        }
+
+        /// <summary>
+        /// Mark a die as a failure
+        /// </summary>
+        /// <param name="die"></param>
+        /// <returns></returns>
+        public DieResult Failure()
+        {
+            return new DieResult()
+            {
+                DieType = DieType,
+                NumSides = NumSides,
+                Value = Value,
+                Flags = (Flags & ~DieFlags.Success) | DieFlags.Failure
+            };
+        }
+
+        /// <summary>
+        /// Mark a die as dropped. We also strip success/failure info when dropping dice
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public DieResult Drop()
+        {
+            return new DieResult()
+            {
+                DieType = DieType,
+                NumSides = NumSides,
+                Value = Value,
+                Flags = (Flags & ~(DieFlags.Success | DieFlags.Failure)) | DieFlags.Dropped
+            };
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is DieResult d)
