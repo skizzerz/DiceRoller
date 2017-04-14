@@ -112,6 +112,21 @@ namespace Dice.AST
             }
 
             _values.Clear();
+            ValueType = ResultType.Total;
+
+            if (numDice == 0)
+            {
+                Value = 0;
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = 0,
+                    Flags = DieFlags.Extra
+                });
+
+                return 0;
+            }
 
             for (int i = 0; i < numDice; i++)
             {
@@ -131,7 +146,6 @@ namespace Dice.AST
             }
 
             Value = _values.Sum(d => d.Value);
-            ValueType = ResultType.Total;
 
             return numDice;
         }
