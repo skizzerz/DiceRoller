@@ -54,5 +54,75 @@ namespace Dice
             Values = rollRoot.Values;
             NumRolls = numRolls;
         }
+
+        /// <summary>
+        /// Display a representation of the roll
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder(RollRoot.ToString());
+
+            sb.Append(" => ");
+            foreach (var die in Values)
+            {
+                if (die.DieType == DieType.Special)
+                {
+                    switch ((SpecialDie)die.Value)
+                    {
+                        case SpecialDie.Add:
+                            sb.Append(" + ");
+                            break;
+                        case SpecialDie.Subtract:
+                            sb.Append(" - ");
+                            break;
+                        case SpecialDie.Multiply:
+                            sb.Append(" * ");
+                            break;
+                        case SpecialDie.Divide:
+                            sb.Append(" / ");
+                            break;
+                        case SpecialDie.OpenParen:
+                            sb.Append("(");
+                            break;
+                        case SpecialDie.CloseParen:
+                            sb.Append(")");
+                            break;
+                    }
+                }
+                else
+                {
+                    if (die.Flags.HasFlag(DieFlags.Success))
+                    {
+                        sb.Append("+");
+                    }
+                    else if (die.Flags.HasFlag(DieFlags.Failure))
+                    {
+                        sb.Append("~");
+                    }
+
+                    sb.Append(die.Value);
+
+                    if (die.Flags.HasFlag(DieFlags.Dropped))
+                    {
+                        sb.Append("*");
+                    }
+                    else if (die.Flags.HasFlag(DieFlags.Critical) || die.Flags.HasFlag(DieFlags.Fumble))
+                    {
+                        sb.Append("!");
+                    }
+                }
+            }
+
+            sb.Append(" => ");
+            sb.Append(Value);
+
+            if (ResultType == ResultType.Successes)
+            {
+                sb.Append(" successes");
+            }
+
+            return sb.ToString();
+        }
     }
 }
