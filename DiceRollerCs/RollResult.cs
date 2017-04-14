@@ -103,13 +103,14 @@ namespace Dice
 
                     sb.Append(die.Value);
 
+                    if (die.Flags.HasFlag(DieFlags.Critical) || die.Flags.HasFlag(DieFlags.Fumble))
+                    {
+                        sb.Append("!");
+                    }
+
                     if (die.Flags.HasFlag(DieFlags.Dropped))
                     {
                         sb.Append("*");
-                    }
-                    else if (die.Flags.HasFlag(DieFlags.Critical) || die.Flags.HasFlag(DieFlags.Fumble))
-                    {
-                        sb.Append("!");
                     }
                 }
             }

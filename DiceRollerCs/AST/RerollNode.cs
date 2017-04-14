@@ -49,24 +49,24 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(".");
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             if (MaxRerollsExpr != null)
             {
-                sb.AppendFormat("rerollN({0}, ", MaxRerollsExpr.ToString());
+                sb.AppendFormat(".rerollN({0}, ", MaxRerollsExpr.ToString());
             }
             else if (MaxRerolls == 1)
             {
-                sb.Append("rerollOnce(");
+                sb.Append(".rerollOnce(");
             }
             else if (MaxRerolls == 0)
             {
-                sb.Append("reroll(");
+                sb.Append(".reroll(");
             }
             else
             {
                 // MaxRerolls was not 0 or 1 and MaxRerollsExpr is null, this should never happen.
-                sb.Append("<<UNKNOWN REROLL>>(");
+                sb.Append(".<<UNKNOWN REROLL>>(");
             }
 
             sb.Append(Comparison.ToString());
@@ -135,6 +135,14 @@ namespace Dice.AST
                 {
                     _values.Add(new DieResult()
                     {
+                        DieType = DieType.Special,
+                        NumSides = 0,
+                        Value = (decimal)SpecialDie.Add,
+                        Flags = 0
+                    });
+
+                    _values.Add(new DieResult()
+                    {
                         DieType = reroll.DieType,
                         NumSides = reroll.NumSides,
                         Value = reroll.Value,
@@ -145,6 +153,14 @@ namespace Dice.AST
                     rerolls++;
                     reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
                 }
+
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Special,
+                    NumSides = 0,
+                    Value = (decimal)SpecialDie.Add,
+                    Flags = 0
+                });
 
                 _values.Add(reroll);
             }

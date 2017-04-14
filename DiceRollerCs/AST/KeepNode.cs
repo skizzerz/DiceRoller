@@ -65,16 +65,16 @@ namespace Dice.AST
             switch (KeepType)
             {
                 case KeepType.KeepHigh:
-                    sb.Append(".keepHigh");
+                    sb.Append(".keepHighest");
                     break;
                 case KeepType.KeepLow:
-                    sb.Append(".keepLow");
+                    sb.Append(".keepLowest");
                     break;
                 case KeepType.DropHigh:
-                    sb.Append(".dropHigh");
+                    sb.Append(".dropHighest");
                     break;
                 case KeepType.DropLow:
-                    sb.Append(".dropLow");
+                    sb.Append(".dropLowest");
                     break;
                 case KeepType.Advantage:
                     sb.Append(".advantage");
@@ -87,14 +87,14 @@ namespace Dice.AST
                     break;
             }
 
-            sb.AppendFormat("({0})", Amount.ToString());
+            sb.AppendFormat("({0})", Amount?.ToString() ?? String.Empty);
 
             return sb.ToString();
         }
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            var rolls = Amount.Evaluate(conf, root, depth + 1);
+            var rolls = Amount?.Evaluate(conf, root, depth + 1) ?? 0;
             rolls += Expression.Evaluate(conf, root, depth + 1);
             rolls += ApplyKeep(conf, root, depth);
 
@@ -105,7 +105,7 @@ namespace Dice.AST
         {
             long rolls = 0;
 
-            if (!Amount.Evaluated)
+            if (Amount?.Evaluated == false)
             {
                 rolls += Amount.Evaluate(conf, root, depth + 1);
             }
@@ -141,10 +141,25 @@ namespace Dice.AST
                     }
 
                     Value = Expression.Value;
+                    _values.Add(new DieResult()
+                    {
+                        DieType = DieType.Special,
+                        NumSides = 0,
+                        Value = (decimal)SpecialDie.Add,
+                        Flags = 0
+                    });
                     _values.AddRange(Expression.Values);
                 }
                 else
                 {
+                    _values.Add(new DieResult()
+                    {
+                        DieType = DieType.Special,
+                        NumSides = 0,
+                        Value = (decimal)SpecialDie.Add,
+                        Flags = 0
+                    });
+
                     _values.AddRange(Expression.Values.Select(d => new DieResult()
                     {
                         DieType = d.DieType,
@@ -170,12 +185,16 @@ namespace Dice.AST
             switch (KeepType)
             {
                 case KeepType.DropHigh:
-                case KeepType.KeepLow:
                     sortedValues = sortedValues.Take(sortedValues.Count - amount).ToList();
                     break;
+                case KeepType.KeepLow:
+                    sortedValues = sortedValues.Take(amount).ToList();
+                    break;
                 case KeepType.DropLow:
-                case KeepType.KeepHigh:
                     sortedValues = sortedValues.Skip(amount).ToList();
+                    break;
+                case KeepType.KeepHigh:
+                    sortedValues = sortedValues.Skip(sortedValues.Count - amount).ToList();
                     break;
                 default:
                     throw new InvalidOperationException("Unknown keep type");
