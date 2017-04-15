@@ -8,7 +8,7 @@ using Dice;
 using Dice.AST;
 using Dice.Grammar;
 
-namespace TestDiceRoller
+namespace TestDiceRoller.AST
 {
     [TestClass]
     public class RollNodeShould : TestBase

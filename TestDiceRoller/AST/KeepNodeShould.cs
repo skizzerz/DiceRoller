@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Dice;
 using Dice.AST;
 
-namespace TestDiceRoller
+namespace TestDiceRoller.AST
 {
     [TestClass]
     public class KeepNodeShould : TestBase

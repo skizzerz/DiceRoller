@@ -52,7 +52,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             if (Critical != null)
             {

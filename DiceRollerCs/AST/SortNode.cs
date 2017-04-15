@@ -37,15 +37,22 @@ namespace Dice.AST
 
         public override string ToString()
         {
+            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
+
             switch (Direction)
             {
                 case SortDirection.Ascending:
-                    return ".sortAsc()";
+                    sb.Append(".sortAsc()");
+                    break;
                 case SortDirection.Descending:
-                    return ".sortDesc()";
+                    sb.Append(".sortDesc()");
+                    break;
                 default:
-                    return ".<<UNKNOWN SORT>>()";
+                    sb.Append(".<<UNKNOWN SORT>>()");
+                    break;
             }
+
+            return sb.ToString();
         }
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
@@ -67,50 +74,89 @@ namespace Dice.AST
         private void DoSort()
         {
             List<DieResult> temp = new List<DieResult>();
-            _values.Clear();
+            List<int> positions = new List<int>();
+            SpecialDie? chainType = null;
+
+            _values = Expression.Values.ToList();
             Value = Expression.Value;
             ValueType = Expression.ValueType;
 
-            foreach (var die in Expression.Values)
+            void FixOrder()
             {
+                if (temp.Count == 0)
+                {
+                    return;
+                }
+
+                IOrderedEnumerable<DieResult> sorted;
+
+                switch (Direction)
+                {
+                    case SortDirection.Ascending:
+                        sorted = temp.OrderBy(d => d.Value);
+                        break;
+                    case SortDirection.Descending:
+                        sorted = temp.OrderByDescending(d => d.Value);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown sort direction");
+                }
+
+                var enumerator = sorted.GetEnumerator();
+                foreach (var pos in positions)
+                {
+                    enumerator.MoveNext();
+                    _values[pos] = enumerator.Current;
+                }
+
+                temp.Clear();
+                positions.Clear();
+            }
+
+            for (int i = 0; i < _values.Count; i++)
+            {
+                var die = _values[i];
+
                 if (die.DieType == DieType.Special)
                 {
-                    if ((SpecialDie)die.Value == SpecialDie.CloseParen)
+                    switch ((SpecialDie)die.Value)
                     {
-                        switch (Direction)
-                        {
-                            case SortDirection.Ascending:
-                                _values.AddRange(temp.OrderBy(d => d.Value));
-                                break;
-                            case SortDirection.Descending:
-                                _values.AddRange(temp.OrderByDescending(d => d.Value));
-                                break;
-                            default:
-                                throw new InvalidOperationException("Unknown sort direction");
-                        }
+                        case SpecialDie.Add:
+                            if (chainType == null && temp.Count > 0)
+                            {
+                                chainType = SpecialDie.Add;
+                            }
+                            else if (chainType != SpecialDie.Add)
+                            {
+                                FixOrder();
+                            }
 
-                        temp.Clear();
+                            break;
+                        case SpecialDie.Multiply:
+                            if (chainType == null && temp.Count > 0)
+                            {
+                                chainType = SpecialDie.Multiply;
+                            }
+                            else if (chainType != SpecialDie.Multiply)
+                            {
+                                FixOrder();
+                            }
+
+                            break;
+                        default:
+                            chainType = null;
+                            FixOrder();
+                            break;
                     }
-
-                    _values.Add(die);
                 }
                 else
                 {
                     temp.Add(die);
+                    positions.Add(i);
                 }
             }
 
-            switch (Direction)
-            {
-                case SortDirection.Ascending:
-                    _values.AddRange(temp.OrderBy(d => d.Value));
-                    break;
-                case SortDirection.Descending:
-                    _values.AddRange(temp.OrderByDescending(d => d.Value));
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown sort direction");
-            }
+            FixOrder();
         }
     }
 }

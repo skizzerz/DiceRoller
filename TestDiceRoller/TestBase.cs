@@ -59,9 +59,11 @@ namespace TestDiceRoller
         protected static readonly LiteralNode Zero = new LiteralNode(0);
         protected static readonly LiteralNode One = new LiteralNode(1);
         protected static readonly LiteralNode Two = new LiteralNode(2);
+        protected static readonly LiteralNode Three = new LiteralNode(3);
         protected static readonly LiteralNode Four = new LiteralNode(4);
         protected static readonly LiteralNode Five = new LiteralNode(5);
         protected static readonly LiteralNode Six = new LiteralNode(6);
+        protected static readonly LiteralNode Nineteen = new LiteralNode(19);
         protected static readonly LiteralNode Twenty = new LiteralNode(20);
         protected static readonly LiteralNode OneHundred = new LiteralNode(100);
         protected static readonly LiteralNode OneMillion = new LiteralNode(1000000);
@@ -74,12 +76,15 @@ namespace TestDiceRoller
         protected static readonly RollNode _1d20 = new RollNode(RollType.Normal, One, Twenty);
         protected static readonly RollNode _2d20 = new RollNode(RollType.Normal, Two, Twenty);
         protected static readonly RollNode _4d6 = new RollNode(RollType.Normal, Four, Six);
+        protected static readonly RollNode _4d20 = new RollNode(RollType.Normal, Four, Twenty);
         protected static readonly RollNode _1d100 = new RollNode(RollType.Normal, One, OneHundred);
         protected static readonly RollNode _1dF = new RollNode(RollType.Fudge, One, null);
         protected static readonly RollNode _1dF20 = new RollNode(RollType.Fudge, One, Twenty);
 
         protected static readonly ComparisonNode equal20 = new ComparisonNode(CompareOp.Equals, Twenty);
+        protected static readonly ComparisonNode equal19 = new ComparisonNode(CompareOp.Equals, Nineteen);
         protected static readonly ComparisonNode equal1 = new ComparisonNode(CompareOp.Equals, One);
+        protected static readonly ComparisonNode equal2 = new ComparisonNode(CompareOp.Equals, Two);
         protected static readonly ComparisonNode less5 = new ComparisonNode(CompareOp.LessThan, Five);
         protected static readonly ComparisonNode greaterEqual5 = new ComparisonNode(CompareOp.GreaterEquals, Five);
 

@@ -54,14 +54,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExplodeNodeShould.cs" />
+    <Compile Include="AST\CritNodeShould.cs" />
+    <Compile Include="AST\ExplodeNodeShould.cs" />
+    <Compile Include="AST\SortNodeShould.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="RerollNodeShould.cs" />
-    <Compile Include="RollNodeShould.cs" />
+    <Compile Include="AST\RerollNodeShould.cs" />
+    <Compile Include="AST\RollNodeShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SuccessNodeShould.cs" />
+    <Compile Include="AST\SuccessNodeShould.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="KeepNodeShould.cs" />
+    <Compile Include="AST\KeepNodeShould.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DiceRollerCs.snk" />

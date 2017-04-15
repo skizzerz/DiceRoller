@@ -39,7 +39,7 @@ namespace Dice.AST
 
         internal GroupNode(DiceAST numTimes, List<DiceAST> exprs)
         {
-            NumTimes = numTimes ?? throw new ArgumentNullException("numTimes");
+            NumTimes = numTimes;
             _expressions = exprs ?? throw new ArgumentNullException("exprs");
             _values = new List<DieResult>();
 
@@ -73,7 +73,7 @@ namespace Dice.AST
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            long rolls = NumTimes.Evaluate(conf, root, depth + 1);
+            long rolls = NumTimes?.Evaluate(conf, root, depth + 1) ?? 0;
 
             rolls += Roll(conf, root, depth, false);
 
@@ -89,7 +89,7 @@ namespace Dice.AST
         internal long Roll(RollerConfig conf, DiceAST root, int depth, bool reroll)
         {
             long rolls = 0;
-            ushort numTimes = (ushort)NumTimes.Value;
+            ushort numTimes = (ushort)(NumTimes?.Value ?? 1);
             Value = 0;
             bool first = true;
             bool haveTotal = false;
