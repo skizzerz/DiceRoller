@@ -151,7 +151,7 @@ namespace Dice.AST
             }
             else
             {
-                Value = sortedValues.Sum(d => d.Flags.HasFlag(DieFlags.Success) ? 1 : (d.Flags.HasFlag(DieFlags.Failure) ? -1 : 0));
+                Value = sortedValues.Sum(d => d.SuccessCount);
                 ValueType = ResultType.Successes;
             }
 

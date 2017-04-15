@@ -32,6 +32,30 @@ namespace TestDiceRoller.AST
         }
 
         [TestMethod]
+        public void Successfully_ListAllValuesForSingleExpr()
+        {
+            var node = new GroupNode(null, new List<DiceAST> { _2d20 });
+            EvaluateNode(node, Roll9Conf, 2, "{2d20} => (9 + 9) => 18");
+        }
+
+        [TestMethod]
+        public void Successfully_CompressValuesForNestedSingleExpr()
+        {
+            var inner = new GroupNode(null, new List<DiceAST> { _2d20 });
+            var node = new GroupNode(null, new List<DiceAST> { inner });
+            EvaluateNode(node, Roll9Conf, 2, "{{2d20}} => (18) => 18");
+        }
+
+        [TestMethod]
+        public void Successfully_DontRerollNestedRolls()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(2, 2, 2, 2, 3, 3, 3, 3, 3) };
+            var roll = new RollNode(RollType.Normal, _1d8, Six);
+            var node = new GroupNode(Two, new List<DiceAST> { roll });
+            EvaluateNode(node, conf, 7, "2{(1d8)d6} => (3 + 3 + 3) + (4 + 4 + 4) => 21");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThrowArgumentNullException_WhenExprsIsNull()
         {

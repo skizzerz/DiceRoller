@@ -148,7 +148,7 @@ namespace Dice.AST
             }
             else
             {
-                Value = dice.Sum(d => d.Flags.HasFlag(DieFlags.Success) ? 1 : (d.Flags.HasFlag(DieFlags.Failure) ? -1 : 0));
+                Value = dice.Sum(d => d.SuccessCount);
                 ValueType = ResultType.Successes;
             }
 

@@ -63,6 +63,7 @@ namespace TestDiceRoller
         protected static readonly LiteralNode Four = new LiteralNode(4);
         protected static readonly LiteralNode Five = new LiteralNode(5);
         protected static readonly LiteralNode Six = new LiteralNode(6);
+        protected static readonly LiteralNode Eight = new LiteralNode(8);
         protected static readonly LiteralNode Nineteen = new LiteralNode(19);
         protected static readonly LiteralNode Twenty = new LiteralNode(20);
         protected static readonly LiteralNode OneHundred = new LiteralNode(100);
@@ -73,6 +74,7 @@ namespace TestDiceRoller
         protected static readonly RollerConfig Roll20Conf = new RollerConfig() { GetRandomBytes = GetRNG(Roll20()) };
         protected static readonly RollerConfig NormalOnlyConf = new RollerConfig() { NormalSidesOnly = true, GetRandomBytes = GetRNG(Roll1()) };
 
+        protected static readonly RollNode _1d8 = new RollNode(RollType.Normal, One, Eight);
         protected static readonly RollNode _1d20 = new RollNode(RollType.Normal, One, Twenty);
         protected static readonly RollNode _2d20 = new RollNode(RollType.Normal, Two, Twenty);
         protected static readonly RollNode _4d6 = new RollNode(RollType.Normal, Four, Six);

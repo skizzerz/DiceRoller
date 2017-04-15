@@ -41,6 +41,12 @@ namespace Dice
             set { Value = (decimal)value; }
         }
 
+        /// <summary>
+        /// Returns 1 if the die is a success, -1 if the die is a failure, and 0 otherwise
+        /// </summary>
+        /// <returns></returns>
+        public int SuccessCount => Flags.HasFlag(DieFlags.Success) ? 1 : (Flags.HasFlag(DieFlags.Failure) ? -1 : 0);
+
         public DieResult(SpecialDie specialDie)
             : this()
         {

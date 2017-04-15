@@ -83,5 +83,19 @@ namespace TestDiceRoller.AST
             var node = new KeepNode(KeepType.KeepHigh, Zero) { Expression = _4d6 };
             EvaluateNode(node, StatConf, 4, "4d6.keepHighest(0) => 5* + 3* + 6!* + 1!* => 0");
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenAmountIsNullAndNotAdvantage()
+        {
+            new KeepNode(KeepType.KeepHigh, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenAmountNotNullAndIsAdvantage()
+        {
+            new KeepNode(KeepType.Advantage, One);
+        }
     }
 }
