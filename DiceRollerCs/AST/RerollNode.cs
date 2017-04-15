@@ -127,14 +127,7 @@ namespace Dice.AST
                 var reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
                 while (rerolls < maxRerolls && Comparison.Compare(reroll.Value))
                 {
-                    _values.Add(new DieResult()
-                    {
-                        DieType = DieType.Special,
-                        NumSides = 0,
-                        Value = (decimal)SpecialDie.Add,
-                        Flags = 0
-                    });
-
+                    _values.Add(new DieResult(SpecialDie.Add));
                     _values.Add(reroll.Drop());
 
                     rolls++;
@@ -142,14 +135,7 @@ namespace Dice.AST
                     reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
                 }
 
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)SpecialDie.Add,
-                    Flags = 0
-                });
-
+                _values.Add(new DieResult(SpecialDie.Add));
                 _values.Add(reroll);
             }
 

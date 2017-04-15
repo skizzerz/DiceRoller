@@ -130,17 +130,6 @@ namespace Dice.AST
             }
 
             long rolls = Expression.Reroll(conf, root, depth + 1);
-
-            if (!Success.Evaluated)
-            {
-                rolls += Success.Evaluate(conf, root, depth + 1);
-            }
-
-            if (Failure?.Evaluated == false)
-            {
-                rolls += Failure.Evaluate(conf, root, depth + 1);
-            }
-
             CountSuccesses();
 
             return rolls;

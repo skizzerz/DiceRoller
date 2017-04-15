@@ -16,18 +16,37 @@ namespace Dice
         /// What type of die was rolled
         /// </summary>
         public DieType DieType { get; set; }
+
         /// <summary>
         /// How many sides the die had
         /// </summary>
         public int NumSides { get; set; }
+
         /// <summary>
         /// What the result of the roll was
         /// </summary>
         public decimal Value { get; set; }
+
         /// <summary>
         /// Any special flags giving more information about the roll
         /// </summary>
         public DieFlags Flags { get; set; }
+
+        /// <summary>
+        /// What type of special die this is. Calling this is an error if DieType != DieType.SpecialDie
+        /// </summary>
+        public SpecialDie SpecialDie
+        {
+            get { return (SpecialDie)Value; }
+            set { Value = (decimal)value; }
+        }
+
+        public DieResult(SpecialDie specialDie)
+            : this()
+        {
+            DieType = DieType.Special;
+            SpecialDie = specialDie;
+        }
 
         /// <summary>
         /// Mark a die as a success
@@ -75,6 +94,25 @@ namespace Dice
                 Value = Value,
                 Flags = (Flags & ~(DieFlags.Success | DieFlags.Failure)) | DieFlags.Dropped
             };
+        }
+
+        /// <summary>
+        /// Checks if this die is a special die of the specified type
+        /// </summary>
+        /// <param name="specialDie"></param>
+        /// <returns></returns>
+        public bool IsSpecialDie(SpecialDie specialDie)
+        {
+            return DieType == DieType.Special && SpecialDie == specialDie;
+        }
+
+        /// <summary>
+        /// Checks if the die is not a special die and has not been dropped
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLiveDie()
+        {
+            return DieType != DieType.Special && !Flags.HasFlag(DieFlags.Dropped);
         }
 
         public override bool Equals(object obj)

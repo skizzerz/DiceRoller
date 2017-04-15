@@ -146,7 +146,7 @@ namespace Dice.AST
             bool haveTotal = false;
             bool haveRoll = false;
 
-            if (Left.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+            if (Left.Values.Any(d => d.DieType.IsRoll()))
             {
                 haveRoll = true;
 
@@ -156,7 +156,7 @@ namespace Dice.AST
                 }
             }
 
-            if (Right.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+            if (Right.Values.Any(d => d.DieType.IsRoll()))
             {
                 haveRoll = true;
 
@@ -207,11 +207,9 @@ namespace Dice.AST
                     // the gnarly mess below is testing if the group node is already wrapped in a single set of parens
                     // if it is, then we don't add another set. So, we check for (1+2+3) and don't turn that into ((1+2+3)), but
                     // we DO turn (1+2)+(3+4) into ((1+2)+(3+4)) unless we're adding/subtracting (which is caught above).
-                    else if (gl.Values[0].DieType == DieType.Special
-                        && ((SpecialDie)gl.Values[0].Value) == SpecialDie.OpenParen
-                        && gl.Values[gl.Values.Count - 1].DieType == DieType.Special
-                        && ((SpecialDie)gl.Values[gl.Values.Count - 1].Value) == SpecialDie.CloseParen
-                        && gl.Values.Count(d => d.DieType == DieType.Special && ((SpecialDie)d.Value) == SpecialDie.OpenParen) == 1)
+                    else if (gl.Values[0].IsSpecialDie(SpecialDie.OpenParen)
+                        && gl.Values[gl.Values.Count - 1].IsSpecialDie(SpecialDie.CloseParen)
+                        && gl.Values.Count(d => d.IsSpecialDie(SpecialDie.OpenParen)) == 1)
                     {
                         addLeftParen = false;
                     }
@@ -243,11 +241,9 @@ namespace Dice.AST
                     {
                         addRightParen = false;
                     }
-                    else if (gr.Values[0].DieType == DieType.Special
-                        && ((SpecialDie)gr.Values[0].Value) == SpecialDie.OpenParen
-                        && gr.Values[gr.Values.Count - 1].DieType == DieType.Special
-                        && ((SpecialDie)gr.Values[gr.Values.Count - 1].Value) == SpecialDie.CloseParen
-                        && gr.Values.Count(d => d.DieType == DieType.Special && ((SpecialDie)d.Value) == SpecialDie.OpenParen) == 1)
+                    else if (gr.Values[0].IsSpecialDie(SpecialDie.OpenParen)
+                        && gr.Values[gr.Values.Count - 1].IsSpecialDie(SpecialDie.CloseParen)
+                        && gr.Values.Count(d => d.IsSpecialDie(SpecialDie.OpenParen)) == 1)
                     {
                         addRightParen = false;
                     }
@@ -263,54 +259,24 @@ namespace Dice.AST
 
             if (addLeftParen)
             {
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)SpecialDie.OpenParen,
-                    Flags = 0
-                });
+                _values.Add(new DieResult(SpecialDie.OpenParen));
             }
             _values.AddRange(Left.Values);
             if (addLeftParen)
             {
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)SpecialDie.CloseParen,
-                    Flags = 0
-                });
+                _values.Add(new DieResult(SpecialDie.CloseParen));
             }
 
-            _values.Add(new DieResult()
-            {
-                DieType = DieType.Special,
-                NumSides = 0,
-                Value = (decimal)sd,
-                Flags = 0
-            });
+            _values.Add(new DieResult(sd));
 
             if (addRightParen)
             {
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)SpecialDie.OpenParen,
-                    Flags = 0
-                });
+                _values.Add(new DieResult(SpecialDie.OpenParen));
             }
             _values.AddRange(Right.Values);
             if (addRightParen)
             {
-                _values.Add(new DieResult()
-                {
-                    DieType = DieType.Special,
-                    NumSides = 0,
-                    Value = (decimal)SpecialDie.CloseParen,
-                    Flags = 0
-                });
+                _values.Add(new DieResult(SpecialDie.CloseParen));
             }
         }
     }

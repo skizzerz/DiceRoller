@@ -18,5 +18,29 @@ namespace Dice
                 .Single()
                 .Description;
         }
+
+        /// <summary>
+        /// Determine if the given DieType is a roll or not
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal static bool IsRoll(this DieType type)
+        {
+            return type == DieType.Normal || type == DieType.Fudge || type == DieType.Group;
+        }
+
+        internal static void MaybeAddPlus(this List<DieResult> values)
+        {
+            if (values.Count == 0)
+            {
+                return;
+            }
+            
+            var last = values[values.Count - 1];
+            if (last.DieType != DieType.Special || last.SpecialDie != SpecialDie.OpenParen)
+            {
+                values.Add(new DieResult(SpecialDie.Add));
+            }
+        }
     }
 }

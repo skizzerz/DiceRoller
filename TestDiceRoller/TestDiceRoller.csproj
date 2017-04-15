@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="AST\CritNodeShould.cs" />
     <Compile Include="AST\ExplodeNodeShould.cs" />
+    <Compile Include="AST\GroupNodeShould.cs" />
     <Compile Include="AST\SortNodeShould.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="AST\RerollNodeShould.cs" />
@@ -74,6 +75,9 @@
       <Project>{806c407c-d9cc-4456-84c3-f25d810c3154}</Project>
       <Name>DiceRollerCs</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Grammar\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -114,17 +114,6 @@ namespace Dice.AST
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             long rolls = Expression.Reroll(conf, root, depth + 1);
-
-            if (Critical?.Evaluated == false)
-            {
-                rolls += Critical.Evaluate(conf, root, depth + 1);
-            }
-
-            if (Fumble?.Evaluated == false)
-            {
-                rolls += Fumble.Evaluate(conf, root, depth + 1);
-            }
-
             MarkCrits();
 
             return rolls;

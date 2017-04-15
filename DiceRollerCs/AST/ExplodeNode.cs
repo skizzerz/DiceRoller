@@ -104,52 +104,29 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            long rolls = 0;
-            if (Comparison?.Evaluated == false)
-            {
-                rolls += Comparison.Evaluate(conf, root, depth + 1);
-            }
-
-            rolls += Expression.Reroll(conf, root, depth + 1);
+            long rolls = Expression.Reroll(conf, root, depth + 1);
             rolls += DoExplode(conf);
 
             return rolls;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
         private long DoExplode(RollerConfig conf)
         {
             long rolls = 0;
-            Func<DieResult, bool> shouldExplode, shouldExplode2;
+            Func<DieResult, decimal, bool> shouldExplode;
+            decimal addToValue = ExplodeType == ExplodeType.Penetrate ? 1 : 0;
+
             Value = 0;
             ValueType = ResultType.Total;
             _values.Clear();
 
             if (Comparison != null)
             {
-                shouldExplode = d => Comparison.Compare(d.Value);
-
-                if (ExplodeType == ExplodeType.Penetrate)
-                {
-                    shouldExplode2 = d => Comparison.Compare(d.Value + 1);
-                }
-                else
-                {
-                    shouldExplode2 = shouldExplode;
-                }
+                shouldExplode = (d, x) => Comparison.Compare(d.Value + x);
             }
             else
             {
-                shouldExplode = d => d.Value == d.NumSides;
-
-                if (ExplodeType == ExplodeType.Penetrate)
-                {
-                    shouldExplode2 = d => d.Value + 1 == d.NumSides;
-                }
-                else
-                {
-                    shouldExplode2 = shouldExplode;
-                }
+                shouldExplode = (d, x) => d.Value + x == d.NumSides;
             }
 
 
@@ -157,7 +134,7 @@ namespace Dice.AST
             {
                 var accum = die;
 
-                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
+                if (!die.IsLiveDie())
                 {
                     // special die results can't explode as they aren't actually dice
                     // dropped dice are no longer part of the resultant expression so should not explode
@@ -181,7 +158,7 @@ namespace Dice.AST
                 }
 
                 Value += die.Value;
-                if (shouldExplode(die))
+                if (shouldExplode(die, 0))
                 {
                     if (!Compound)
                     {
@@ -240,16 +217,10 @@ namespace Dice.AST
                         }
                         else
                         {
-                            _values.Add(new DieResult()
-                            {
-                                DieType = DieType.Special,
-                                NumSides = 0,
-                                Value = (decimal)SpecialDie.Add,
-                                Flags = 0
-                            });
+                            _values.Add(new DieResult(SpecialDie.Add));
                             _values.Add(result);
                         }
-                    } while (shouldExplode2(result));
+                    } while (shouldExplode(result, addToValue));
 
                     if (Compound)
                     {

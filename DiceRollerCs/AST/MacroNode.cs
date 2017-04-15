@@ -81,11 +81,6 @@ namespace Dice.AST
         {
             // Macros are currently only evaluated once. This may change in the future
             // once it is more understood what these can be used for.
-            if (!Evaluated)
-            {
-                return Evaluate(conf, root, depth);
-            }
-
             return 0;
         }
     }

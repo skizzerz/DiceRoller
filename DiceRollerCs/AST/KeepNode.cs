@@ -103,65 +103,21 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            long rolls = 0;
-
-            if (Amount?.Evaluated == false)
-            {
-                rolls += Amount.Evaluate(conf, root, depth + 1);
-            }
-
-            rolls += Expression.Reroll(conf, root, depth + 1);
+            long rolls = Expression.Reroll(conf, root, depth + 1);
             rolls += ApplyKeep(conf, root, depth);
 
             return rolls;
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
         private long ApplyKeep(RollerConfig conf, DiceAST root, int depth)
         {
             if (KeepType == KeepType.Advantage || KeepType == KeepType.Disadvantage)
             {
-                Value = Expression.Value;
-                ValueType = Expression.ValueType;
-                _values = Expression.Values.ToList();
-                var rolls = Expression.Reroll(conf, root, depth + 1);
-
-                if ((KeepType == KeepType.Advantage && Expression.Value > Value)
-                    || (KeepType == KeepType.Disadvantage && Expression.Value < Value))
-                {
-                    for (int i = 0; i < _values.Count; i++)
-                    {
-                        _values[i] = _values[i].Drop();
-                    }
-
-                    Value = Expression.Value;
-                    _values.Add(new DieResult()
-                    {
-                        DieType = DieType.Special,
-                        NumSides = 0,
-                        Value = (decimal)SpecialDie.Add,
-                        Flags = 0
-                    });
-                    _values.AddRange(Expression.Values);
-                }
-                else
-                {
-                    _values.Add(new DieResult()
-                    {
-                        DieType = DieType.Special,
-                        NumSides = 0,
-                        Value = (decimal)SpecialDie.Add,
-                        Flags = 0
-                    });
-
-                    _values.AddRange(Expression.Values.Select(d => d.Drop()));
-                }
-
-                return rolls;
+                return ApplyAdvantage(conf, root, depth);
             }
 
             var sortedValues = Expression.Values
-                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                .Where(d => d.IsLiveDie())
                 .OrderBy(d => d.Value).ToList();
             var amount = (int)Amount.Value;
 
@@ -198,10 +154,11 @@ namespace Dice.AST
                 Value = sortedValues.Sum(d => d.Flags.HasFlag(DieFlags.Success) ? 1 : (d.Flags.HasFlag(DieFlags.Failure) ? -1 : 0));
                 ValueType = ResultType.Successes;
             }
+
             _values.Clear();
             foreach (var d in Expression.Values)
             {
-                if (d.DieType == DieType.Special || d.Flags.HasFlag(DieFlags.Dropped))
+                if (!d.IsLiveDie())
                 {
                     // while we apply drop/keep on grouped die results, special dice are passed as-is
                     // also if the die was already dropped, we don't try to drop it again
@@ -221,6 +178,34 @@ namespace Dice.AST
             }
 
             return 0;
+        }
+
+        private long ApplyAdvantage(RollerConfig conf, DiceAST root, int depth)
+        {
+            Value = Expression.Value;
+            ValueType = Expression.ValueType;
+            _values = Expression.Values.ToList();
+            var rolls = Expression.Reroll(conf, root, depth + 1);
+
+            if ((KeepType == KeepType.Advantage && Expression.Value > Value)
+                || (KeepType == KeepType.Disadvantage && Expression.Value < Value))
+            {
+                for (int i = 0; i < _values.Count; i++)
+                {
+                    _values[i] = _values[i].Drop();
+                }
+
+                Value = Expression.Value;
+                _values.Add(new DieResult(SpecialDie.Add));
+                _values.AddRange(Expression.Values);
+            }
+            else
+            {
+                _values.Add(new DieResult(SpecialDie.Add));
+                _values.AddRange(Expression.Values.Select(d => d.Drop()));
+            }
+
+            return rolls;
         }
     }
 }

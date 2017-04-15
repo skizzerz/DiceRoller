@@ -23,7 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>3021</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\DiceRoller.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

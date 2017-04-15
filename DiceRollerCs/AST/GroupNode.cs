@@ -75,97 +75,61 @@ namespace Dice.AST
         {
             long rolls = NumTimes?.Evaluate(conf, root, depth + 1) ?? 0;
 
-            rolls += Roll(conf, root, depth, false);
+            rolls += Roll(conf, root, depth);
 
             return rolls;
         }
 
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            return Roll(conf, root, depth, true);
+            return Roll(conf, root, depth);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Cannot be easily refactored.")]
-        internal long Roll(RollerConfig conf, DiceAST root, int depth, bool reroll)
+        internal long Roll(RollerConfig conf, DiceAST root, int depth)
         {
             long rolls = 0;
             ushort numTimes = (ushort)(NumTimes?.Value ?? 1);
-            Value = 0;
-            bool first = true;
             bool haveTotal = false;
             bool haveRoll = false;
 
+            Value = 0;
+            _values.Clear();
+
+            if (numTimes == 0)
+            {
+                _values.Add(new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = 0,
+                    Flags = DieFlags.Extra
+                });
+
+                return 0;
+            }
+
             for (ushort run = 0; run < numTimes; run++)
             {
+                _values.MaybeAddPlus();
+                _values.Add(new DieResult(SpecialDie.OpenParen));
+
                 foreach (var ast in Expressions)
                 {
-                    if (reroll || run > 0)
-                    {
-                        // we want certain variables "fixed" throughout each iteration
-                        // for example, in the group 2{(1d6)d8}, we want to roll 1d6 once and then treat it as if the
-                        // group was 2{3d8} (or whatever the 1d6 rolled); in other words, we don't re-evaluate the 1d6
-                        // every iteration.
-                        rolls += ast.Reroll(conf, root, depth + 1);
-                    }
-                    else
-                    {
-                        rolls += ast.Evaluate(conf, root, depth + 1);
-                    }
-
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        _values.Add(new DieResult()
-                        {
-                            DieType = DieType.Special,
-                            NumSides = 0,
-                            Value = (decimal)SpecialDie.Add,
-                            Flags = 0
-                        });
-                    }
+                    // we want certain variables "fixed" throughout each iteration
+                    // for example, in the group 2{(1d6)d8}, we want to roll 1d6 once and then treat it as if the
+                    // group was 2{3d8} (or whatever the 1d6 rolled); in other words, we don't re-evaluate the 1d6
+                    // every iteration. Note that Reroll() calls Evaluate() if the expr wasn't already evaluated.
+                    rolls += ast.Reroll(conf, root, depth + 1);
+                    _values.MaybeAddPlus();
 
                     // If the group contains exactly one member, we want to expose all dice rolled in the subtree
                     // e.g. {3d6+4d8} should contain a list of 7 final values, three for the d6s and four for the d8s.
                     // However, if the group contains more than one member, or if the group's sole member is another group,
                     // we want to expose the aggregate instead. e.g. {3d6,4d8} should expose 2 final values, and {{3d6+4d8}}
                     // should expose 1 final value.
-                    if (Expressions.Count == 1)
+                    if (Expressions.Count == 1 && !(ast is GroupNode))
                     {
-                        if (ast is GroupNode)
-                        {
-                            _values.Add(new DieResult()
-                            {
-                                DieType = DieType.Group,
-                                NumSides = 0,
-                                Value = ast.Value,
-                                // maintain any crit/fumble flags from the underlying dice, combining them together
-                                Flags = ast.Values
-                                    .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
-                                    .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
-                                    .Aggregate((d1, d2) => d1 | d2)
-                            });
-                        }
-                        else
-                        {
-                            _values.Add(new DieResult()
-                            {
-                                DieType = DieType.Special,
-                                NumSides = 0,
-                                Value = (decimal)SpecialDie.OpenParen,
-                                Flags = 0
-                            });
-                            _values.AddRange(ast.Values);
-                            _values.Add(new DieResult()
-                            {
-                                DieType = DieType.Special,
-                                NumSides = 0,
-                                Value = (decimal)SpecialDie.CloseParen,
-                                Flags = 0
-                            });
-                        }
+                        _values.AddRange(ast.Values);
                     }
                     else
                     {
@@ -185,7 +149,7 @@ namespace Dice.AST
                     Value += ast.Value;
                     // we make our final ValueType successes if *all* underlying expressions in this group which actually contain rolls are success types
                     // (and if there are actually rolls)
-                    if (ast.Values.Any(d => d.DieType == DieType.Normal || d.DieType == DieType.Fudge || d.DieType == DieType.Group))
+                    if (ast.Values.Any(d => d.DieType.IsRoll()))
                     {
                         haveRoll = true;
 
@@ -195,6 +159,8 @@ namespace Dice.AST
                         }
                     }
                 }
+
+                _values.Add(new DieResult(SpecialDie.CloseParen));
             }
 
             if (!haveRoll || haveTotal)

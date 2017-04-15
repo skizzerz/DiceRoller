@@ -44,7 +44,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(Context.Expression?.ToString() ?? String.Empty);
             if (Context.Scope != FunctionScope.Global)
             {
                 sb.Append(".");

@@ -34,8 +34,8 @@ namespace Dice
         /// </summary>
         Dropped = 16,
         /// <summary>
-        /// Indicates the die was added due to an explosion or reroll,
-        /// and was not one of the original dice rolled
+        /// Indicates the die was added due to an explosion or reroll, and was not one of the original dice rolled.
+        /// May appear on Literal dice to indicate it is a placeholder number (such as a placeholder 0 when no dice are rolled).
         /// </summary>
         Extra = 32,
         /// <summary>
