@@ -127,5 +127,28 @@ namespace TestDiceRoller
                 }
             }
         }
+
+        protected static void EvaluateRoll(string diceExpr, RollerConfig conf, int expectedRolls, string expectedResult)
+        {
+            var result = Roller.Roll(diceExpr, conf);
+            Assert.AreEqual(expectedRolls, result.NumRolls);
+            Assert.AreEqual(expectedResult, result.ToString());
+        }
+
+        protected static void EvaluateRoll(string diceExpr, RollerConfig conf, DiceErrorCode error)
+        {
+            try
+            {
+                Roller.Roll(diceExpr, conf);
+                Assert.Fail("Expected DiceException with error code {0}, but did not receive an exception.", error.ToString());
+            }
+            catch (DiceException e)
+            {
+                if (e.ErrorCode != error)
+                {
+                    Assert.Fail("Expected DiceException with error code {0}, but got error code {1}.", error.ToString(), e.ErrorCode.ToString());
+                }
+            }
+        }
     }
 }

@@ -61,14 +61,8 @@ namespace Dice
             var walker = new ParseTreeWalker();
             var listener = new DiceGrammarListener();
 
-            try
-            {
-                walker.Walk(listener, parser.input());
-            }
-            catch (RecognitionException e)
-            {
-                throw new DiceException(DiceErrorCode.ParseError, e.Message, e);
-            }
+            parser.AddErrorListener(new DiceErrorListener());
+            walker.Walk(listener, parser.input());
 
             // evaluate diceExpr
             var root = listener.Root;

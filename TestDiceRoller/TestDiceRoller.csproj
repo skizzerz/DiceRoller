@@ -57,10 +57,12 @@
     <Compile Include="AST\CritNodeShould.cs" />
     <Compile Include="AST\ExplodeNodeShould.cs" />
     <Compile Include="AST\GroupNodeShould.cs" />
+    <Compile Include="AST\MathNodeShould.cs" />
     <Compile Include="AST\SortNodeShould.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="AST\RerollNodeShould.cs" />
     <Compile Include="AST\RollNodeShould.cs" />
+    <Compile Include="Grammar\BasicRollShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AST\SuccessNodeShould.cs" />
     <Compile Include="TestBase.cs" />
@@ -76,9 +78,7 @@
       <Name>DiceRollerCs</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Grammar\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

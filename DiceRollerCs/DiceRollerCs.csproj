@@ -94,6 +94,7 @@
     <Compile Include="FunctionRegistry.cs" />
     <Compile Include="FunctionScope.cs" />
     <Compile Include="FunctionTiming.cs" />
+    <Compile Include="Grammar\DiceErrorListener.cs" />
     <Compile Include="Grammar\DiceGrammarBaseListener.cs" />
     <Compile Include="Grammar\DiceGrammarLexer.cs" />
     <Compile Include="Grammar\DiceGrammarListener.cs" />

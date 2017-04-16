@@ -181,7 +181,7 @@ namespace Dice.AST
             // Parenthesis are not added if one side has only one child.
             _values.Clear();
             bool addLeftParen = Left.Values.Count != 1;
-            bool addRightParen = Left.Values.Count != 1;
+            bool addRightParen = Right.Values.Count != 1;
 
             if (addLeftParen)
             {
