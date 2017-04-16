@@ -34,7 +34,7 @@ public partial class DiceGrammarLexer : Lexer {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		T_DIGIT_STRING=1, T_ALPHA_STRING=2, T_STRING=3, T_D=4, T_FUDGE=5, T_KEEP_HIGH=6, 
+		T_NUMBER=1, T_IDENTIFIER=2, T_STRING=3, T_D=4, T_FUDGE=5, T_KEEP_HIGH=6, 
 		T_KEEP_LOW=7, T_DROP_HIGH=8, T_DROP_LOW=9, T_ADVANTAGE=10, T_DISADVANTAGE=11, 
 		T_REROLL=12, T_REROLL_ONCE=13, T_EXPLODE=14, T_COMPOUND=15, T_PENETRATE=16, 
 		T_CRIT=17, T_CRITFAIL=18, T_FAIL=19, T_SORT_ASC=20, T_SORT_DESC=21, T_EQUALS=22, 
@@ -51,7 +51,7 @@ public partial class DiceGrammarLexer : Lexer {
 	};
 
 	public static readonly string[] ruleNames = {
-		"T_DIGIT_STRING", "T_ALPHA_STRING", "T_STRING", "T_D", "T_FUDGE", "T_KEEP_HIGH", 
+		"T_NUMBER", "T_IDENTIFIER", "T_STRING", "T_D", "T_FUDGE", "T_KEEP_HIGH", 
 		"T_KEEP_LOW", "T_DROP_HIGH", "T_DROP_LOW", "T_ADVANTAGE", "T_DISADVANTAGE", 
 		"T_REROLL", "T_REROLL_ONCE", "T_EXPLODE", "T_COMPOUND", "T_PENETRATE", 
 		"T_CRIT", "T_CRITFAIL", "T_FAIL", "T_SORT_ASC", "T_SORT_DESC", "T_EQUALS", 
@@ -79,13 +79,13 @@ public partial class DiceGrammarLexer : Lexer {
 		"'/'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "T_DIGIT_STRING", "T_ALPHA_STRING", "T_STRING", "T_D", "T_FUDGE", 
-		"T_KEEP_HIGH", "T_KEEP_LOW", "T_DROP_HIGH", "T_DROP_LOW", "T_ADVANTAGE", 
-		"T_DISADVANTAGE", "T_REROLL", "T_REROLL_ONCE", "T_EXPLODE", "T_COMPOUND", 
-		"T_PENETRATE", "T_CRIT", "T_CRITFAIL", "T_FAIL", "T_SORT_ASC", "T_SORT_DESC", 
-		"T_EQUALS", "T_GREATER", "T_LESS", "T_GREATER_EQUALS", "T_LESS_EQUALS", 
-		"T_NOT_EQUALS", "T_LBRACE", "T_RBRACE", "T_LSQUARE", "T_RSQUARE", "T_COMMA", 
-		"T_DOT", "T_LPAREN", "T_RPAREN", "T_PLUS", "T_MINUS", "T_MULTIPLY", "T_DIVIDE", 
+		null, "T_NUMBER", "T_IDENTIFIER", "T_STRING", "T_D", "T_FUDGE", "T_KEEP_HIGH", 
+		"T_KEEP_LOW", "T_DROP_HIGH", "T_DROP_LOW", "T_ADVANTAGE", "T_DISADVANTAGE", 
+		"T_REROLL", "T_REROLL_ONCE", "T_EXPLODE", "T_COMPOUND", "T_PENETRATE", 
+		"T_CRIT", "T_CRITFAIL", "T_FAIL", "T_SORT_ASC", "T_SORT_DESC", "T_EQUALS", 
+		"T_GREATER", "T_LESS", "T_GREATER_EQUALS", "T_LESS_EQUALS", "T_NOT_EQUALS", 
+		"T_LBRACE", "T_RBRACE", "T_LSQUARE", "T_RSQUARE", "T_COMMA", "T_DOT", 
+		"T_LPAREN", "T_RPAREN", "T_PLUS", "T_MINUS", "T_MULTIPLY", "T_DIVIDE", 
 		"WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);

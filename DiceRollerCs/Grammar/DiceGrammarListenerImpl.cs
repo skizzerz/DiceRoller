@@ -174,7 +174,7 @@ namespace Dice.Grammar
             args.Reverse();
 
             // check for a built-in function
-            var fname = context.T_ALPHA_STRING().GetText().ToLower();
+            var fname = context.T_IDENTIFIER().GetText().ToLower();
             switch (fname)
             {
                 case "keephighest":
@@ -422,7 +422,7 @@ namespace Dice.Grammar
             args.Reverse();
 
             // check for a built-in function
-            var fname = context.T_ALPHA_STRING().GetText().ToLower();
+            var fname = context.T_IDENTIFIER().GetText().ToLower();
             switch (fname)
             {
                 case "reroll":
@@ -686,7 +686,7 @@ namespace Dice.Grammar
             }
 
             args.Reverse();
-            var fname = context.T_ALPHA_STRING().GetText().ToLower();
+            var fname = context.T_IDENTIFIER().GetText().ToLower();
             Stack.Push(new FunctionNode(FunctionScope.Global, fname, args));
         }
 

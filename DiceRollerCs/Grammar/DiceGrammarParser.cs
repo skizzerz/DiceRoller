@@ -37,7 +37,7 @@ public partial class DiceGrammarParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		T_DIGIT_STRING=1, T_ALPHA_STRING=2, T_STRING=3, T_D=4, T_FUDGE=5, T_KEEP_HIGH=6, 
+		T_NUMBER=1, T_IDENTIFIER=2, T_STRING=3, T_D=4, T_FUDGE=5, T_KEEP_HIGH=6, 
 		T_KEEP_LOW=7, T_DROP_HIGH=8, T_DROP_LOW=9, T_ADVANTAGE=10, T_DISADVANTAGE=11, 
 		T_REROLL=12, T_REROLL_ONCE=13, T_EXPLODE=14, T_COMPOUND=15, T_PENETRATE=16, 
 		T_CRIT=17, T_CRITFAIL=18, T_FAIL=19, T_SORT_ASC=20, T_SORT_DESC=21, T_EQUALS=22, 
@@ -69,13 +69,13 @@ public partial class DiceGrammarParser : Parser {
 		"'/'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "T_DIGIT_STRING", "T_ALPHA_STRING", "T_STRING", "T_D", "T_FUDGE", 
-		"T_KEEP_HIGH", "T_KEEP_LOW", "T_DROP_HIGH", "T_DROP_LOW", "T_ADVANTAGE", 
-		"T_DISADVANTAGE", "T_REROLL", "T_REROLL_ONCE", "T_EXPLODE", "T_COMPOUND", 
-		"T_PENETRATE", "T_CRIT", "T_CRITFAIL", "T_FAIL", "T_SORT_ASC", "T_SORT_DESC", 
-		"T_EQUALS", "T_GREATER", "T_LESS", "T_GREATER_EQUALS", "T_LESS_EQUALS", 
-		"T_NOT_EQUALS", "T_LBRACE", "T_RBRACE", "T_LSQUARE", "T_RSQUARE", "T_COMMA", 
-		"T_DOT", "T_LPAREN", "T_RPAREN", "T_PLUS", "T_MINUS", "T_MULTIPLY", "T_DIVIDE", 
+		null, "T_NUMBER", "T_IDENTIFIER", "T_STRING", "T_D", "T_FUDGE", "T_KEEP_HIGH", 
+		"T_KEEP_LOW", "T_DROP_HIGH", "T_DROP_LOW", "T_ADVANTAGE", "T_DISADVANTAGE", 
+		"T_REROLL", "T_REROLL_ONCE", "T_EXPLODE", "T_COMPOUND", "T_PENETRATE", 
+		"T_CRIT", "T_CRITFAIL", "T_FAIL", "T_SORT_ASC", "T_SORT_DESC", "T_EQUALS", 
+		"T_GREATER", "T_LESS", "T_GREATER_EQUALS", "T_LESS_EQUALS", "T_NOT_EQUALS", 
+		"T_LBRACE", "T_RBRACE", "T_LSQUARE", "T_RSQUARE", "T_COMMA", "T_DOT", 
+		"T_LPAREN", "T_RPAREN", "T_PLUS", "T_MINUS", "T_MULTIPLY", "T_DIVIDE", 
 		"WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
@@ -198,7 +198,7 @@ public partial class DiceGrammarParser : Parser {
 			State = 52;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case T_DIGIT_STRING:
+			case T_NUMBER:
 			case T_LBRACE:
 			case T_LSQUARE:
 			case T_LPAREN:
@@ -208,7 +208,7 @@ public partial class DiceGrammarParser : Parser {
 				State = 50; mult_expr(0);
 				}
 				break;
-			case T_ALPHA_STRING:
+			case T_IDENTIFIER:
 				_localctx = new MathFunctionContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
@@ -669,7 +669,7 @@ public partial class DiceGrammarParser : Parser {
 				State = 92; Match(T_RPAREN);
 				}
 				break;
-			case T_DIGIT_STRING:
+			case T_NUMBER:
 			case T_LSQUARE:
 				_localctx = new NumberNumberContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
@@ -719,7 +719,7 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class NumberLiteralContext : NumberContext {
-		public ITerminalNode T_DIGIT_STRING() { return GetToken(DiceGrammarParser.T_DIGIT_STRING, 0); }
+		public ITerminalNode T_NUMBER() { return GetToken(DiceGrammarParser.T_NUMBER, 0); }
 		public NumberLiteralContext(NumberContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
 			IDiceGrammarListener typedListener = listener as IDiceGrammarListener;
@@ -739,11 +739,11 @@ public partial class DiceGrammarParser : Parser {
 			State = 101;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case T_DIGIT_STRING:
+			case T_NUMBER:
 				_localctx = new NumberLiteralContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 97; Match(T_DIGIT_STRING);
+				State = 97; Match(T_NUMBER);
 				}
 				break;
 			case T_LSQUARE:
@@ -783,7 +783,7 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class GlobalFunctionContext : Global_functionContext {
-		public ITerminalNode T_ALPHA_STRING() { return GetToken(DiceGrammarParser.T_ALPHA_STRING, 0); }
+		public ITerminalNode T_IDENTIFIER() { return GetToken(DiceGrammarParser.T_IDENTIFIER, 0); }
 		public ITerminalNode T_LPAREN() { return GetToken(DiceGrammarParser.T_LPAREN, 0); }
 		public ITerminalNode T_RPAREN() { return GetToken(DiceGrammarParser.T_RPAREN, 0); }
 		public Function_argContext[] function_arg() {
@@ -816,12 +816,12 @@ public partial class DiceGrammarParser : Parser {
 			_localctx = new GlobalFunctionContext(_localctx);
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 103; Match(T_ALPHA_STRING);
+			State = 103; Match(T_IDENTIFIER);
 			State = 104; Match(T_LPAREN);
 			State = 113;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_DIGIT_STRING) | (1L << T_ALPHA_STRING) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_NUMBER) | (1L << T_IDENTIFIER) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
 				{
 				State = 105; function_arg();
 				State = 110;
@@ -869,7 +869,7 @@ public partial class DiceGrammarParser : Parser {
 	}
 	public partial class GroupFunctionContext : Group_functionContext {
 		public ITerminalNode T_DOT() { return GetToken(DiceGrammarParser.T_DOT, 0); }
-		public ITerminalNode T_ALPHA_STRING() { return GetToken(DiceGrammarParser.T_ALPHA_STRING, 0); }
+		public ITerminalNode T_IDENTIFIER() { return GetToken(DiceGrammarParser.T_IDENTIFIER, 0); }
 		public ITerminalNode T_LPAREN() { return GetToken(DiceGrammarParser.T_LPAREN, 0); }
 		public ITerminalNode T_RPAREN() { return GetToken(DiceGrammarParser.T_RPAREN, 0); }
 		public Function_argContext[] function_arg() {
@@ -903,12 +903,12 @@ public partial class DiceGrammarParser : Parser {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 117; Match(T_DOT);
-			State = 118; Match(T_ALPHA_STRING);
+			State = 118; Match(T_IDENTIFIER);
 			State = 119; Match(T_LPAREN);
 			State = 128;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_DIGIT_STRING) | (1L << T_ALPHA_STRING) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_NUMBER) | (1L << T_IDENTIFIER) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
 				{
 				State = 120; function_arg();
 				State = 125;
@@ -956,7 +956,7 @@ public partial class DiceGrammarParser : Parser {
 	}
 	public partial class BasicFunctionContext : Basic_functionContext {
 		public ITerminalNode T_DOT() { return GetToken(DiceGrammarParser.T_DOT, 0); }
-		public ITerminalNode T_ALPHA_STRING() { return GetToken(DiceGrammarParser.T_ALPHA_STRING, 0); }
+		public ITerminalNode T_IDENTIFIER() { return GetToken(DiceGrammarParser.T_IDENTIFIER, 0); }
 		public ITerminalNode T_LPAREN() { return GetToken(DiceGrammarParser.T_LPAREN, 0); }
 		public ITerminalNode T_RPAREN() { return GetToken(DiceGrammarParser.T_RPAREN, 0); }
 		public Function_argContext[] function_arg() {
@@ -990,12 +990,12 @@ public partial class DiceGrammarParser : Parser {
 			EnterOuterAlt(_localctx, 1);
 			{
 			State = 132; Match(T_DOT);
-			State = 133; Match(T_ALPHA_STRING);
+			State = 133; Match(T_IDENTIFIER);
 			State = 134; Match(T_LPAREN);
 			State = 143;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_DIGIT_STRING) | (1L << T_ALPHA_STRING) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_NUMBER) | (1L << T_IDENTIFIER) | (1L << T_EQUALS) | (1L << T_GREATER) | (1L << T_LESS) | (1L << T_GREATER_EQUALS) | (1L << T_LESS_EQUALS) | (1L << T_NOT_EQUALS) | (1L << T_LBRACE) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
 				{
 				State = 135; function_arg();
 				State = 140;
@@ -1078,8 +1078,8 @@ public partial class DiceGrammarParser : Parser {
 			State = 149;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case T_DIGIT_STRING:
-			case T_ALPHA_STRING:
+			case T_NUMBER:
+			case T_IDENTIFIER:
 			case T_LBRACE:
 			case T_LSQUARE:
 			case T_LPAREN:
@@ -1191,7 +1191,7 @@ public partial class DiceGrammarParser : Parser {
 				State = 152;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_DIGIT_STRING) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T_NUMBER) | (1L << T_LSQUARE) | (1L << T_LPAREN))) != 0)) {
 					{
 					State = 151; number_expr();
 					}
@@ -2316,7 +2316,7 @@ public partial class DiceGrammarParser : Parser {
 			State = 270;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case T_DIGIT_STRING:
+			case T_NUMBER:
 			case T_LSQUARE:
 				_localctx = new CompImplicitContext(_localctx);
 				EnterOuterAlt(_localctx, 1);

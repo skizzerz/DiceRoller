@@ -1,5 +1,6 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.7-complete.jar -package Dice.Grammar -o Grammar DiceGrammar.g4 */
+ * For example: java -jar C:\antlr\antlr-4.7-complete.jar -package Dice.Grammar -o Grammar DiceGrammar.g4
+ */
 grammar DiceGrammar;
 options { language=CSharp; }
 
@@ -36,20 +37,20 @@ number_expr
     ;
 
 number
-    : T_DIGIT_STRING # NumberLiteral
+    : T_NUMBER # NumberLiteral
     | T_LSQUARE T_STRING T_RSQUARE # NumberMacro
     ;
 
 global_function
-    : T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
+    : T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
     ;
 
 group_function
-    : T_DOT T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
+    : T_DOT T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
     ;
 
 basic_function
-    : T_DOT T_ALPHA_STRING T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
+    : T_DOT T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
     ;
 
 function_arg
@@ -135,8 +136,8 @@ crit_expr
     | T_CRITFAIL compare_expr # FumbleOnly
     ;
 
-T_DIGIT_STRING : '-'? [0-9]+ ('.' [0-9]+)? ;
-T_ALPHA_STRING : [a-zA-Z][a-zA-Z0-9]* ;
+T_NUMBER : '-'? [0-9]+ ('.' [0-9]+)? ;
+T_IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
 T_STRING : ~[()[\]{}]+ ;
 
 T_D : 'd' ;
