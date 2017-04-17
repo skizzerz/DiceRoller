@@ -71,7 +71,7 @@ namespace Dice.AST
         {
             if (comp == null)
             {
-                throw new ArgumentNullException("comp");
+                return;
             }
 
             if (Critical == null)
@@ -88,7 +88,7 @@ namespace Dice.AST
         {
             if (comp == null)
             {
-                throw new ArgumentNullException("comp");
+                return;
             }
 
             if (Fumble == null)
