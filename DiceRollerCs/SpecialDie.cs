@@ -18,6 +18,7 @@ namespace Dice
         Multiply = 2,
         Divide = 3,
         OpenParen = 4,
-        CloseParen = 5
+        CloseParen = 5,
+        Negate = 6
     }
 }

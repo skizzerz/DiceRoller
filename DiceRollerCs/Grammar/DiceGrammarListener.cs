@@ -16,6 +16,8 @@ namespace Dice.Grammar
         // holds the state of the current parse tree, the bottom of the stack is the root of the AST,
         // which is accessible via the Root property after parsing is complete.
         private Stack<DiceAST> Stack;
+        // holds the RollerConfig that's directing this
+        private RollerConfig Config;
 
         /// <summary>
         /// Accesses the root of the parsed AST. This is only valid if parsing is complete. If this
@@ -32,6 +34,11 @@ namespace Dice.Grammar
 
                 return Stack.Peek();
             }
+        }
+
+        public DiceGrammarListener(RollerConfig config)
+        {
+            Config = config ?? throw new ArgumentNullException("config");
         }
 
         public override void EnterInput([NotNull] DiceGrammarParser.InputContext context)
@@ -65,6 +72,12 @@ namespace Dice.Grammar
             var right = Stack.Pop();
             var left = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Subtract, left, right));
+        }
+
+        public override void ExitUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context)
+        {
+            var param = Stack.Pop();
+            Stack.Push(new MathNode(MathOp.Negate, param, null));
         }
 
         public override void ExitNumberLiteral([NotNull] DiceGrammarParser.NumberLiteralContext context)
@@ -290,7 +303,7 @@ namespace Dice.Grammar
                     Stack.Push(new SortNode(SortDirection.Descending));
                     break;
                 default:
-                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args));
+                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Config));
                     break;
             }
         }
@@ -455,7 +468,7 @@ namespace Dice.Grammar
                     }
                     else
                     {
-                        maxRerolls = ((MacroNode)args[0]).Execute();
+                        maxRerolls = ((MacroNode)args[0]).Evaluate(Config, args[0], 0);
                     }
 
                     if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > Int32.MaxValue)
@@ -667,7 +680,7 @@ namespace Dice.Grammar
                     Stack.Push(new SortNode(SortDirection.Descending));
                     break;
                 default:
-                    Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args));
+                    Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Config));
                     break;
             }
         }
@@ -686,7 +699,7 @@ namespace Dice.Grammar
 
             args.Reverse();
             var fname = context.T_IDENTIFIER().GetText().ToLower();
-            Stack.Push(new FunctionNode(FunctionScope.Global, fname, args));
+            Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Config));
         }
 
         public override void ExitKeepHigh([NotNull] DiceGrammarParser.KeepHighContext context)

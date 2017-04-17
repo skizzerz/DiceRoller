@@ -27,14 +27,13 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
+        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollerConfig conf)
         {
-            Context = new FunctionContext(scope, name, arguments);
-            _values = new List<DieResult>();
-
             try
             {
-                (Timing, Function) = FunctionRegistry.Callbacks[(name, scope)];
+                (name, Timing, Function) = conf.FunctionRegistry.Get(name, scope);
+                Context = new FunctionContext(scope, name, arguments);
+                _values = new List<DieResult>();
             }
             catch (KeyNotFoundException)
             {

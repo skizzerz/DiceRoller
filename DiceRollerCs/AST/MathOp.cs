@@ -14,6 +14,10 @@ namespace Dice.AST
         Add,
         Subtract,
         Multiply,
-        Divide
+        Divide,
+        /// <summary>
+        /// Negate the parameter. This operation is unary.
+        /// </summary>
+        Negate
     }
 }

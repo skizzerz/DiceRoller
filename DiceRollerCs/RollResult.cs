@@ -88,6 +88,12 @@ namespace Dice
                         case SpecialDie.CloseParen:
                             sb.Append(")");
                             break;
+                        case SpecialDie.Negate:
+                            sb.Append("-");
+                            break;
+                        default:
+                            sb.Append("<<UNKOWN SPECIAL>>");
+                            break;
                     }
                 }
                 else

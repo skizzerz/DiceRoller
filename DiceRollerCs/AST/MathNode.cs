@@ -36,8 +36,14 @@ namespace Dice.AST
         internal MathNode(MathOp operation, DiceAST left, DiceAST right)
         {
             Operation = operation;
-            Left = left ?? throw new ArgumentNullException("left");
+            Left = left;
             Right = right ?? throw new ArgumentNullException("right");
+
+            if (!operation.IsUnary() && left == null)
+            {
+                throw new ArgumentNullException("left");
+            }
+
             _values = new List<DieResult>();
         }
 
@@ -54,7 +60,7 @@ namespace Dice.AST
             {
                 sb.AppendFormat("({0})", Left.ToString());
             }
-            else
+            else if (Left != null)
             {
                 sb.Append(Left.ToString());
             }
@@ -73,6 +79,9 @@ namespace Dice.AST
                 case MathOp.Divide:
                     sb.Append(" / ");
                     break;
+                case MathOp.Negate:
+                    sb.Append("-");
+                    break;
                 default:
                     sb.Append("<<UNKNOWN MATH>>");
                     break;
@@ -81,6 +90,7 @@ namespace Dice.AST
             if (Right is MathNode mr
                 && (Operation == MathOp.Divide
                     || Operation == MathOp.Subtract
+                    || Operation == MathOp.Negate
                     || (Operation == MathOp.Multiply && (mr.Operation == MathOp.Add || mr.Operation == MathOp.Subtract))))
             {
                 sb.AppendFormat("({0})", Right.ToString());
@@ -95,7 +105,8 @@ namespace Dice.AST
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            long rolls = Left.Evaluate(conf, root, depth + 1) + Right.Evaluate(conf, root, depth + 1);
+            long rolls = Left?.Evaluate(conf, root, depth + 1) ?? 0;
+            rolls += Right.Evaluate(conf, root, depth + 1);
             DoMath();
 
             return rolls;
@@ -103,7 +114,8 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            long rolls = Left.Reroll(conf, root, depth + 1) + Right.Reroll(conf, root, depth + 1);
+            long rolls = Left?.Reroll(conf, root, depth + 1) ?? 0;
+            rolls += Right.Reroll(conf, root, depth + 1);
             DoMath();
 
             return rolls;
@@ -138,6 +150,10 @@ namespace Dice.AST
                     Value = Left.Value / Right.Value;
                     sd = SpecialDie.Divide;
                     break;
+                case MathOp.Negate:
+                    Value = -Right.Value;
+                    sd = SpecialDie.Negate;
+                    break;
                 default:
                     throw new InvalidOperationException("Math operation not recognized");
             }
@@ -146,7 +162,7 @@ namespace Dice.AST
             bool haveTotal = false;
             bool haveRoll = false;
 
-            if (Left.Values.Any(d => d.DieType.IsRoll()))
+            if (Left?.Values.Any(d => d.DieType.IsRoll()) == true)
             {
                 haveRoll = true;
 
@@ -180,12 +196,12 @@ namespace Dice.AST
             // 3, 4, 5, 1, and 2 would render as ( 3 + 4 + 5 ) - ( 1 + 2 ).
             // Parenthesis are not added if one side has only one child.
             _values.Clear();
-            bool addLeftParen = Left.Values.Count != 1;
+            bool addLeftParen = Left?.Values.Count != 1;
             bool addRightParen = Right.Values.Count != 1;
-            var leftRoll = Left.GetUnderlyingRollNode();
+            var leftRoll = Left?.GetUnderlyingRollNode();
             var rightRoll = Right.GetUnderlyingRollNode();
 
-            if (addLeftParen)
+            if (addLeftParen && leftRoll != null)
             {
                 if (leftRoll is MathNode ml)
                 {
@@ -259,14 +275,17 @@ namespace Dice.AST
                 }
             }
 
-            if (addLeftParen)
+            if (Left != null)
             {
-                _values.Add(new DieResult(SpecialDie.OpenParen));
-            }
-            _values.AddRange(Left.Values);
-            if (addLeftParen)
-            {
-                _values.Add(new DieResult(SpecialDie.CloseParen));
+                if (addLeftParen)
+                {
+                    _values.Add(new DieResult(SpecialDie.OpenParen));
+                }
+                _values.AddRange(Left.Values);
+                if (addLeftParen)
+                {
+                    _values.Add(new DieResult(SpecialDie.CloseParen));
+                }
             }
 
             _values.Add(new DieResult(sd));

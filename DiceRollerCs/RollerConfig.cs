@@ -62,6 +62,11 @@ namespace Dice
         /// </summary>
         public MacroCallback ExecuteMacro { get; set; }
 
+        /// <summary>
+        /// Contains the FunctionRegistry that maps all known functions to their callbacks.
+        /// </summary>
+        public FunctionRegistry FunctionRegistry { get; set; }
+
         public RollerConfig()
         {
             MaxDice = 1000;
@@ -71,6 +76,8 @@ namespace Dice
             NormalSidesOnly = false;
             GetRandomBytes = null;
             ExecuteMacro = null;
+            FunctionRegistry = new FunctionRegistry();
+            FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
         }
     }
 }

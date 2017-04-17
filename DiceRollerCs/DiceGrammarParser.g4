@@ -23,7 +23,12 @@ add_expr
 mult_expr
     : mult_expr T_MULTIPLY roll_expr # MultMult
     | mult_expr T_DIVIDE roll_expr # MultDiv
-    | roll_expr # MultNone
+    | unary_expr # MultNone
+    ;
+
+unary_expr
+    : T_MINUS unary_expr # UnaryMinus
+    | roll_expr # UnaryNone
     ;
 
 roll_expr

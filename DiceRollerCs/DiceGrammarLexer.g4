@@ -6,8 +6,8 @@ lexer grammar DiceGrammarLexer;
 options { language=CSharp; }
 
 T_IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
-T_NUMBER : '-'? [0-9]+ ('.' [0-9]+)? -> pushMode(AFTER_NUMBER) ;
-T_MACRO : '[' ~[\]]+ ']' -> pushMode(AFTER_NUMBER) ;
+T_NUMBER : [0-9]+ ('.' [0-9]+)? -> pushMode(AFTER_NUMBER) ;
+T_MACRO : '[' .+? ']' -> pushMode(AFTER_NUMBER) ;
 
 T_EQUALS : '=' ;
 T_GREATER : '>' ;
@@ -17,9 +17,9 @@ T_LESS_EQUALS : '<=' ;
 T_NOT_EQUALS : ( '!=' | '<>' ) ;
 
 T_LPAREN : '(' ;
-T_RPAREN : ')' ;
+T_RPAREN : ')' -> pushMode(AFTER_NUMBER) ;
 T_LBRACE : '{' ;
-T_RBRACE : '}' ;
+T_RBRACE : '}' -> pushMode(AFTER_NUMBER) ;
 
 T_COMMA : ',' ;
 T_DOT : '.' ;
@@ -31,10 +31,10 @@ T_DIVIDE : '/' ;
 
 WS : [ \r\n\t] -> skip ;
 
-// AFTER_NUMBER doesn't allow identifiers
+/* AFTER_NUMBER doesn't allow identifiers */
 mode AFTER_NUMBER;
 
-AN_NUMBER : '-'? [0-9]+ ('.' [0-9]+)? -> type(T_NUMBER) ;
+AN_NUMBER : [0-9]+ ('.' [0-9]+)? -> type(T_NUMBER) ;
 AN_MACRO : '[' .+? ']' -> type(T_MACRO) ;
 
 T_FUDGE : 'F' ;

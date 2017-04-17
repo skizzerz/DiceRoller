@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
+using Dice.AST;
+
 namespace Dice
 {
     internal static class ExtensionMethods
@@ -40,6 +42,17 @@ namespace Dice
             if (last.DieType != DieType.Special || last.SpecialDie != SpecialDie.OpenParen)
             {
                 values.Add(new DieResult(SpecialDie.Add));
+            }
+        }
+
+        internal static bool IsUnary(this MathOp op)
+        {
+            switch (op)
+            {
+                case MathOp.Negate:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

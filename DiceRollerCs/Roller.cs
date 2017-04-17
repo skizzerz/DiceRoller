@@ -63,7 +63,7 @@ namespace Dice
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new DiceGrammarParser(tokenStream);
             var walker = new ParseTreeWalker();
-            var listener = new DiceGrammarListener();
+            var listener = new DiceGrammarListener(config);
 
             parser.AddErrorListener(new DiceErrorListener());
             var context = parser.input();

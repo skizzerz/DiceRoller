@@ -63,6 +63,7 @@
     <Compile Include="AST\RerollNodeShould.cs" />
     <Compile Include="AST\RollNodeShould.cs" />
     <Compile Include="Grammar\BasicRollShould.cs" />
+    <Compile Include="Grammar\InvalidExpressionsShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AST\SuccessNodeShould.cs" />
     <Compile Include="TestBase.cs" />

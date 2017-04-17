@@ -35,12 +35,6 @@ namespace Dice.AST
             return String.Format("[{0}]", Context.Param);
         }
 
-        internal decimal Execute()
-        {
-            EvaluateInternal(null, null, 0);
-            return Value;
-        }
-
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
             if (conf.ExecuteMacro == null)

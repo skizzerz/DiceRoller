@@ -70,10 +70,25 @@ namespace TestDiceRoller.AST
         }
 
         [TestMethod]
+        public void Successfully_OrderOfOperations_Negate()
+        {
+            var inner = new MathNode(MathOp.Add, Two, Two);
+            var node = new MathNode(MathOp.Negate, null, inner);
+            EvaluateNode(node, Roll1Conf, 0, "-(2 + 2) => -(2 + 2) => -4");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ThrowArgumentNullException_WhenLeftNull()
+        public void ThrowArgumentNullException_WhenLeftNullAndNotUnary()
         {
             new MathNode(MathOp.Add, null, One);
+        }
+
+        [TestMethod]
+        public void Successfully_DoUnaryWithLeftNull()
+        {
+            var node = new MathNode(MathOp.Negate, null, Two);
+            EvaluateNode(node, Roll1Conf, 0, "-2 => -2 => -2");
         }
 
         [TestMethod]

@@ -138,6 +138,30 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterUnaryNone([NotNull] DiceGrammarParser.UnaryNoneContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitUnaryNone([NotNull] DiceGrammarParser.UnaryNoneContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>RollGroup</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.roll_expr"/>.
 	/// </summary>
