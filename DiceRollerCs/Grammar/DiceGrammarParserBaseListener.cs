@@ -160,34 +160,6 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>UnaryMinus</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>UnaryMinus</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>UnaryNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterUnaryNone([NotNull] DiceGrammarParser.UnaryNoneContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>UnaryNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitUnaryNone([NotNull] DiceGrammarParser.UnaryNoneContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>RollGroup</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.roll_expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -243,6 +215,62 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRollNone([NotNull] DiceGrammarParser.RollNoneContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryExprMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryExprMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryExprNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryExprNone([NotNull] DiceGrammarParser.UnaryExprNoneContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryExprNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryExprNone([NotNull] DiceGrammarParser.UnaryExprNoneContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryNumberMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_number"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryNumberMinus([NotNull] DiceGrammarParser.UnaryNumberMinusContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryNumberMinus</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_number"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryNumberMinus([NotNull] DiceGrammarParser.UnaryNumberMinusContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>UnaryNumberNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_number"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryNumberNone([NotNull] DiceGrammarParser.UnaryNumberNoneContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>UnaryNumberNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.unary_number"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryNumberNone([NotNull] DiceGrammarParser.UnaryNumberNoneContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>NumberParen</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.number_expr"/>.

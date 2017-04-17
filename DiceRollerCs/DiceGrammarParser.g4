@@ -23,19 +23,24 @@ add_expr
 mult_expr
     : mult_expr T_MULTIPLY roll_expr # MultMult
     | mult_expr T_DIVIDE roll_expr # MultDiv
-    | unary_expr # MultNone
-    ;
-
-unary_expr
-    : T_MINUS unary_expr # UnaryMinus
-    | roll_expr # UnaryNone
+    | roll_expr # MultNone
     ;
 
 roll_expr
-    : (number_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
-    | number_expr T_D number_expr (basic_extras)* (basic_function)* # RollBasic
-    | number_expr T_D T_FUDGE (number_expr)? (basic_extras)* (basic_function)* # RollFudge
-    | number_expr # RollNone
+    : (unary_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
+    | unary_expr T_D number_expr (basic_extras)* (basic_function)* # RollBasic
+    | unary_expr T_D T_FUDGE (unary_expr)? (basic_extras)* (basic_function)* # RollFudge
+    | unary_expr # RollNone
+    ;
+
+unary_expr
+    : T_MINUS unary_expr # UnaryExprMinus
+    | number_expr # UnaryExprNone
+    ;
+
+unary_number
+    : T_MINUS number # UnaryNumberMinus
+    | number # UnaryNumberNone
     ;
 
 number_expr
@@ -86,10 +91,10 @@ basic_extras
     ;
 
 keep_expr
-    : T_KEEP_HIGH number # KeepHigh
-    | T_KEEP_LOW number # KeepLow
-    | T_DROP_HIGH number # DropHigh
-    | T_DROP_LOW number # DropLow
+    : T_KEEP_HIGH unary_number # KeepHigh
+    | T_KEEP_LOW unary_number # KeepLow
+    | T_DROP_HIGH unary_number # DropHigh
+    | T_DROP_LOW unary_number # DropLow
     | T_ADVANTAGE # Advantage
     | T_DISADVANTAGE # Disadvantage
     ;
@@ -110,17 +115,17 @@ success_expr
     ;
 
 compare_expr
-    : number # CompImplicit
+    : unary_number # CompImplicit
     | explicit_compare_expr # CompExplicit
     ;
 
 explicit_compare_expr
-    : T_EQUALS number # CompEquals
-    | T_GREATER number # CompGreater
-    | T_LESS number # CompLess
-    | T_GREATER_EQUALS number # CompGreaterEquals
-    | T_LESS_EQUALS number # CompLessEquals
-    | T_NOT_EQUALS number # CompNotEquals
+    : T_EQUALS unary_number # CompEquals
+    | T_GREATER unary_number # CompGreater
+    | T_LESS unary_number # CompLess
+    | T_GREATER_EQUALS unary_number # CompGreaterEquals
+    | T_LESS_EQUALS unary_number # CompLessEquals
+    | T_NOT_EQUALS unary_number # CompNotEquals
     ;
 
 sort_expr

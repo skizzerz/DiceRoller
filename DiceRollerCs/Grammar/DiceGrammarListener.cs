@@ -74,7 +74,13 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Subtract, left, right));
         }
 
-        public override void ExitUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context)
+        public override void ExitUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context)
+        {
+            var param = Stack.Pop();
+            Stack.Push(new MathNode(MathOp.Negate, null, param));
+        }
+
+        public override void ExitUnaryNumberMinus([NotNull] DiceGrammarParser.UnaryNumberMinusContext context)
         {
             var param = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Negate, null, param));
@@ -371,7 +377,7 @@ namespace Dice.Grammar
             }
 
             extras.Reverse();
-            if (context.number_expr().Length > 1)
+            if (context.unary_expr().Length > 1)
             {
                 numSides = Stack.Pop();
             }
