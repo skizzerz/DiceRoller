@@ -1,11 +1,12 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.7-complete.jar -package Dice.Grammar -o Grammar DiceGrammar.g4
+ * For example: java -jar C:\antlr\antlr-4.7-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
  */
-grammar DiceGrammar;
-options { language=CSharp; }
+
+parser grammar DiceGrammarParser;
+options { language=CSharp; tokenVocab=DiceGrammarLexer; }
 
 input
-    : math_expr
+    : math_expr EOF
     ;
 
 math_expr
@@ -20,15 +21,16 @@ mult_expr
     ;
 
 add_expr
-    : add_expr T_PLUS paren_expr # AddAdd
-    | add_expr T_MINUS paren_expr # AddSub
-    | paren_expr # AddNone
+    : add_expr T_PLUS roll_expr # AddAdd
+    | add_expr T_MINUS roll_expr # AddSub
+    | roll_expr # AddNone
     ;
 
-paren_expr
-    : T_LPAREN math_expr T_RPAREN # ParenParen
-    | number # ParenNumber
-    | grouped_roll # ParenGroup
+roll_expr
+    : (number_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
+    | number_expr T_D number_expr (basic_extras)* (basic_function)* # RollBasic
+    | number_expr T_D T_FUDGE (number_expr)? (basic_extras)* (basic_function)* # RollFudge
+    | number_expr # RollNone
     ;
 
 number_expr
@@ -38,7 +40,7 @@ number_expr
 
 number
     : T_NUMBER # NumberLiteral
-    | T_LSQUARE T_STRING T_RSQUARE # NumberMacro
+    | T_MACRO # NumberMacro
     ;
 
 global_function
@@ -58,11 +60,6 @@ function_arg
     | explicit_compare_expr # FnArgComp
     ;
 
-grouped_roll
-    : (number_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # GroupGroup
-    | basic_roll # GroupBasic
-    ;
-
 grouped_roll_inner
     : grouped_roll_inner T_COMMA math_expr # GroupExtra
     | math_expr # GroupInit
@@ -72,11 +69,6 @@ grouped_extras
     : keep_expr # GroupKeep
     | success_expr # GroupSuccess
     | sort_expr # GroupSort
-    ;
-
-basic_roll
-    : number_expr T_D number_expr (basic_extras)* (basic_function)* # BasicBasic
-    | number_expr T_D T_FUDGE (number_expr)? (basic_extras)* (basic_function)* # BasicFudge
     ;
 
 basic_extras
@@ -135,58 +127,3 @@ crit_expr
     : T_CRIT compare_expr (T_FAIL compare_expr)? # CritFumble
     | T_CRITFAIL compare_expr # FumbleOnly
     ;
-
-T_NUMBER : '-'? [0-9]+ ('.' [0-9]+)? ;
-T_IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
-T_STRING : ~[()[\]{}]+ ;
-
-T_D : 'd' ;
-T_FUDGE : 'F' ;
-
-T_KEEP_HIGH : 'kh' ;
-T_KEEP_LOW : 'kl' ;
-T_DROP_HIGH : 'dh' ;
-T_DROP_LOW : 'dl' ;
-
-T_ADVANTAGE : 'ad' ;
-T_DISADVANTAGE : 'da' ;
-
-T_REROLL : 'rr' ;
-T_REROLL_ONCE : 'ro' ;
-
-T_EXPLODE : '!e' ;
-T_COMPOUND : '!c' ;
-T_PENETRATE : '!p' ;
-
-T_CRIT : 'cs' ;
-T_CRITFAIL : 'cf' ;
-
-/* this token never appears at the beginning of a modifier, as such it is only one letter.
- * tokens which appear at the beginning of modifiers are always two letters or more to allow for disambiguation. */
-T_FAIL : 'f' ;
-
-T_SORT_ASC : 'sa' ;
-T_SORT_DESC : 'sd' ;
-
-T_EQUALS : '=' ;
-T_GREATER : '>' ;
-T_LESS : '<' ;
-T_GREATER_EQUALS : '>=' ;
-T_LESS_EQUALS : '<=' ;
-T_NOT_EQUALS : ( '!=' | '<>' ) ;
-
-T_LBRACE : '{' ;
-T_RBRACE : '}' ;
-T_LSQUARE : '[' ;
-T_RSQUARE : ']' ;
-T_COMMA : ',' ;
-T_DOT : '.' ;
-
-T_LPAREN : '(' ;
-T_RPAREN : ')' ;
-T_PLUS : '+' ;
-T_MINUS : '-' ;
-T_MULTIPLY : '*' ;
-T_DIVIDE : '/' ;
-
-WS : [\p{White_Space}] -> skip ;

@@ -56,13 +56,18 @@ namespace Dice
             }
 
             // parse diceExpr
-            var lexer = new DiceGrammarLexer(new AntlrInputStream(diceExpr));
-            var parser = new DiceGrammarParser(new CommonTokenStream(lexer));
+            //diceExpr = DiceGrammarPreprocessor.Preprocess(diceExpr);
+            //var lexer = new DiceExpressionLexer(new AntlrInputStream(diceExpr));
+            var inputStream = new AntlrInputStream(diceExpr);
+            var lexer = new DiceGrammarLexer(inputStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            var parser = new DiceGrammarParser(tokenStream);
             var walker = new ParseTreeWalker();
             var listener = new DiceGrammarListener();
 
             parser.AddErrorListener(new DiceErrorListener());
-            walker.Walk(listener, parser.input());
+            var context = parser.input();
+            walker.Walk(listener, context);
 
             // evaluate diceExpr
             var root = listener.Root;

@@ -95,11 +95,11 @@
     <Compile Include="FunctionScope.cs" />
     <Compile Include="FunctionTiming.cs" />
     <Compile Include="Grammar\DiceErrorListener.cs" />
-    <Compile Include="Grammar\DiceGrammarBaseListener.cs" />
     <Compile Include="Grammar\DiceGrammarLexer.cs" />
     <Compile Include="Grammar\DiceGrammarListener.cs" />
-    <Compile Include="Grammar\DiceGrammarListenerImpl.cs" />
     <Compile Include="Grammar\DiceGrammarParser.cs" />
+    <Compile Include="Grammar\DiceGrammarParserBaseListener.cs" />
+    <Compile Include="Grammar\DiceGrammarParserListener.cs" />
     <Compile Include="MacroContext.cs" />
     <Compile Include="ResultType.cs" />
     <Compile Include="Roller.cs" />
@@ -110,10 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="DiceGrammarLexer.g4" />
+    <None Include="DiceGrammarParser.g4" />
     <None Include="DiceRollerCs.snk" />
-    <None Include="DiceGrammar.g4" />
-    <None Include="Grammar\DiceGrammar.tokens" />
     <None Include="Grammar\DiceGrammarLexer.tokens" />
+    <None Include="Grammar\DiceGrammarParser.tokens" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
