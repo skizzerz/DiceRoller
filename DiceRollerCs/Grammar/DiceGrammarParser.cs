@@ -45,7 +45,7 @@ public partial class DiceGrammarParser : Parser {
 		T_REROLL=29, T_REROLL_ONCE=30, T_EXPLODE=31, T_COMPOUND=32, T_PENETRATE=33, 
 		T_CRIT=34, T_CRITFAIL=35, T_FAIL=36, T_SORT_ASC=37, T_SORT_DESC=38, AN_WS=39;
 	public const int
-		RULE_input = 0, RULE_math_expr = 1, RULE_mult_expr = 2, RULE_add_expr = 3, 
+		RULE_input = 0, RULE_math_expr = 1, RULE_add_expr = 2, RULE_mult_expr = 3, 
 		RULE_roll_expr = 4, RULE_number_expr = 5, RULE_number = 6, RULE_global_function = 7, 
 		RULE_group_function = 8, RULE_basic_function = 9, RULE_function_arg = 10, 
 		RULE_grouped_roll_inner = 11, RULE_grouped_extras = 12, RULE_basic_extras = 13, 
@@ -53,7 +53,7 @@ public partial class DiceGrammarParser : Parser {
 		RULE_compare_expr = 18, RULE_explicit_compare_expr = 19, RULE_sort_expr = 20, 
 		RULE_crit_expr = 21;
 	public static readonly string[] ruleNames = {
-		"input", "math_expr", "mult_expr", "add_expr", "roll_expr", "number_expr", 
+		"input", "math_expr", "add_expr", "mult_expr", "roll_expr", "number_expr", 
 		"number", "global_function", "group_function", "basic_function", "function_arg", 
 		"grouped_roll_inner", "grouped_extras", "basic_extras", "keep_expr", "reroll_expr", 
 		"explode_expr", "success_expr", "compare_expr", "explicit_compare_expr", 
@@ -175,8 +175,8 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class MathNormalContext : Math_exprContext {
-		public Mult_exprContext mult_expr() {
-			return GetRuleContext<Mult_exprContext>(0);
+		public Add_exprContext add_expr() {
+			return GetRuleContext<Add_exprContext>(0);
 		}
 		public MathNormalContext(Math_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -204,7 +204,7 @@ public partial class DiceGrammarParser : Parser {
 				_localctx = new MathNormalContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 47; mult_expr(0);
+				State = 47; add_expr(0);
 				}
 				break;
 			case T_IDENTIFIER:
@@ -229,145 +229,6 @@ public partial class DiceGrammarParser : Parser {
 		return _localctx;
 	}
 
-	public partial class Mult_exprContext : ParserRuleContext {
-		public Mult_exprContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int RuleIndex { get { return RULE_mult_expr; } }
-	 
-		public Mult_exprContext() { }
-		public virtual void CopyFrom(Mult_exprContext context) {
-			base.CopyFrom(context);
-		}
-	}
-	public partial class MultMultContext : Mult_exprContext {
-		public Mult_exprContext mult_expr() {
-			return GetRuleContext<Mult_exprContext>(0);
-		}
-		public ITerminalNode T_MULTIPLY() { return GetToken(DiceGrammarParser.T_MULTIPLY, 0); }
-		public Add_exprContext add_expr() {
-			return GetRuleContext<Add_exprContext>(0);
-		}
-		public MultMultContext(Mult_exprContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.EnterMultMult(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.ExitMultMult(this);
-		}
-	}
-	public partial class MultNoneContext : Mult_exprContext {
-		public Add_exprContext add_expr() {
-			return GetRuleContext<Add_exprContext>(0);
-		}
-		public MultNoneContext(Mult_exprContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.EnterMultNone(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.ExitMultNone(this);
-		}
-	}
-	public partial class MultDivContext : Mult_exprContext {
-		public Mult_exprContext mult_expr() {
-			return GetRuleContext<Mult_exprContext>(0);
-		}
-		public ITerminalNode T_DIVIDE() { return GetToken(DiceGrammarParser.T_DIVIDE, 0); }
-		public Add_exprContext add_expr() {
-			return GetRuleContext<Add_exprContext>(0);
-		}
-		public MultDivContext(Mult_exprContext context) { CopyFrom(context); }
-		public override void EnterRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.EnterMultDiv(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
-			if (typedListener != null) typedListener.ExitMultDiv(this);
-		}
-	}
-
-	[RuleVersion(0)]
-	public Mult_exprContext mult_expr() {
-		return mult_expr(0);
-	}
-
-	private Mult_exprContext mult_expr(int _p) {
-		ParserRuleContext _parentctx = Context;
-		int _parentState = State;
-		Mult_exprContext _localctx = new Mult_exprContext(Context, _parentState);
-		Mult_exprContext _prevctx = _localctx;
-		int _startState = 4;
-		EnterRecursionRule(_localctx, 4, RULE_mult_expr, _p);
-		try {
-			int _alt;
-			EnterOuterAlt(_localctx, 1);
-			{
-			{
-			_localctx = new MultNoneContext(_localctx);
-			Context = _localctx;
-			_prevctx = _localctx;
-
-			State = 52; add_expr(0);
-			}
-			Context.Stop = TokenStream.LT(-1);
-			State = 62;
-			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,2,Context);
-			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					if ( ParseListeners!=null )
-						TriggerExitRuleEvent();
-					_prevctx = _localctx;
-					{
-					State = 60;
-					ErrorHandler.Sync(this);
-					switch ( Interpreter.AdaptivePredict(TokenStream,1,Context) ) {
-					case 1:
-						{
-						_localctx = new MultMultContext(new Mult_exprContext(_parentctx, _parentState));
-						PushNewRecursionContext(_localctx, _startState, RULE_mult_expr);
-						State = 54;
-						if (!(Precpred(Context, 3))) throw new FailedPredicateException(this, "Precpred(Context, 3)");
-						State = 55; Match(T_MULTIPLY);
-						State = 56; add_expr(0);
-						}
-						break;
-					case 2:
-						{
-						_localctx = new MultDivContext(new Mult_exprContext(_parentctx, _parentState));
-						PushNewRecursionContext(_localctx, _startState, RULE_mult_expr);
-						State = 57;
-						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
-						State = 58; Match(T_DIVIDE);
-						State = 59; add_expr(0);
-						}
-						break;
-					}
-					} 
-				}
-				State = 64;
-				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,2,Context);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			ErrorHandler.ReportError(this, re);
-			ErrorHandler.Recover(this, re);
-		}
-		finally {
-			UnrollRecursionContexts(_parentctx);
-		}
-		return _localctx;
-	}
-
 	public partial class Add_exprContext : ParserRuleContext {
 		public Add_exprContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -385,8 +246,8 @@ public partial class DiceGrammarParser : Parser {
 			return GetRuleContext<Add_exprContext>(0);
 		}
 		public ITerminalNode T_MINUS() { return GetToken(DiceGrammarParser.T_MINUS, 0); }
-		public Roll_exprContext roll_expr() {
-			return GetRuleContext<Roll_exprContext>(0);
+		public Mult_exprContext mult_expr() {
+			return GetRuleContext<Mult_exprContext>(0);
 		}
 		public AddSubContext(Add_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -399,8 +260,8 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class AddNoneContext : Add_exprContext {
-		public Roll_exprContext roll_expr() {
-			return GetRuleContext<Roll_exprContext>(0);
+		public Mult_exprContext mult_expr() {
+			return GetRuleContext<Mult_exprContext>(0);
 		}
 		public AddNoneContext(Add_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -417,8 +278,8 @@ public partial class DiceGrammarParser : Parser {
 			return GetRuleContext<Add_exprContext>(0);
 		}
 		public ITerminalNode T_PLUS() { return GetToken(DiceGrammarParser.T_PLUS, 0); }
-		public Roll_exprContext roll_expr() {
-			return GetRuleContext<Roll_exprContext>(0);
+		public Mult_exprContext mult_expr() {
+			return GetRuleContext<Mult_exprContext>(0);
 		}
 		public AddAddContext(Add_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -441,14 +302,153 @@ public partial class DiceGrammarParser : Parser {
 		int _parentState = State;
 		Add_exprContext _localctx = new Add_exprContext(Context, _parentState);
 		Add_exprContext _prevctx = _localctx;
-		int _startState = 6;
-		EnterRecursionRule(_localctx, 6, RULE_add_expr, _p);
+		int _startState = 4;
+		EnterRecursionRule(_localctx, 4, RULE_add_expr, _p);
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
 			{
 			_localctx = new AddNoneContext(_localctx);
+			Context = _localctx;
+			_prevctx = _localctx;
+
+			State = 52; mult_expr(0);
+			}
+			Context.Stop = TokenStream.LT(-1);
+			State = 62;
+			ErrorHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(TokenStream,2,Context);
+			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					if ( ParseListeners!=null )
+						TriggerExitRuleEvent();
+					_prevctx = _localctx;
+					{
+					State = 60;
+					ErrorHandler.Sync(this);
+					switch ( Interpreter.AdaptivePredict(TokenStream,1,Context) ) {
+					case 1:
+						{
+						_localctx = new AddAddContext(new Add_exprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_add_expr);
+						State = 54;
+						if (!(Precpred(Context, 3))) throw new FailedPredicateException(this, "Precpred(Context, 3)");
+						State = 55; Match(T_PLUS);
+						State = 56; mult_expr(0);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new AddSubContext(new Add_exprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_add_expr);
+						State = 57;
+						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
+						State = 58; Match(T_MINUS);
+						State = 59; mult_expr(0);
+						}
+						break;
+					}
+					} 
+				}
+				State = 64;
+				ErrorHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(TokenStream,2,Context);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			UnrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public partial class Mult_exprContext : ParserRuleContext {
+		public Mult_exprContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_mult_expr; } }
+	 
+		public Mult_exprContext() { }
+		public virtual void CopyFrom(Mult_exprContext context) {
+			base.CopyFrom(context);
+		}
+	}
+	public partial class MultMultContext : Mult_exprContext {
+		public Mult_exprContext mult_expr() {
+			return GetRuleContext<Mult_exprContext>(0);
+		}
+		public ITerminalNode T_MULTIPLY() { return GetToken(DiceGrammarParser.T_MULTIPLY, 0); }
+		public Roll_exprContext roll_expr() {
+			return GetRuleContext<Roll_exprContext>(0);
+		}
+		public MultMultContext(Mult_exprContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.EnterMultMult(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.ExitMultMult(this);
+		}
+	}
+	public partial class MultNoneContext : Mult_exprContext {
+		public Roll_exprContext roll_expr() {
+			return GetRuleContext<Roll_exprContext>(0);
+		}
+		public MultNoneContext(Mult_exprContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.EnterMultNone(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.ExitMultNone(this);
+		}
+	}
+	public partial class MultDivContext : Mult_exprContext {
+		public Mult_exprContext mult_expr() {
+			return GetRuleContext<Mult_exprContext>(0);
+		}
+		public ITerminalNode T_DIVIDE() { return GetToken(DiceGrammarParser.T_DIVIDE, 0); }
+		public Roll_exprContext roll_expr() {
+			return GetRuleContext<Roll_exprContext>(0);
+		}
+		public MultDivContext(Mult_exprContext context) { CopyFrom(context); }
+		public override void EnterRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.EnterMultDiv(this);
+		}
+		public override void ExitRule(IParseTreeListener listener) {
+			IDiceGrammarParserListener typedListener = listener as IDiceGrammarParserListener;
+			if (typedListener != null) typedListener.ExitMultDiv(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public Mult_exprContext mult_expr() {
+		return mult_expr(0);
+	}
+
+	private Mult_exprContext mult_expr(int _p) {
+		ParserRuleContext _parentctx = Context;
+		int _parentState = State;
+		Mult_exprContext _localctx = new Mult_exprContext(Context, _parentState);
+		Mult_exprContext _prevctx = _localctx;
+		int _startState = 6;
+		EnterRecursionRule(_localctx, 6, RULE_mult_expr, _p);
+		try {
+			int _alt;
+			EnterOuterAlt(_localctx, 1);
+			{
+			{
+			_localctx = new MultNoneContext(_localctx);
 			Context = _localctx;
 			_prevctx = _localctx;
 
@@ -469,21 +469,21 @@ public partial class DiceGrammarParser : Parser {
 					switch ( Interpreter.AdaptivePredict(TokenStream,3,Context) ) {
 					case 1:
 						{
-						_localctx = new AddAddContext(new Add_exprContext(_parentctx, _parentState));
-						PushNewRecursionContext(_localctx, _startState, RULE_add_expr);
+						_localctx = new MultMultContext(new Mult_exprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_mult_expr);
 						State = 68;
 						if (!(Precpred(Context, 3))) throw new FailedPredicateException(this, "Precpred(Context, 3)");
-						State = 69; Match(T_PLUS);
+						State = 69; Match(T_MULTIPLY);
 						State = 70; roll_expr();
 						}
 						break;
 					case 2:
 						{
-						_localctx = new AddSubContext(new Add_exprContext(_parentctx, _parentState));
-						PushNewRecursionContext(_localctx, _startState, RULE_add_expr);
+						_localctx = new MultDivContext(new Mult_exprContext(_parentctx, _parentState));
+						PushNewRecursionContext(_localctx, _startState, RULE_mult_expr);
 						State = 71;
 						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
-						State = 72; Match(T_MINUS);
+						State = 72; Match(T_DIVIDE);
 						State = 73; roll_expr();
 						}
 						break;
@@ -2556,20 +2556,20 @@ public partial class DiceGrammarParser : Parser {
 
 	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 2: return mult_expr_sempred((Mult_exprContext)_localctx, predIndex);
-		case 3: return add_expr_sempred((Add_exprContext)_localctx, predIndex);
+		case 2: return add_expr_sempred((Add_exprContext)_localctx, predIndex);
+		case 3: return mult_expr_sempred((Mult_exprContext)_localctx, predIndex);
 		case 11: return grouped_roll_inner_sempred((Grouped_roll_innerContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private bool mult_expr_sempred(Mult_exprContext _localctx, int predIndex) {
+	private bool add_expr_sempred(Add_exprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0: return Precpred(Context, 3);
 		case 1: return Precpred(Context, 2);
 		}
 		return true;
 	}
-	private bool add_expr_sempred(Add_exprContext _localctx, int predIndex) {
+	private bool mult_expr_sempred(Mult_exprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 2: return Precpred(Context, 3);
 		case 3: return Precpred(Context, 2);
@@ -2667,8 +2667,8 @@ public partial class DiceGrammarParser : Parser {
 		'\x5', '\x3', '\x2', '\x2', '\x2', '\x35', '\x36', '\b', '\x4', '\x1', 
 		'\x2', '\x36', '\x37', '\x5', '\b', '\x5', '\x2', '\x37', '@', '\x3', 
 		'\x2', '\x2', '\x2', '\x38', '\x39', '\f', '\x5', '\x2', '\x2', '\x39', 
-		':', '\a', '\x14', '\x2', '\x2', ':', '?', '\x5', '\b', '\x5', '\x2', 
-		';', '<', '\f', '\x4', '\x2', '\x2', '<', '=', '\a', '\x15', '\x2', '\x2', 
+		':', '\a', '\x12', '\x2', '\x2', ':', '?', '\x5', '\b', '\x5', '\x2', 
+		';', '<', '\f', '\x4', '\x2', '\x2', '<', '=', '\a', '\x13', '\x2', '\x2', 
 		'=', '?', '\x5', '\b', '\x5', '\x2', '>', '\x38', '\x3', '\x2', '\x2', 
 		'\x2', '>', ';', '\x3', '\x2', '\x2', '\x2', '?', '\x42', '\x3', '\x2', 
 		'\x2', '\x2', '@', '>', '\x3', '\x2', '\x2', '\x2', '@', '\x41', '\x3', 
@@ -2676,8 +2676,8 @@ public partial class DiceGrammarParser : Parser {
 		'@', '\x3', '\x2', '\x2', '\x2', '\x43', '\x44', '\b', '\x5', '\x1', '\x2', 
 		'\x44', '\x45', '\x5', '\n', '\x6', '\x2', '\x45', 'N', '\x3', '\x2', 
 		'\x2', '\x2', '\x46', 'G', '\f', '\x5', '\x2', '\x2', 'G', 'H', '\a', 
-		'\x12', '\x2', '\x2', 'H', 'M', '\x5', '\n', '\x6', '\x2', 'I', 'J', '\f', 
-		'\x4', '\x2', '\x2', 'J', 'K', '\a', '\x13', '\x2', '\x2', 'K', 'M', '\x5', 
+		'\x14', '\x2', '\x2', 'H', 'M', '\x5', '\n', '\x6', '\x2', 'I', 'J', '\f', 
+		'\x4', '\x2', '\x2', 'J', 'K', '\a', '\x15', '\x2', '\x2', 'K', 'M', '\x5', 
 		'\n', '\x6', '\x2', 'L', '\x46', '\x3', '\x2', '\x2', '\x2', 'L', 'I', 
 		'\x3', '\x2', '\x2', '\x2', 'M', 'P', '\x3', '\x2', '\x2', '\x2', 'N', 
 		'L', '\x3', '\x2', '\x2', '\x2', 'N', 'O', '\x3', '\x2', '\x2', '\x2', 

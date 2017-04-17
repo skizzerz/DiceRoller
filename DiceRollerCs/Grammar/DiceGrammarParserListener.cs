@@ -66,42 +66,6 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitMathFunction([NotNull] DiceGrammarParser.MathFunctionContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>MultMult</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterMultMult([NotNull] DiceGrammarParser.MultMultContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultMult</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>MultNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterMultNone([NotNull] DiceGrammarParser.MultNoneContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitMultNone([NotNull] DiceGrammarParser.MultNoneContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>MultDiv</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterMultDiv([NotNull] DiceGrammarParser.MultDivContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultDiv</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>AddSub</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.add_expr"/>.
 	/// </summary>
@@ -137,6 +101,42 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitAddAdd([NotNull] DiceGrammarParser.AddAddContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultMult</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultMult([NotNull] DiceGrammarParser.MultMultContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultMult</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultNone([NotNull] DiceGrammarParser.MultNoneContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultNone([NotNull] DiceGrammarParser.MultNoneContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultDiv</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultDiv([NotNull] DiceGrammarParser.MultDivContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultDiv</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RollGroup</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.roll_expr"/>.

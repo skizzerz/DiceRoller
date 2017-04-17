@@ -76,48 +76,6 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMathFunction([NotNull] DiceGrammarParser.MathFunctionContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>MultMult</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMultMult([NotNull] DiceGrammarParser.MultMultContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultMult</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>MultNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMultNone([NotNull] DiceGrammarParser.MultNoneContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultNone</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMultNone([NotNull] DiceGrammarParser.MultNoneContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>MultDiv</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMultDiv([NotNull] DiceGrammarParser.MultDivContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>MultDiv</c>
-	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>AddSub</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.add_expr"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -159,6 +117,48 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitAddAdd([NotNull] DiceGrammarParser.AddAddContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultMult</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMultMult([NotNull] DiceGrammarParser.MultMultContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultMult</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMultNone([NotNull] DiceGrammarParser.MultNoneContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultNone</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMultNone([NotNull] DiceGrammarParser.MultNoneContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>MultDiv</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMultDiv([NotNull] DiceGrammarParser.MultDivContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>MultDiv</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.mult_expr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>RollGroup</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.roll_expr"/>.

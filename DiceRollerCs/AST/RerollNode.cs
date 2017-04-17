@@ -92,6 +92,11 @@ namespace Dice.AST
             return rolls;
         }
 
+        internal override DiceAST GetUnderlyingRollNode()
+        {
+            return Expression.GetUnderlyingRollNode();
+        }
+
         private long MaybeReroll(RollerConfig conf)
         {
             long rolls = 0;

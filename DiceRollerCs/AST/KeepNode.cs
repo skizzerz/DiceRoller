@@ -109,6 +109,11 @@ namespace Dice.AST
             return rolls;
         }
 
+        internal override DiceAST GetUnderlyingRollNode()
+        {
+            return Expression.GetUnderlyingRollNode();
+        }
+
         private long ApplyKeep(RollerConfig conf, DiceAST root, int depth)
         {
             if (KeepType == KeepType.Advantage || KeepType == KeepType.Disadvantage)

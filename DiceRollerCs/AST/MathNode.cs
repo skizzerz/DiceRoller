@@ -182,10 +182,12 @@ namespace Dice.AST
             _values.Clear();
             bool addLeftParen = Left.Values.Count != 1;
             bool addRightParen = Right.Values.Count != 1;
+            var leftRoll = Left.GetUnderlyingRollNode();
+            var rightRoll = Right.GetUnderlyingRollNode();
 
             if (addLeftParen)
             {
-                if (Left is MathNode ml)
+                if (leftRoll is MathNode ml)
                 {
                     // don't add parens unless it is required to make the order of operations match the tree
                     // (such as an add underneath a multiply)
@@ -197,7 +199,7 @@ namespace Dice.AST
                         addLeftParen = false;
                     }
                 }
-                else if (Left is GroupNode gl)
+                else if (leftRoll is GroupNode gl)
                 {
                     // group nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
                     if (Operation == MathOp.Add || Operation == MathOp.Subtract)
@@ -214,7 +216,7 @@ namespace Dice.AST
                         addLeftParen = false;
                     }
                 }
-                else if (Left is RollNode)
+                else if (leftRoll is RollNode)
                 {
                     // roll nodes internally are all addition, so we don't need to wrap addition in parens if we're adding/subtracting
                     if (Operation == MathOp.Add || Operation == MathOp.Subtract)
@@ -228,14 +230,14 @@ namespace Dice.AST
             // to ensure that such things ARE wrapped in parens
             if (addRightParen)
             {
-                if (Right is MathNode mr)
+                if (rightRoll is MathNode mr)
                 {
                     if (Operation == MathOp.Add || mr.Operation == MathOp.Multiply)
                     {
                         addRightParen = false;
                     }
                 }
-                else if (Right is GroupNode gr)
+                else if (rightRoll is GroupNode gr)
                 {
                     if (Operation == MathOp.Add)
                     {
@@ -248,7 +250,7 @@ namespace Dice.AST
                         addRightParen = false;
                     }
                 }
-                else if (Right is RollNode)
+                else if (rightRoll is RollNode)
                 {
                     if (Operation == MathOp.Add)
                     {

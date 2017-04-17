@@ -10,20 +10,20 @@ input
     ;
 
 math_expr
-    : mult_expr # MathNormal
+    : add_expr # MathNormal
     | global_function # MathFunction
     ;
 
-mult_expr
-    : mult_expr T_MULTIPLY add_expr # MultMult
-    | mult_expr T_DIVIDE add_expr # MultDiv
-    | add_expr # MultNone
+add_expr
+    : add_expr T_PLUS mult_expr # AddAdd
+    | add_expr T_MINUS mult_expr # AddSub
+    | mult_expr # AddNone
     ;
 
-add_expr
-    : add_expr T_PLUS roll_expr # AddAdd
-    | add_expr T_MINUS roll_expr # AddSub
-    | roll_expr # AddNone
+mult_expr
+    : mult_expr T_MULTIPLY roll_expr # MultMult
+    | mult_expr T_DIVIDE roll_expr # MultDiv
+    | roll_expr # MultNone
     ;
 
 roll_expr

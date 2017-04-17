@@ -86,6 +86,16 @@ namespace Dice.AST
             return rolls;
         }
 
+        internal override DiceAST GetUnderlyingRollNode()
+        {
+            if (Context.Expression == null)
+            {
+                return this;
+            }
+
+            return Context.Expression.GetUnderlyingRollNode();
+        }
+
         private void CallFunction()
         {
             Function(Context);

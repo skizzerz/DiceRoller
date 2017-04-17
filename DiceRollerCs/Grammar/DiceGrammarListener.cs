@@ -41,29 +41,29 @@ namespace Dice.Grammar
 
         public override void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context)
         {
-            var left = Stack.Pop();
             var right = Stack.Pop();
+            var left = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Multiply, left, right));
         }
 
         public override void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context)
         {
-            var left = Stack.Pop();
             var right = Stack.Pop();
+            var left = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Divide, left, right));
         }
 
         public override void ExitAddAdd([NotNull] DiceGrammarParser.AddAddContext context)
         {
-            var left = Stack.Pop();
             var right = Stack.Pop();
+            var left = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Add, left, right));
         }
 
         public override void ExitAddSub([NotNull] DiceGrammarParser.AddSubContext context)
         {
-            var left = Stack.Pop();
             var right = Stack.Pop();
+            var left = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Subtract, left, right));
         }
 

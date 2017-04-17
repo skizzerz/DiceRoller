@@ -135,6 +135,11 @@ namespace Dice.AST
             return rolls;
         }
 
+        internal override DiceAST GetUnderlyingRollNode()
+        {
+            return Expression.GetUnderlyingRollNode();
+        }
+
         private void CountSuccesses()
         {
             Successes = 0;

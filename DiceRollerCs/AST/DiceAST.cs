@@ -96,6 +96,16 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <summary>
+        /// Gets the roll node underneath this node, unless this node is a roll node of some sort.
+        /// Nodes that can branch (such as MathNode) may be returned as well.
+        /// </summary>
+        /// <returns></returns>
+        internal virtual DiceAST GetUnderlyingRollNode()
+        {
+            return this;
+        }
+
         protected abstract long EvaluateInternal(RollerConfig conf, DiceAST root, int depth);
         protected abstract long RerollInternal(RollerConfig conf, DiceAST root, int depth);
     }
