@@ -110,5 +110,10 @@ namespace Dice
         /// </summary>
         [Description("Error processing the dice expression: {0}")]
         ParseError = 18,
+        /// <summary>
+        /// Cannot specify advantage or disadvantage more than once.
+        /// </summary>
+        [Description("Cannot specify advantage or disadvantage more than once.")]
+        AdvantageOnlyOnce = 19,
     }
 }

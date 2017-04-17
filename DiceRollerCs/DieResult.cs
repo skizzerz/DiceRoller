@@ -33,6 +33,11 @@ namespace Dice
         public DieFlags Flags { get; set; }
 
         /// <summary>
+        /// Additional data about the roll. Used with SpecialDie.Text to display arbitrary text
+        /// </summary>
+        public string Data { get; set; }
+
+        /// <summary>
         /// What type of special die this is. Calling this is an error if DieType != DieType.SpecialDie
         /// </summary>
         public SpecialDie SpecialDie
@@ -52,6 +57,16 @@ namespace Dice
         {
             DieType = DieType.Special;
             SpecialDie = specialDie;
+        }
+
+        /// <summary>
+        /// Creates a Text die with the given data
+        /// </summary>
+        /// <param name="text"></param>
+        public DieResult(string text)
+            : this(SpecialDie.Text)
+        {
+            Data = text;
         }
 
         /// <summary>

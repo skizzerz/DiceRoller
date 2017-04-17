@@ -85,11 +85,23 @@ namespace Dice.AST
 
         internal void AddKeep(KeepNode keep)
         {
+            if (keep == null)
+            {
+                throw new ArgumentNullException("keep");
+            }
+
             if (keep.KeepType == KeepType.Advantage || keep.KeepType == KeepType.Disadvantage)
             {
                 if (Keep.Count > 0)
                 {
-                    throw new DiceException(DiceErrorCode.NoAdvantageKeep);
+                    if (haveAdvantage)
+                    {
+                        throw new DiceException(DiceErrorCode.AdvantageOnlyOnce);
+                    }
+                    else
+                    {
+                        throw new DiceException(DiceErrorCode.NoAdvantageKeep);
+                    }
                 }
 
                 haveAdvantage = true;
@@ -99,7 +111,7 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.NoAdvantageKeep);
             }
 
-            Keep.Add(keep ?? throw new ArgumentNullException("keep"));
+            Keep.Add(keep);
         }
 
         internal void AddSort(SortNode sort)

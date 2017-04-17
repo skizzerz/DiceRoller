@@ -77,7 +77,7 @@ namespace Dice.Grammar
         public override void ExitUnaryMinus([NotNull] DiceGrammarParser.UnaryMinusContext context)
         {
             var param = Stack.Pop();
-            Stack.Push(new MathNode(MathOp.Negate, param, null));
+            Stack.Push(new MathNode(MathOp.Negate, null, param));
         }
 
         public override void ExitNumberLiteral([NotNull] DiceGrammarParser.NumberLiteralContext context)
@@ -434,8 +434,15 @@ namespace Dice.Grammar
             args.Reverse();
 
             // check for a built-in function
-            var fname = context.T_IDENTIFIER().GetText().ToLower();
-            switch (fname)
+            var fname = context.T_IDENTIFIER().GetText();
+            var lname = fname.ToLower();
+
+            if (BuiltinFunctions.ReservedNames.ContainsKey(lname))
+            {
+                fname = BuiltinFunctions.ReservedNames[lname];
+            }
+
+            switch (lname)
             {
                 case "reroll":
                     if (args.Count == 0)
@@ -456,7 +463,12 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArity, fname);
                     }
 
-                    if (!(args[0] is LiteralNode || args[0] is MacroNode) || args.Skip(1).OfType<ComparisonNode>().Count() < args.Count)
+                    if (!(args[0] is LiteralNode || args[0] is MacroNode))
+                    {
+                        throw new DiceException(DiceErrorCode.BadRerollCount, fname);
+                    }
+
+                    if (args.Skip(1).OfType<ComparisonNode>().Count() < args.Count - 1)
                     {
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }

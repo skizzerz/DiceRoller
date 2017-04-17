@@ -165,7 +165,7 @@ namespace Dice
 
             var lname = name.ToLower();
 
-            if (BuiltinFunctions.ReservedNames.Contains(lname))
+            if (BuiltinFunctions.ReservedNames.ContainsKey(lname))
             {
                 throw new ArgumentException("Cannot remove a reserved function name", "name");
             }
@@ -180,7 +180,7 @@ namespace Dice
 
         internal bool Contains(string lname, FunctionScope scope, bool includeReserved = true)
         {
-            if (includeReserved && BuiltinFunctions.ReservedNames.Contains(lname.ToLower()))
+            if (includeReserved && BuiltinFunctions.ReservedNames.ContainsKey(lname.ToLower()))
             {
                 return true;
             }

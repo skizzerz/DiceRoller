@@ -91,6 +91,12 @@ namespace Dice
                         case SpecialDie.Negate:
                             sb.Append("-");
                             break;
+                        case SpecialDie.Comma:
+                            sb.Append(", ");
+                            break;
+                        case SpecialDie.Text:
+                            sb.Append(die.Data);
+                            break;
                         default:
                             sb.Append("<<UNKOWN SPECIAL>>");
                             break;

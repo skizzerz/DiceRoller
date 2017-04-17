@@ -16,20 +16,17 @@ namespace Dice.AST
         public bool Evaluated { get; private set; }
 
         /// <summary>
-        /// The final value of this node. This is only valid after
-        /// Evaluate() has been called on the node.
+        /// The final value of this node.
         /// </summary>
         public decimal Value { get; protected set; }
 
         /// <summary>
-        /// What type of value we have (total or successes). This is only
-        /// valid after Evaluate() has been called on the node.
+        /// What type of value we have (total or successes).
         /// </summary>
         public ResultType ValueType { get; protected set; } = ResultType.Total;
 
         /// <summary>
         /// The underlying dice that were rolled, as well as their values.
-        /// This is only valid after Evaluate() has been called on the node.
         /// If no dice were rolled, this will be an empty list.
         /// </summary>
         public abstract IReadOnlyList<DieResult> Values { get; }

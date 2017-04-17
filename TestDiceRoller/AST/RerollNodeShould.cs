@@ -38,5 +38,21 @@ namespace TestDiceRoller.AST
             var node = new RerollNode(2, less5, Two) { Expression = _1d20 };
             EvaluateNode(node, RerollConf, 3, "1d20.rerollN(2, <5) => 1!* + 2* + 1! => 1");
         }
+
+        [TestMethod]
+        public void ThrowTooManyDice_WhenRerollingMoreThanMaxDice()
+        {
+            var conf = new RollerConfig() { MaxDice = 10, GetRandomBytes = GetRNG(Roll1()) };
+            var node = new RerollNode(0, equal1) { Expression = _1d20 };
+            EvaluateNode(node, conf, DiceErrorCode.TooManyDice);
+        }
+
+        [TestMethod]
+        public void Successfully_AbortRerollWhenMaxRerollsReached()
+        {
+            var conf = new RollerConfig() { MaxRerolls = 2, GetRandomBytes = GetRNG(Roll1()) };
+            var node = new RerollNode(0, equal1) { Expression = _1d20 };
+            EvaluateNode(node, conf, 3, "1d20.reroll(=1) => 1!* + 1!* + 1! => 1");
+        }
     }
 }

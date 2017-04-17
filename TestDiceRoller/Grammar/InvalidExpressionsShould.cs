@@ -19,42 +19,6 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteRerollExtra()
-        {
-            EvaluateRoll("3d6rr", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenIncompleteRerollOnceExtra()
-        {
-            EvaluateRoll("3d6ro", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenIncompleteKeepHighestExtra()
-        {
-            EvaluateRoll("3d6kh", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenIncompleteKeepLowestExtra()
-        {
-            EvaluateRoll("3d6kl", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenIncompleteDropHighestExtra()
-        {
-            EvaluateRoll("3d6dh", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenIncompleteDropLowestExtra()
-        {
-            EvaluateRoll("3d6dl", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
         public void ThrowParseError_WhenIncompleteCriticalExtra()
         {
             EvaluateRoll("3d6cs", Roll9Conf, DiceErrorCode.ParseError);
@@ -106,12 +70,6 @@ namespace TestDiceRoller.Grammar
         public void ThrowParseError_WhenExtraAfterFunction()
         {
             EvaluateRoll("1d20.reroll()sa", Roll9Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowNoAdvantageKeep_WhenMixingKeepAndAdvantage()
-        {
-            EvaluateRoll("1d20adkh1", Roll9Conf, DiceErrorCode.NoAdvantageKeep);
         }
 
         [TestMethod]

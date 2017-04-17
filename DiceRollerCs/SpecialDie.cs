@@ -19,6 +19,8 @@ namespace Dice
         Divide = 3,
         OpenParen = 4,
         CloseParen = 5,
-        Negate = 6
+        Negate = 6,
+        Comma = 7,
+        Text = 8
     }
 }
