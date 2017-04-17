@@ -150,5 +150,21 @@ namespace TestDiceRoller
                 }
             }
         }
+
+        public static void ExecuteMacro(MacroContext context)
+        {
+            switch (context.Param)
+            {
+                case "one":
+                    context.Value = 1;
+                    break;
+                case "two":
+                    context.Value = 2;
+                    break;
+                case "twenty":
+                    context.Value = 20;
+                    break;
+            }
+        }
     }
 }

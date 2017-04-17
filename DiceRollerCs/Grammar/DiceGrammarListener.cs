@@ -506,54 +506,62 @@ namespace Dice.Grammar
                 case "explode":
                     if (args.Count == 0)
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                        Stack.Push(new ExplodeNode(ExplodeType.Explode, false, null));
                     }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    else
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
+                        if (args.OfType<ComparisonNode>().Count() < args.Count)
+                        {
+                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                        }
 
-                    Stack.Push(new ExplodeNode(ExplodeType.Explode, false, new ComparisonNode(args.Cast<ComparisonNode>())));
+                        Stack.Push(new ExplodeNode(ExplodeType.Explode, false, new ComparisonNode(args.Cast<ComparisonNode>())));
+                    }
                     break;
                 case "compound":
                     if (args.Count == 0)
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                        Stack.Push(new ExplodeNode(ExplodeType.Explode, true, null));
                     }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    else
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
+                        if (args.OfType<ComparisonNode>().Count() < args.Count)
+                        {
+                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                        }
 
-                    Stack.Push(new ExplodeNode(ExplodeType.Explode, true, new ComparisonNode(args.Cast<ComparisonNode>())));
+                        Stack.Push(new ExplodeNode(ExplodeType.Explode, true, new ComparisonNode(args.Cast<ComparisonNode>())));
+                    }
                     break;
                 case "penetrate":
                     if (args.Count == 0)
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, null));
                     }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    else
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
+                        if (args.OfType<ComparisonNode>().Count() < args.Count)
+                        {
+                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                        }
 
-                    Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, new ComparisonNode(args.Cast<ComparisonNode>())));
+                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, new ComparisonNode(args.Cast<ComparisonNode>())));
+                    }
                     break;
                 case "compoundpenetrate":
                     if (args.Count == 0)
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
+                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, true, null));
                     }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
+                    else
                     {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
+                        if (args.OfType<ComparisonNode>().Count() < args.Count)
+                        {
+                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
+                        }
 
-                    Stack.Push(new ExplodeNode(ExplodeType.Penetrate, true, new ComparisonNode(args.Cast<ComparisonNode>())));
+                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, true, new ComparisonNode(args.Cast<ComparisonNode>())));
+                    }
                     break;
                 case "keephighest":
                     if (args.Count != 1)

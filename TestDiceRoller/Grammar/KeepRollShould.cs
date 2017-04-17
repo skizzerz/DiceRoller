@@ -121,6 +121,90 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_DropLowestExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dFdl1", conf, 3, "3dF.dropLowest(1) => -1!* + 0 + 1! => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_DropLowestFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dF.dropLowest(1)", conf, 3, "3dF.dropLowest(1) => -1!* + 0 + 1! => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_DropHighestExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dFdh1", conf, 3, "3dF.dropHighest(1) => -1! + 0 + 1!* => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_DropHighestFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dF.dropHighest(1)", conf, 3, "3dF.dropHighest(1) => -1! + 0 + 1!* => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_KeepLowestExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dFkl1", conf, 3, "3dF.keepLowest(1) => -1! + 0* + 1!* => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_KeepLowestFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dF.keepLowest(1)", conf, 3, "3dF.keepLowest(1) => -1! + 0* + 1!* => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_KeepHighestExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dFkh1", conf, 3, "3dF.keepHighest(1) => -1!* + 0* + 1! => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_KeepHighestFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2) };
+            EvaluateRoll("3dF.keepHighest(1)", conf, 3, "3dF.keepHighest(1) => -1!* + 0* + 1! => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_AdvantageExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1) };
+            EvaluateRoll("1dFad", conf, 2, "1dF.advantage() => -1!* + 0 => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_AdvantageFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1) };
+            EvaluateRoll("1dF.advantage()", conf, 2, "1dF.advantage() => -1!* + 0 => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_DisdvantageExtra_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1) };
+            EvaluateRoll("1dFda", conf, 2, "1dF.disadvantage() => -1! + 0* => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_DisdvantageFunction_Fudge()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 1) };
+            EvaluateRoll("1dF.disadvantage()", conf, 2, "1dF.disadvantage() => -1! + 0* => -1");
+        }
+
+        [TestMethod]
         public void ThrowAdvantageOnlyOnce_WhenDoingAdvantageTwice()
         {
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(3, 15, 7) };

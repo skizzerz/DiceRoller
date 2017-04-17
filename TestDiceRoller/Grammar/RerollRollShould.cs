@@ -23,6 +23,18 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_RerollExtra_Fudge()
+        {
+            EvaluateRoll("1dFrr<0", RerollConf, 2, "1dF.reroll(<0) => -1!* + 0 => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_RerollFunction_Fudge()
+        {
+            EvaluateRoll("1dF.reroll(<0)", RerollConf, 2, "1dF.reroll(<0) => -1!* + 0 => 0");
+        }
+
+        [TestMethod]
         public void Successfully_RerollTwoConditionsExtra()
         {
             EvaluateRoll("1d20rr1rr2", RerollConf, 4, "1d20.reroll(=1, =2) => 1!* + 2* + 1!* + 10 => 10");
