@@ -81,9 +81,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DiceRollerCs\DiceRollerCs.csproj">
+    <ProjectReference Include="..\DiceRollerCs\Dice.csproj">
       <Project>{806c407c-d9cc-4456-84c3-f25d810c3154}</Project>
-      <Name>DiceRollerCs</Name>
+      <Name>Dice</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
