@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DiceRoller</id>
+    <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
+    <version>1.0.0</version>
+    <title>DiceRoller</title>
+    <authors>Ryan Schmidt</authors>
+    <owners>skizzerz</owners>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://skizzerz.net/DiceRoller</projectUrl>
+    <iconUrl>https://skizzerz.net/DiceRoller/images/thumb/5/56/DiceRoller_Logo.svg/256px-DiceRoller_Logo.svg.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright ©2017 Ryan Schmidt</copyright>
+    <tags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</tags>
+    <dependencies>
+      <dependency id="Antlr4.Runtime.Standard" version="4.7" />
+      <dependency id="System.ValueTuple" version="4.3" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Dice.dll" target="lib\net452" />
+    <file src="bin\Release\Dice.pdb" target="lib\net452" />
+  </files>
+</package>

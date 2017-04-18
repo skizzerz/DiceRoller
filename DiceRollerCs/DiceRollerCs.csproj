@@ -114,6 +114,7 @@
     <None Include=".editorconfig" />
     <None Include="DiceGrammarLexer.g4" />
     <None Include="DiceGrammarParser.g4" />
+    <None Include="DiceRollerCs.nuspec" />
     <None Include="DiceRollerCs.snk" />
     <None Include="Grammar\DiceGrammarLexer.tokens" />
     <None Include="Grammar\DiceGrammarParser.tokens" />
