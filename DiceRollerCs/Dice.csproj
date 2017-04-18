@@ -104,6 +104,7 @@
     <Compile Include="Grammar\DiceGrammarParserListener.cs" />
     <Compile Include="InternalContext.cs" />
     <Compile Include="MacroContext.cs" />
+    <Compile Include="PbP\RollPost.cs" />
     <Compile Include="ResultType.cs" />
     <Compile Include="Roller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

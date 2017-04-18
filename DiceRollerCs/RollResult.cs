@@ -14,7 +14,7 @@ namespace Dice
     /// as well as the individual die results of the roll.
     /// </summary>
     [Serializable]
-    public class RollResult : ISerializable
+    public class RollResult : ISerializable, IEquatable<RollResult>
     {
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.
@@ -216,6 +216,45 @@ namespace Dice
             info.AddValue("Expression", Expression);
             info.AddValue("AllRolls", AllRolls.ToArray(), typeof(uint[]));
             info.AddValue("AllMacros", AllMacros.ToArray(), typeof(decimal[]));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RollResult r)
+            {
+                return Equals(r);
+            }
+
+            return false;
+        }
+
+        public virtual bool Equals(RollResult r)
+        {
+            // RollRoot is not considered when determining if two RollResults are equal.
+            // This is because RollRoot is not preserved on serialization, and does not contain
+            // any information that is not represented via other properties/fields.
+            return ResultType == r.ResultType
+                && Value == r.Value
+                && Values.SequenceEqual(r.Values)
+                && NumRolls == r.NumRolls
+                && AllRolls.SequenceEqual(r.AllRolls)
+                && AllMacros.SequenceEqual(r.AllMacros);
+        }
+
+        public override int GetHashCode()
+        {
+            // See above for why RollRoot isn't present in the hash code
+            return new { ResultType, Value, Values = Values.ToArray(), NumRolls, Expression, AllRolls = AllRolls.ToArray(), AllMacros = AllMacros.ToArray() }.GetHashCode();
+        }
+
+        public static bool operator==(RollResult a, RollResult b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RollResult a, RollResult b)
+        {
+            return !a.Equals(b);
         }
     }
 }

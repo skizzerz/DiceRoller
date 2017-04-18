@@ -12,7 +12,7 @@ namespace Dice
     /// Contains the result of an individual die roll.
     /// </summary>
     [Serializable]
-    public struct DieResult : ISerializable
+    public struct DieResult : ISerializable, IEquatable<DieResult>
     {
         /// <summary>
         /// What type of die was rolled
@@ -162,10 +162,15 @@ namespace Dice
         {
             if (obj is DieResult d)
             {
-                return DieType == d.DieType && NumSides == d.NumSides && Value == d.Value && Flags == d.Flags;
+                return Equals(d);
             }
 
             return false;
+        }
+
+        public bool Equals(DieResult d)
+        {
+            return DieType == d.DieType && NumSides == d.NumSides && Value == d.Value && Flags == d.Flags;
         }
 
         public override int GetHashCode()
