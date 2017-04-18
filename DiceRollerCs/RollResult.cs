@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 using Dice.AST;
 
@@ -12,7 +13,8 @@ namespace Dice
     /// Holds the result of a roll, allowing easy access to the total result
     /// as well as the individual die results of the roll.
     /// </summary>
-    public class RollResult
+    [Serializable]
+    public class RollResult : ISerializable
     {
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.
@@ -36,23 +38,48 @@ namespace Dice
         /// <summary>
         /// The root of the AST for this roll. Accessing this is usually not required,
         /// but is exposed if deeper introspection into the roll is desired.
+        /// This will be null if a RollResult is deserialized.
         /// </summary>
         public DiceAST RollRoot { get; private set; }
+
+        /// <summary>
+        /// The normalized dice expression for the roll, equivalent to RollRoot.ToString(),
+        /// except that this will be defined even if RollRoot is null.
+        /// </summary>
+        public string Expression { get; private set; }
 
         /// <summary>
         /// The number of dice rolls that were needed to fully evaluate this expression.
         /// </summary>
         public int NumRolls { get; private set; }
 
+        /// <summary>
+        /// The rolled value for every die, from left-to-right according to the normalized Expression.
+        /// By taking Expression, AllRolls, and AllMacros, it is possible to reconstruct the full
+        /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
+        /// after a RollResult is deserialized, this is how RollRoot is created.
+        /// </summary>
+        private List<uint> AllRolls;
+
+        /// <summary>
+        /// The value for every macro, from left-to-right according to the normalized Expression.
+        /// By taking Expression, AllRolls, and AllMacros, it is possible to reconstruct the full
+        /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
+        /// after a RollResult is deserialized, this is how RollRoot is created.
+        /// </summary>
+        private List<decimal> AllMacros;
+
         internal RollResult(DiceAST rollRoot, int numRolls)
         {
             RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
             // cache some commonly-referenced information directly in this class instead of requiring
-            // the user to drill down into RollRoot for everything
+            // the user to drill down into RollRoot for everything (and because RollRoot isn't available
+            // if deserializing).
             ResultType = rollRoot.ValueType;
             Value = rollRoot.Value;
             Values = rollRoot.Values;
             NumRolls = numRolls;
+            Expression = rollRoot.ToString();
         }
 
         /// <summary>

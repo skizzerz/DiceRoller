@@ -402,6 +402,18 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupReroll</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterGroupReroll([NotNull] DiceGrammarParser.GroupRerollContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupReroll</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitGroupReroll([NotNull] DiceGrammarParser.GroupRerollContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicReroll</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
 	/// </summary>

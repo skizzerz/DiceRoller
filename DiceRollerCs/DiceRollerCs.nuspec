@@ -3,7 +3,7 @@
   <metadata>
     <id>DiceRoller</id>
     <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
@@ -12,7 +12,7 @@
     <iconUrl>https://skizzerz.net/DiceRoller/images/thumb/5/56/DiceRoller_Logo.svg/256px-DiceRoller_Logo.svg.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Reroll grouped rolls and a new PbP helper (Dice.PbP namespace) to accomodate multiple rolls in a post.</releaseNotes>
     <copyright>Copyright ©2017 Ryan Schmidt</copyright>
     <tags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</tags>
     <dependencies>

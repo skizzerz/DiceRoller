@@ -79,6 +79,7 @@ grouped_extras
     : keep_expr # GroupKeep
     | success_expr # GroupSuccess
     | sort_expr # GroupSort
+    | reroll_expr # GroupReroll
     ;
 
 basic_extras

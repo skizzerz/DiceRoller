@@ -19,6 +19,7 @@ namespace Dice.AST
         public List<KeepNode> Keep { get; private set; }
         public SortNode Sort { get; private set; }
         public SuccessNode Success { get; private set; }
+        public RerollNode RerollNode { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
 
         private bool haveAdvantage = false;
@@ -33,6 +34,7 @@ namespace Dice.AST
             Success = null;
             Functions = new List<FunctionNode>();
             NumTimes = null;
+            RerollNode = null;
         }
 
         internal void AddExpression(DiceAST expression)
@@ -105,6 +107,28 @@ namespace Dice.AST
             Functions.Add(fn ?? throw new ArgumentNullException("fn"));
         }
 
+        internal void AddReroll(RerollNode reroll)
+        {
+            if (reroll == null)
+            {
+                throw new ArgumentNullException("reroll");
+            }
+
+            if (RerollNode != null && RerollNode.MaxRerolls != reroll.MaxRerolls)
+            {
+                throw new DiceException(DiceErrorCode.MixedReroll);
+            }
+
+            if (RerollNode == null)
+            {
+                RerollNode = reroll;
+            }
+            else
+            {
+                RerollNode.Comparison.Add(reroll.Comparison);
+            }
+        }
+
         /// <summary>
         /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree
         /// </summary>
@@ -117,6 +141,11 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.BeforeExplode, ref group);
             AddFunctionNodes(FunctionTiming.AfterExplode, ref group);
             AddFunctionNodes(FunctionTiming.BeforeReroll, ref group);
+            if (RerollNode != null)
+            {
+                RerollNode.Expression = group;
+                group = RerollNode;
+            }
             AddFunctionNodes(FunctionTiming.AfterReroll, ref group);
             AddFunctionNodes(FunctionTiming.BeforeKeep, ref group);
             foreach (var k in Keep)
@@ -179,6 +208,11 @@ namespace Dice.AST
             sb.Append("{");
             sb.Append(String.Join(", ", GroupExpressions.Select(o => o.ToString())));
             sb.Append("}");
+
+            if (RerollNode != null)
+            {
+                sb.Append(RerollNode.ToString());
+            }
 
             foreach (var k in Keep)
             {

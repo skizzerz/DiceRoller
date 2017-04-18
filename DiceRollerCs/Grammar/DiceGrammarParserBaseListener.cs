@@ -468,6 +468,20 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGroupSort([NotNull] DiceGrammarParser.GroupSortContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupReroll</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterGroupReroll([NotNull] DiceGrammarParser.GroupRerollContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupReroll</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitGroupReroll([NotNull] DiceGrammarParser.GroupRerollContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicReroll</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
 	/// <para>The default implementation does nothing.</para>

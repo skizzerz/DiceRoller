@@ -106,13 +106,21 @@ namespace Dice.AST
 
             foreach (var die in Expression.Values)
             {
-                if (die.DieType == DieType.Group || die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped) || !Comparison.Compare(die.Value))
+                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped) || !Comparison.Compare(die.Value))
                 {
                     _values.Add(die);
                     continue;
                 }
 
                 _values.Add(die.Drop());
+
+                if (die.DieType == DieType.Group)
+                {
+                    // Handle group rerolls by recording the underlying group expression in DieResult.Data and rerolling it
+                    // (specifically, store an identifier in DieResult.Data and keep a Dictionary somewhere that maps the id into the DiceAST for
+                    // that particular DiceAST expression. Probably store the Dictionary in conf as an internal since we pass that everywhere already
+                    throw new NotImplementedException("Grouped rerolls are not yet implemented");
+                }
 
                 rolls++;
                 rerolls++;
