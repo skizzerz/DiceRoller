@@ -9,6 +9,7 @@ namespace TestDiceRoller.Grammar
     public class RerollRollShould : TestBase
     {
         private static RollerConfig RerollConf => new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 0, 9) };
+        private static RollerConfig GroupRerollConf => new RollerConfig() { GetRandomBytes = GetRNG(0, 4, 5, 4, 1, 2, 1, 1, 3, 3) };
 
         [TestMethod]
         public void Successfully_RerollExtra()
@@ -35,6 +36,18 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_RerollExtra_Group()
+        {
+            EvaluateRoll("2{{2d6}}rr<7", GroupRerollConf, 10, "2{{2d6}}.reroll(<7) => (6!* + 5* + 4* + 8) + (11!) => 19");
+        }
+
+        [TestMethod]
+        public void Successfully_RerollFunction_Group()
+        {
+            EvaluateRoll("2{{2d6}}.reroll(<7)", GroupRerollConf, 10, "2{{2d6}}.reroll(<7) => (6!* + 5* + 4* + 8) + (11!) => 19");
+        }
+
+        [TestMethod]
         public void Successfully_RerollTwoConditionsExtra()
         {
             EvaluateRoll("1d20rr1rr2", RerollConf, 4, "1d20.reroll(=1, =2) => 1!* + 2* + 1!* + 10 => 10");
@@ -50,6 +63,18 @@ namespace TestDiceRoller.Grammar
         public void Successfully_RerollOnceExtra()
         {
             EvaluateRoll("1d20ro<=2", RerollConf, 2, "1d20.rerollOnce(<=2) => 1!* + 2 => 2");
+        }
+
+        [TestMethod]
+        public void Successfully_RerollOnceExtra_Group()
+        {
+            EvaluateRoll("2{{2d6}}ro<7", GroupRerollConf, 6, "2{{2d6}}.rerollOnce(<7) => (6!* + 5) + (11!) => 16");
+        }
+
+        [TestMethod]
+        public void Successfully_RerollOnceFunction_Group()
+        {
+            EvaluateRoll("2{{2d6}}.rerollOnce(<7)", GroupRerollConf, 6, "2{{2d6}}.rerollOnce(<7) => (6!* + 5) + (11!) => 16");
         }
 
         [TestMethod]
@@ -74,6 +99,12 @@ namespace TestDiceRoller.Grammar
         public void Successfully_RerollNFunction()
         {
             EvaluateRoll("1d20.rerollN(2, <=2)", RerollConf, 3, "1d20.rerollN(2, <=2) => 1!* + 2* + 1! => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_RerollNFunction_Group()
+        {
+            EvaluateRoll("2{{2d6}}.rerollN(2, <7)", GroupRerollConf, 8, "2{{2d6}}.rerollN(2, <7) => (6!* + 5* + 4) + (11!) => 15");
         }
 
         [TestMethod]

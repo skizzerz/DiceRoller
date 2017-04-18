@@ -47,6 +47,11 @@ namespace Dice.AST
         /// <returns>Total number of rolls taken to evaluate this subtree</returns>
         internal long Evaluate(RollerConfig conf, DiceAST root, int depth)
         {
+            if (this == root)
+            {
+                conf.InternalContext = new InternalContext();
+            }
+
             if (depth > conf.MaxRecursionDepth)
             {
                 throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);

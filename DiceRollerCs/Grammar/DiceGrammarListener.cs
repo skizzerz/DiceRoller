@@ -228,22 +228,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    decimal maxRerolls;
-                    if (args[0] is LiteralNode)
-                    {
-                        maxRerolls = ((LiteralNode)args[0]).Value;
-                    }
-                    else
-                    {
-                        maxRerolls = ((MacroNode)args[0]).Evaluate(Config, args[0], 0);
-                    }
-
-                    if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > Int32.MaxValue)
-                    {
-                        throw new DiceException(DiceErrorCode.BadRerollCount, fname);
-                    }
-
-                    Stack.Push(new RerollNode((int)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
+                    Stack.Push(new RerollNode(-1, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
                     break;
                 case "rerollonce":
                     if (args.Count == 0)
@@ -542,22 +527,7 @@ namespace Dice.Grammar
                         throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
                     }
 
-                    decimal maxRerolls;
-                    if (args[0] is LiteralNode)
-                    {
-                        maxRerolls = ((LiteralNode)args[0]).Value;
-                    }
-                    else
-                    {
-                        maxRerolls = ((MacroNode)args[0]).Evaluate(Config, args[0], 0);
-                    }
-
-                    if (maxRerolls < 0 || Math.Floor(maxRerolls) != maxRerolls || maxRerolls > Int32.MaxValue)
-                    {
-                        throw new DiceException(DiceErrorCode.BadRerollCount, fname);
-                    }
-
-                    Stack.Push(new RerollNode((int)maxRerolls, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
+                    Stack.Push(new RerollNode(-1, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
                     break;
                 case "rerollonce":
                     if (args.Count == 0)

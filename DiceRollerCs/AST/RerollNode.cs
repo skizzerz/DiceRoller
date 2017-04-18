@@ -45,6 +45,11 @@ namespace Dice.AST
             MaxRerolls = maxRerolls;
             MaxRerollsExpr = maxRerollsExpr;
             _values = new List<DieResult>();
+
+            if (maxRerolls < 0 && maxRerollsExpr == null)
+            {
+                throw new DiceException(DiceErrorCode.BadRerollCount);
+            }
         }
 
         public override string ToString()
@@ -77,9 +82,10 @@ namespace Dice.AST
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
         {
-            var rolls = Comparison.Evaluate(conf, root, depth + 1);
+            var rolls = MaxRerollsExpr?.Evaluate(conf, root, depth + 1) ?? 0;
+            rolls += Comparison.Evaluate(conf, root, depth + 1);
             rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += MaybeReroll(conf);
+            rolls += MaybeReroll(conf, root, depth);
 
             return rolls;
         }
@@ -87,7 +93,7 @@ namespace Dice.AST
         protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
         {
             var rolls = Expression.Reroll(conf, root, depth + 1);
-            rolls += MaybeReroll(conf);
+            rolls += MaybeReroll(conf, root, depth);
 
             return rolls;
         }
@@ -97,11 +103,21 @@ namespace Dice.AST
             return Expression.GetUnderlyingRollNode();
         }
 
-        private long MaybeReroll(RollerConfig conf)
+        private long MaybeReroll(RollerConfig conf, DiceAST root, int depth)
         {
             long rolls = 0;
             int rerolls = 0;
-            var maxRerolls = MaxRerolls == 0 ? conf.MaxRerolls : Math.Min(MaxRerolls, conf.MaxRerolls);
+            int maxRerolls = MaxRerolls;
+            if (MaxRerolls < 0)
+            {
+                if (MaxRerollsExpr.Value < 0 || Math.Floor(MaxRerollsExpr.Value) != MaxRerollsExpr.Value || MaxRerollsExpr.Value > Int32.MaxValue)
+                {
+                    throw new DiceException(DiceErrorCode.BadRerollCount);
+                }
+
+                maxRerolls = (int)MaxRerollsExpr.Value;
+            }
+            maxRerolls = maxRerolls == 0 ? conf.MaxRerolls : Math.Min(maxRerolls, conf.MaxRerolls);
             _values.Clear();
 
             foreach (var die in Expression.Values)
@@ -116,40 +132,76 @@ namespace Dice.AST
 
                 if (die.DieType == DieType.Group)
                 {
-                    // Handle group rerolls by recording the underlying group expression in DieResult.Data and rerolling it
-                    // (specifically, store an identifier in DieResult.Data and keep a Dictionary somewhere that maps the id into the DiceAST for
-                    // that particular DiceAST expression. Probably store the Dictionary in conf as an internal since we pass that everywhere already
-                    throw new NotImplementedException("Grouped rerolls are not yet implemented");
-                }
+                    var group = conf.InternalContext.GetGroupExpression(die.Data);
+                    rolls += group.Reroll(conf, root, depth + 1);
+                    rerolls++;
 
-                rolls++;
-                rerolls++;
-                RollType rt = RollType.Normal;
-                switch (die.DieType)
-                {
-                    case DieType.Normal:
-                        rt = RollType.Normal;
-                        break;
-                    case DieType.Fudge:
-                        rt = RollType.Fudge;
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unsupported die type in reroll");
-                }
+                    while (rerolls < maxRerolls && Comparison.Compare(group.Value))
+                    {
+                        _values.Add(new DieResult(SpecialDie.Add));
+                        _values.Add(new DieResult()
+                        {
+                            DieType = DieType.Group,
+                            NumSides = 0,
+                            Value = group.Value,
+                            // maintain any crit/fumble flags from the underlying dice, combining them together
+                            Flags = group.Values
+                                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                                .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                                .Aggregate((d1, d2) => d1 | d2),
+                            Data = die.Data
+                        }.Drop()); // mark the overall result as dropped
 
-                var reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
-                while (rerolls < maxRerolls && Comparison.Compare(reroll.Value))
-                {
+                        rolls += group.Reroll(conf, root, depth + 1);
+                        rerolls++;
+                    }
+
                     _values.Add(new DieResult(SpecialDie.Add));
-                    _values.Add(reroll.Drop());
-
+                    _values.Add(new DieResult()
+                    {
+                        DieType = DieType.Group,
+                        NumSides = 0,
+                        Value = group.Value,
+                        // maintain any crit/fumble flags from the underlying dice, combining them together
+                        Flags = group.Values
+                            .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                            .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                            .Aggregate((d1, d2) => d1 | d2),
+                        Data = die.Data
+                    });
+                }
+                else
+                {
                     rolls++;
                     rerolls++;
-                    reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
-                }
+                    RollType rt = RollType.Normal;
+                    switch (die.DieType)
+                    {
+                        case DieType.Normal:
+                            rt = RollType.Normal;
+                            break;
+                        case DieType.Fudge:
+                            rt = RollType.Fudge;
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unsupported die type in reroll");
+                    }
 
-                _values.Add(new DieResult(SpecialDie.Add));
-                _values.Add(reroll);
+                    var reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
+                    while (rerolls < maxRerolls && Comparison.Compare(reroll.Value))
+                    {
+                        _values.Add(new DieResult(SpecialDie.Add));
+                        _values.Add(reroll.Drop());
+
+                        rolls++;
+                        rerolls++;
+                        reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
+                    }
+
+
+                    _values.Add(new DieResult(SpecialDie.Add));
+                    _values.Add(reroll);
+                }
             }
 
             var dice = _values.Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped));

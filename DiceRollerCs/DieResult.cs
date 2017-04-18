@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace Dice
 {
     /// <summary>
     /// Contains the result of an individual die roll.
     /// </summary>
-    public struct DieResult
+    [Serializable]
+    public struct DieResult : ISerializable
     {
         /// <summary>
         /// What type of die was rolled
@@ -67,6 +69,26 @@ namespace Dice
             : this(SpecialDie.Text)
         {
             Data = text;
+        }
+
+        /// <summary>
+        /// Deserializes a DieResult
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        private DieResult(SerializationInfo info, StreamingContext context)
+            : this()
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            DieType = (DieType)info.GetInt32("DieType");
+            NumSides = info.GetInt32("NumSides");
+            Value = info.GetDecimal("Value");
+            Flags = (DieFlags)info.GetInt32("Flags");
+            Data = info.GetString("Data");
         }
 
         /// <summary>
@@ -149,6 +171,21 @@ namespace Dice
         public override int GetHashCode()
         {
             return new { DieType, NumSides, Value, Flags }.GetHashCode();
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            info.AddValue("_Version", 1);
+            info.AddValue("DieType", (int)DieType);
+            info.AddValue("NumSides", NumSides);
+            info.AddValue("Value", Value);
+            info.AddValue("Flags", (int)Flags);
+            info.AddValue("Data", Data);
         }
 
         public static bool operator ==(DieResult a, DieResult b)

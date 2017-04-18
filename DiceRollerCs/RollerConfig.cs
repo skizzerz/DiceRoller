@@ -67,6 +67,11 @@ namespace Dice
         /// </summary>
         public FunctionRegistry FunctionRegistry { get; set; }
 
+        /// <summary>
+        /// Opaque contextual information used when evaluating dice expressions
+        /// </summary>
+        internal InternalContext InternalContext { get; set; }
+
         public RollerConfig()
         {
             MaxDice = 1000;
@@ -78,6 +83,7 @@ namespace Dice
             ExecuteMacro = null;
             FunctionRegistry = new FunctionRegistry();
             FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
+            InternalContext = new InternalContext();
         }
     }
 }

@@ -142,7 +142,8 @@ namespace Dice.AST
                             Flags = ast.Values
                                 .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
                                 .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
-                                .Aggregate((d1, d2) => d1 | d2)
+                                .Aggregate((d1, d2) => d1 | d2),
+                            Data = conf.InternalContext.AddGroupExpression(ast)
                         });
                     }
 

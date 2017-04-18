@@ -185,7 +185,10 @@ namespace Dice.AST
             } while (!IsFairRoll(roll, sides));
 
             // rollAmt is a number from 0 to sides-1, need to convert to a proper number
-            int rollAmt = (int)(BitConverter.ToUInt32(roll, 0) % sides);
+            uint rollValue = BitConverter.ToUInt32(roll, 0) % sides;
+            int rollAmt = (int)rollValue;
+
+            conf.InternalContext.AllRolls.Add(rollValue);
 
             // first, mark if this was a critical or fumble. This may be overridden later by a CritNode.
             if (rollAmt == 0)

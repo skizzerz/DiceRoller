@@ -59,7 +59,7 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
-        private List<uint> AllRolls;
+        private IReadOnlyList<uint> AllRolls;
 
         /// <summary>
         /// The value for every macro, from left-to-right according to the normalized Expression.
@@ -67,9 +67,9 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
-        private List<decimal> AllMacros;
+        private IReadOnlyList<decimal> AllMacros;
 
-        internal RollResult(DiceAST rollRoot, int numRolls)
+        internal RollResult(RollerConfig conf, DiceAST rollRoot, int numRolls)
         {
             RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
             // cache some commonly-referenced information directly in this class instead of requiring
@@ -80,6 +80,30 @@ namespace Dice
             Values = rollRoot.Values;
             NumRolls = numRolls;
             Expression = rollRoot.ToString();
+            AllRolls = conf.InternalContext.AllRolls;
+            AllMacros = conf.InternalContext.AllMacros;
+        }
+
+        /// <summary>
+        /// Constructs a new instance of RollResult using the serialized data.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected RollResult(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            RollRoot = null;
+            ResultType = (ResultType)info.GetInt32("ResultType");
+            Value = info.GetDecimal("Value");
+            Values = (DieResult[])info.GetValue("Values", typeof(DieResult[]));
+            NumRolls = info.GetInt32("NumRolls");
+            Expression = info.GetString("Expression");
+            AllRolls = (uint[])info.GetValue("AllRolls", typeof(uint[]));
+            AllMacros = (decimal[])info.GetValue("AllMacros", typeof(decimal[]));
         }
 
         /// <summary>
@@ -88,7 +112,7 @@ namespace Dice
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(RollRoot.ToString());
+            StringBuilder sb = new StringBuilder(Expression);
 
             sb.Append(" => ");
             foreach (var die in Values)
@@ -170,6 +194,28 @@ namespace Dice
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Serializes the RollResult.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+
+            info.AddValue("_Version", 1);
+            info.AddValue("ResultType", (int)ResultType);
+            info.AddValue("Value", Value);
+            info.AddValue("Values", Values.ToArray(), typeof(DieResult[]));
+            info.AddValue("NumRolls", NumRolls);
+            info.AddValue("Expression", Expression);
+            info.AddValue("AllRolls", AllRolls.ToArray(), typeof(uint[]));
+            info.AddValue("AllMacros", AllMacros.ToArray(), typeof(decimal[]));
         }
     }
 }

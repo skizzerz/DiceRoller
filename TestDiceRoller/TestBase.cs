@@ -102,7 +102,7 @@ namespace TestDiceRoller
             long actualRolls = node.Evaluate(conf, node, 0);
             Assert.AreEqual(expectedRolls, actualRolls);
 
-            RollResult result = new RollResult(node, (int)actualRolls);
+            RollResult result = new RollResult(conf, node, (int)actualRolls);
             Assert.AreEqual(expectedResult, result.ToString());
         }
 
