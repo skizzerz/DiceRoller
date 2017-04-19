@@ -23,9 +23,7 @@ namespace Dice.AST
         /// <summary>
         /// ComparisonNodes only occur in special places in the AST
         /// where it does not make sense to obtain their Value or Values.
-        /// As such, neither of these return any data. The grammar only allows
-        /// for numbers or macros to be underneath ComparisonNodes, which
-        /// precludes the possibility to have dice rolls.
+        /// As such, neither of these return any data.
         /// </summary>
         public override IReadOnlyList<DieResult> Values
         {

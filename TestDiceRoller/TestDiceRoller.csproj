@@ -62,6 +62,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="AST\RerollNodeShould.cs" />
     <Compile Include="AST\RollNodeShould.cs" />
+    <Compile Include="FunctionRegistryShould.cs" />
     <Compile Include="Grammar\BasicRollShould.cs" />
     <Compile Include="Grammar\CritRollShould.cs" />
     <Compile Include="Grammar\ExplodeRollShould.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Grammar\SuccessRollShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AST\SuccessNodeShould.cs" />
+    <Compile Include="SerializationShould.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="AST\KeepNodeShould.cs" />
   </ItemGroup>

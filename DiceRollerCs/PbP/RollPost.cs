@@ -13,7 +13,7 @@ namespace Dice.PbP
     /// get those results back without changing the rolled values, and check for evidence of roll tampering/cheating.</para>
     /// </summary>
     [Serializable]
-    public class RollPost : ISerializable
+    public class RollPost : ISerializable, IDeserializationCallback
     {
         private List<RollResult> _pristine = new List<RollResult>();
         private List<RollResult> _stored = new List<RollResult>();
@@ -27,10 +27,20 @@ namespace Dice.PbP
         public IReadOnlyList<RollResult> Pristine => _pristine;
 
         /// <summary>
+        /// Mutable version of Pristine. Subclasses can modify the list via this method.
+        /// </summary>
+        protected IList<RollResult> PristineList { get; private set; }
+
+        /// <summary>
         /// Contains the most recent saved version of the post. All rolls in the post are represented here in-order so that their results may be
         /// directly used rather than needing to re-evaluate the dice expression each time the post is viewed/previewed/edited.
         /// </summary>
         public IReadOnlyList<RollResult> Stored => _stored;
+
+        /// <summary>
+        /// Mutable version of Stored. Subclasses can modify the list via this method.
+        /// </summary>
+        protected IList<RollResult> StoredList { get; private set; }
 
         /// <summary>
         /// Contains the current version of the post (the one being checked). This starts out empty even when deserializing, and is added to
@@ -39,10 +49,19 @@ namespace Dice.PbP
         public IReadOnlyList<RollResult> Current => _current;
 
         /// <summary>
+        /// Mutable version of Current. Subclasses can modify the list via this method.
+        /// </summary>
+        protected IList<RollResult> CurrentList { get; private set; }
+
+        /// <summary>
         /// Constructs a new, empty RollPost. This represents a new post being made. If editing an existing post,
         /// the RollPost should be constructed via deserializing the old RollPost stored in the database or other storage medium.
         /// </summary>
-        public RollPost() { }
+        public RollPost() {
+            PristineList = _pristine;
+            StoredList = _stored;
+            CurrentList = _current;
+        }
 
         /// <summary>
         /// Constructs a new RollPost using serialized data. This should be used whenever creating a RollPost based on an existing post.
@@ -50,14 +69,29 @@ namespace Dice.PbP
         /// <param name="info"></param>
         /// <param name="context"></param>
         protected RollPost(SerializationInfo info, StreamingContext context)
+            : this()
         {
             if (info == null)
             {
                 throw new ArgumentNullException("info");
             }
 
-            _pristine = ((RollResult[])info.GetValue("Pristine", typeof(RollResult[]))).ToList();
-            _stored = ((RollResult[])info.GetValue("Stored", typeof(RollResult[]))).ToList();
+            // array is deserialized before contents, so cannot do .ToList() to save directly in _pristine and _stored
+            // as such, save to these lists instead for the time being, then fix when all is done.
+            PristineList = (RollResult[])info.GetValue("Pristine", typeof(RollResult[]));
+            StoredList = (RollResult[])info.GetValue("Stored", typeof(RollResult[]));
+        }
+
+        /// <summary>
+        /// Completes deserialization of the RollPost once the entire object graph has been deserialized.
+        /// </summary>
+        /// <param name="sender"></param>
+        public virtual void OnDeserialization(object sender)
+        {
+            _pristine = PristineList.ToList();
+            _stored = StoredList.ToList();
+            PristineList = _pristine;
+            StoredList = _stored;
         }
 
         /// <summary>
@@ -80,16 +114,26 @@ namespace Dice.PbP
         }
 
         /// <summary>
-        /// Adds a new roll to the post. This is checked against the pristine copy. If it does not cause a warning
-        /// (e.g. it is adding a new roll at the end), the roll is added to the pristine copy as well. If it does
-        /// cause a warning, it is only added to Current and the TamperWarning flag is set to true.
-        /// <para>A roll causes a warning if Current does not begin with all of the elements of Pristine in-order.
-        /// This could happen if a previous roll was edited or deleted, or if all the rolls just haven't been added yet.</para>
+        /// Adds a new roll to the post using the DefaultConfig if the roll needs to be evaluated.
+        /// </summary>
+        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
+        public void AddRoll(string diceExpr)
+        {
+            AddRoll(diceExpr, null);
+        }
+
+        /// <summary>
+        /// Adds a new roll to the post using the given config if the roll needs to be evaluated.
         /// </summary>
         /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
         /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
-        public void AddRoll(string diceExpr, RollerConfig config = null)
+        public void AddRoll(string diceExpr, RollerConfig config)
         {
+            if (config == null)
+            {
+                config = Roller.DefaultConfig;
+            }
+
             int nextIdx = Current.Count;
             var ast = Roller.Parse(diceExpr, config);
             string normalizedExpr = ast.ToString();
@@ -118,6 +162,7 @@ namespace Dice.PbP
                 config.ExecuteMacro -= PostMacros;
                 config.ExecuteMacro += PostMacros;
                 _current.Add(Roller.Roll(ast, config));
+                config.ExecuteMacro -= PostMacros; // ensure we don't leave around our custom executor past this
                 _diverged = 2;
             }
         }
@@ -132,7 +177,22 @@ namespace Dice.PbP
         /// <returns></returns>
         public virtual bool Validate()
         {
+            if (_current.Count < _pristine.Count)
+            {
+                // rolls were removed
+                return false;
+            }
 
+            if (!_pristine.SequenceEqual(_current.Take(_pristine.Count)))
+            {
+                // beginning of each doesn't match
+                return false;
+            }
+
+            // if we get here, all is well
+            _pristine = _current;
+
+            return true;
         }
 
         /// <summary>
@@ -154,7 +214,7 @@ namespace Dice.PbP
         private void RollMacro(MacroContext context, string[] args)
         {
             // [roll:X] retrieves the Value of the Xth roll (first roll in the post is X=1). Can only retrieve values of past rolls.
-            // [roll:X:Y] retrieves the Value of the Yth die on the Xth roll (actual die rolls only, aka normal/fudge). First die is Y=1.
+            // [roll:X:Y] retrieves the Value of the Yth die on the Xth roll (actual die rolls only, aka normal/fudge/group). First die is Y=1.
             // [roll:X:critical] is the number of dice in the Xth roll that are critical.
             // [roll:X:Y:critical] is 1 if the Yth die is critical and 0 otherwise.
             // [roll:X:fumble] and [roll:X:Y:fumble] work the same way
@@ -174,7 +234,16 @@ namespace Dice.PbP
                 return; // invalid X
             }
 
-            rollIdx--; // make 0-based instead of 1-based
+            if (rollIdx < 0)
+            {
+                // negative X means we count backwards from the current post
+                rollIdx += Current.Count;
+            }
+            else
+            {
+                rollIdx--; // make 0-based instead of 1-based
+            }
+
             if (rollIdx < 0 || rollIdx >= Current.Count)
             {
                 return; // X is too big or small
@@ -190,12 +259,11 @@ namespace Dice.PbP
 
             int dieIdx = -1;
             int nextIdx = 2;
-            List<DieResult> allRolls = null;
+            var allRolls = Current[rollIdx].Values.Where(d => d.IsLiveDie() && d.DieType.IsRoll()).ToList();
             if (Int32.TryParse(args[2], out dieIdx))
             {
                 dieIdx--;
                 nextIdx = 3;
-                allRolls = Current[rollIdx].Values.Where(d => d.IsLiveDie() && d.DieType.IsRoll()).ToList();
                 if (dieIdx < 0 || dieIdx >= allRolls.Count)
                 {
                     return; // Y is too big or small
@@ -209,17 +277,32 @@ namespace Dice.PbP
                 }
             }
 
-            #error FINISH THIS
+            DieFlags flag;
             switch (args[nextIdx].ToLower())
             {
                 case "critical":
+                    flag = DieFlags.Critical;
                     break;
                 case "fumble":
+                    flag = DieFlags.Fumble;
                     break;
                 case "success":
+                    flag = DieFlags.Success;
                     break;
                 case "failure":
+                    flag = DieFlags.Failure;
                     break;
+                default:
+                    return; // unrecognized flag
+            }
+
+            if (dieIdx >= 0)
+            {
+                context.Value = allRolls[dieIdx].Flags.HasFlag(flag) ? 1 : 0;
+            }
+            else
+            {
+                context.Value = allRolls.Count(d => d.Flags.HasFlag(flag));
             }
         }
     }

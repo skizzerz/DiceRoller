@@ -320,5 +320,56 @@ namespace Dice
 
             context.Values = values;
         }
+
+        [DiceFunction("if", Scope = FunctionScope.Global)]
+        public static void If(FunctionContext context)
+        {
+            if (context.Arguments.Count < 3 || context.Arguments.Count > 4)
+            {
+                throw new DiceException(DiceErrorCode.IncorrectArity, "if");
+            }
+
+            var test = context.Arguments[0];
+            var compare = context.Arguments[1] as ComparisonNode;
+            var then = context.Arguments[2];
+            var otherwise = context.Arguments.ElementAtOrDefault(3);
+
+            if (test is ComparisonNode || compare == null || then is ComparisonNode || otherwise is ComparisonNode)
+            {
+                throw new DiceException(DiceErrorCode.IncorrectArgType, "if");
+            }
+
+            List<DieResult> values = new List<DieResult>()
+            {
+                new DieResult(SpecialDie.OpenParen)
+            };
+
+            if (compare.Compare(test.Value))
+            {
+                context.Value = then.Value;
+                context.ValueType = then.ValueType;
+                values.AddRange(then.Values);
+            }
+            else if (otherwise != null)
+            {
+                context.Value = otherwise.Value;
+                context.ValueType = otherwise.ValueType;
+                values.AddRange(otherwise.Values);
+            }
+            else
+            {
+                context.Value = 0;
+                values.Add(new DieResult()
+                {
+                    DieType = DieType.Literal,
+                    NumSides = 0,
+                    Value = 0,
+                    Flags = DieFlags.Macro
+                });
+            }
+
+            values.Add(new DieResult(SpecialDie.CloseParen));
+            context.Values = values;
+        }
     }
 }
