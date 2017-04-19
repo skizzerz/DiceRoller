@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
+using Dice.AST;
 using Dice.Grammar;
 
 namespace Dice
@@ -44,6 +45,43 @@ namespace Dice
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr, RollerConfig config)
         {
+            var root = Parse(diceExpr, config);
+
+            return Roll(root, config);
+        }
+
+        /// <summary>
+        /// Evaluates the root of the tree, returning the RollResult.
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        internal static RollResult Roll(DiceAST root, RollerConfig config)
+        {
+            // validate config
+            if (config == null)
+            {
+                config = DefaultConfig;
+            }
+
+            if (config.MaxDice < 1 || config.MaxRecursionDepth < 0 || config.MaxRerolls < 0 || config.MaxSides < 1)
+            {
+                throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
+            }
+
+            var numRolls = root.Evaluate(config, root, 0);
+
+            return new RollResult(config, root, (int)numRolls);
+        }
+
+        /// <summary>
+        /// Parses the diceExpr into an AST without evaluating it.
+        /// </summary>
+        /// <param name="diceExpr"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        internal static DiceAST Parse(string diceExpr, RollerConfig config)
+        {
             // validate config
             if (config == null)
             {
@@ -56,8 +94,6 @@ namespace Dice
             }
 
             // parse diceExpr
-            //diceExpr = DiceGrammarPreprocessor.Preprocess(diceExpr);
-            //var lexer = new DiceExpressionLexer(new AntlrInputStream(diceExpr));
             var inputStream = new AntlrInputStream(diceExpr);
             var lexer = new DiceGrammarLexer(inputStream);
             var tokenStream = new CommonTokenStream(lexer);
@@ -69,11 +105,7 @@ namespace Dice
             var context = parser.input();
             walker.Walk(listener, context);
 
-            // evaluate diceExpr
-            var root = listener.Root;
-            var numRolls = root.Evaluate(config, root, 0);
-
-            return new RollResult(config, root, (int)numRolls);
+            return listener.Root;
         }
     }
 }

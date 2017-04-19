@@ -97,12 +97,10 @@ namespace TestDiceRoller
         /// <param name="conf"></param>
         /// <param name="expectedRolls"></param>
         /// <param name="expectedResult"></param>
-        protected static void EvaluateNode(DiceAST node, RollerConfig conf, long expectedRolls, string expectedResult)
+        protected static void EvaluateNode(DiceAST node, RollerConfig conf, int expectedRolls, string expectedResult)
         {
-            long actualRolls = node.Evaluate(conf, node, 0);
-            Assert.AreEqual(expectedRolls, actualRolls);
-
-            RollResult result = new RollResult(conf, node, (int)actualRolls);
+            var result = Roller.Roll(node, conf);
+            Assert.AreEqual(expectedRolls, result.NumRolls);
             Assert.AreEqual(expectedResult, result.ToString());
         }
 
@@ -116,7 +114,7 @@ namespace TestDiceRoller
         {
             try
             {
-                node.Evaluate(conf, node, 0);
+                Roller.Roll(node, conf);
                 Assert.Fail("Expected DiceException with error code {0}, but did not receive an exception.", error.ToString());
             }
             catch (DiceException e)
