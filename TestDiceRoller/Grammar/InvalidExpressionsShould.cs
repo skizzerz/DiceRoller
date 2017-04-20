@@ -77,5 +77,11 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("(1d8-2)d6", Roll1Conf, DiceErrorCode.NegativeDice);
         }
+
+        [TestMethod]
+        public void ThrowDivideByZero_WhenDividingByZero()
+        {
+            EvaluateRoll("2/(1d6-1)*3", Roll1Conf, DiceErrorCode.DivideByZero);
+        }
     }
 }

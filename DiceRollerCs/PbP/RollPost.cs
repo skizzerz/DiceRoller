@@ -257,10 +257,9 @@ namespace Dice.PbP
                 return;
             }
 
-            int dieIdx = -1;
             int nextIdx = 2;
             var allRolls = Current[rollIdx].Values.Where(d => d.IsLiveDie() && d.DieType.IsRoll()).ToList();
-            if (Int32.TryParse(args[2], out dieIdx))
+            if (Int32.TryParse(args[2], out int dieIdx))
             {
                 dieIdx--;
                 nextIdx = 3;
@@ -275,6 +274,10 @@ namespace Dice.PbP
                     context.Value = allRolls[dieIdx].Value;
                     return;
                 }
+            }
+            else
+            {
+                dieIdx = -1;
             }
 
             DieFlags flag;

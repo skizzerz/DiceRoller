@@ -114,6 +114,20 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_TerminateTooManyRerolls()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(Roll9()), MaxRerolls = 2 };
+            EvaluateRoll("1d20rr!=2", conf, 3, "1d20.reroll(!=2) => 9* + 9* + 9 => 9");
+        }
+
+        [TestMethod]
+        public void ThrowTooManyDice_WhenTooManyDice()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(Roll9()), MaxDice = 2 };
+            EvaluateRoll("1d20rr<>2", conf, DiceErrorCode.TooManyDice);
+        }
+
+        [TestMethod]
         public void ThrowMixedReroll_WhenMixingRerollTypes()
         {
             EvaluateRoll("1d20rr1ro2", Roll9Conf, DiceErrorCode.MixedReroll);
