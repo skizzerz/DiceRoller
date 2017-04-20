@@ -8,7 +8,10 @@ using Antlr4.Runtime;
 
 namespace Dice.Grammar
 {
-    class DiceErrorListener : IAntlrErrorListener<IToken>
+    /// <summary>
+    /// Simple error listener which throws a DiceException upon encountering errors
+    /// </summary>
+    public class DiceErrorListener : IAntlrErrorListener<IToken>
     {
         public void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {

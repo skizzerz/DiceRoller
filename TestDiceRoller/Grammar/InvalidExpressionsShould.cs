@@ -83,5 +83,11 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("2/(1d6-1)*3", Roll1Conf, DiceErrorCode.DivideByZero);
         }
+
+        [TestMethod]
+        public void ThrowParseError_WhenGibberishAfterNumber()
+        {
+            EvaluateRoll("2asdf0894", Roll20Conf, DiceErrorCode.ParseError);
+        }
     }
 }

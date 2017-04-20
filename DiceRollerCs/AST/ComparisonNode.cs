@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dice.AST
 {
+    /// <summary>
+    /// Represents one or more comparisons. This node is found as part of other nodes,
+    /// rather than a standalone node in the AST.
+    /// </summary>
     public class ComparisonNode : DiceAST
     {
         private List<Comparison> _comparisons;

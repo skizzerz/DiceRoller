@@ -7,6 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
+    /// <summary>
+    /// Holds information about a comparison, which checks a CompareOp against an expression.
+    /// </summary>
     public struct Comparison
     {
 

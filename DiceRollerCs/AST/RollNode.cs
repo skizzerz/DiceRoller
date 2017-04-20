@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 
 namespace Dice.AST
 {
+    /// <summary>
+    /// Represents rolling one or more dice of the same type.
+    /// </summary>
     public class RollNode : DiceAST
     {
         private List<DieResult> _values;
