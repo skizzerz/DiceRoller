@@ -103,7 +103,7 @@ namespace Dice.AST
         /// Nodes that can branch (such as MathNode) may be returned as well.
         /// </summary>
         /// <returns></returns>
-        internal virtual DiceAST GetUnderlyingRollNode()
+        protected internal virtual DiceAST GetUnderlyingRollNode()
         {
             return this;
         }
