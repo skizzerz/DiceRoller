@@ -41,15 +41,30 @@ namespace Dice
                     switch (attr.Scope)
                     {
                         case FunctionScope.All:
+                            if (Contains(lname, FunctionScope.Global) || Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, FunctionScope.Global), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
                             break;
                         case FunctionScope.Roll:
+                            if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
                             break;
                         default:
+                            if (Contains(lname, attr.Scope))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
                             break;
                     }
@@ -62,8 +77,8 @@ namespace Dice
         /// as well as all public instance methods of that type with the DiceFunctionAttribute to be registered
         /// as callbacks. The passed-in object will be used when calling instance methods.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
+        /// <typeparam name="T">Type whose methods will be registered.</typeparam>
+        /// <param name="obj">Object to use when invoking instance methods.</param>
         public void RegisterType<T>(T obj)
         {
             foreach (var m in obj.GetType().GetMethods().Where(m => m.IsPublic))
@@ -92,15 +107,30 @@ namespace Dice
                     switch (attr.Scope)
                     {
                         case FunctionScope.All:
+                            if (Contains(lname, FunctionScope.Global) || Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, FunctionScope.Global), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
                             break;
                         case FunctionScope.Roll:
+                            if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
                             Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
                             break;
                         default:
+                            if (Contains(lname, attr.Scope))
+                            {
+                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                            }
+
                             Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
                             break;
                     }
@@ -148,6 +178,11 @@ namespace Dice
             }
 
             var lname = name.ToLower();
+            if (Contains(lname, scope))
+            {
+                throw new InvalidOperationException("A function with the same name and scope has already been registered");
+            }
+
             Callbacks.Add((lname, scope), (name, timing, callback));
         }
 
@@ -178,14 +213,14 @@ namespace Dice
             return Callbacks[(lname.ToLower(), scope)];
         }
 
-        internal bool Contains(string lname, FunctionScope scope, bool includeReserved = true)
+        internal bool Contains(string name, FunctionScope scope, bool includeReserved = true)
         {
-            if (includeReserved && BuiltinFunctions.ReservedNames.ContainsKey(lname.ToLower()))
+            if (includeReserved && BuiltinFunctions.ReservedNames.ContainsKey(name.ToLower()))
             {
                 return true;
             }
 
-            return Callbacks.ContainsKey((lname.ToLower(), scope));
+            return Callbacks.ContainsKey((name.ToLower(), scope));
         }
     }
 }

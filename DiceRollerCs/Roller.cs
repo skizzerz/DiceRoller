@@ -33,6 +33,11 @@ namespace Dice
         /// <param name="diceExpr">Dice expression to roll.</param>
         public static RollResult Roll(string diceExpr)
         {
+            if (diceExpr == null)
+            {
+                throw new ArgumentNullException("diceExpr");
+            }
+
             return Roll(diceExpr, null);
         }
 
@@ -45,6 +50,11 @@ namespace Dice
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr, RollerConfig config)
         {
+            if (diceExpr == null)
+            {
+                throw new ArgumentNullException("diceExpr");
+            }
+
             var root = Parse(diceExpr, config);
 
             return Roll(root, config);
