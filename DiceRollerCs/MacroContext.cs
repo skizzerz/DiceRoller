@@ -40,7 +40,7 @@ namespace Dice
             Value = Decimal.MinValue;
             Values = null;
             ValueType = ResultType.Total;
-            Param = param;
+            Param = param ?? throw new ArgumentNullException("param");
         }
     }
 }

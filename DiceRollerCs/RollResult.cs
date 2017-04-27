@@ -247,7 +247,7 @@ namespace Dice
             return new { ResultType, Value, Values = Values.ToArray(), NumRolls, Expression, AllRolls = AllRolls.ToArray(), AllMacros = AllMacros.ToArray() }.GetHashCode();
         }
 
-        public static bool operator==(RollResult a, RollResult b)
+        public static bool operator ==(RollResult a, RollResult b)
         {
             return a.Equals(b);
         }

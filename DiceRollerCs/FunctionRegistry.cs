@@ -139,32 +139,33 @@ namespace Dice
         }
 
         /// <summary>
-        /// Registers the specified global callback to the given name
+        /// Registers the specified global callback to the given name.
         /// </summary>
-        /// <param name="name">Function name</param>
-        /// <param name="callback">Callback to invoke for this function</param>
+        /// <param name="name">Function name to register. Function names are case-insensitive.</param>
+        /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
         public void RegisterFunction(string name, FunctionCallback callback)
         {
             RegisterFunction(name, callback, FunctionScope.Global, FunctionTiming.Last);
         }
 
         /// <summary>
-        /// Registers the specified callback to the given name
+        /// Registers the specified callback to the given name and scope.
         /// </summary>
-        /// <param name="name">Function name</param>
-        /// <param name="callback">Callback to invoke for this function</param>
+        /// <param name="name">Function name to register. Function names are case-insensitive.</param>
+        /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
+        /// <param name="scope">The scope of the function.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope)
         {
             RegisterFunction(name, callback, scope, FunctionTiming.Last);
         }
 
         /// <summary>
-        /// Registers the specified callback to the given name
+        /// Registers the specified callback to the given name, scope, and timing.
         /// </summary>
-        /// <param name="name">Function name</param>
-        /// <param name="callback">Callback to invoke for this function</param>
-        /// <param name="scope">Scope in which function is valid</param>
-        /// <param name="timing">Timing of function execution</param>
+        /// <param name="name">Function name to register. Function names are case-insensitive.</param>
+        /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
+        /// <param name="scope">The scope of the function.</param>
+        /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope, FunctionTiming timing)
         {
             if (name == null)
