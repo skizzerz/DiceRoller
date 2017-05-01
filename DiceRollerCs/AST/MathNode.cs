@@ -198,8 +198,8 @@ namespace Dice.AST
             _values.Clear();
             bool addLeftParen = Left?.Values.Count != 1;
             bool addRightParen = Right.Values.Count != 1;
-            var leftRoll = Left?.GetUnderlyingRollNode();
-            var rightRoll = Right.GetUnderlyingRollNode();
+            var leftRoll = Left?.UnderlyingRollNode;
+            var rightRoll = Right.UnderlyingRollNode;
 
             if (addLeftParen && leftRoll != null)
             {

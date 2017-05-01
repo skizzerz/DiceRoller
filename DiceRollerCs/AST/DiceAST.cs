@@ -26,6 +26,12 @@ namespace Dice.AST
         public ResultType ValueType { get; protected set; } = ResultType.Total;
 
         /// <summary>
+        /// Gets the roll node underneath this node, unless this node is a roll node of some sort.
+        /// Nodes that can branch (such as MathNode) may be returned as well.
+        /// </summary>
+        protected internal virtual DiceAST UnderlyingRollNode => this;
+
+        /// <summary>
         /// The underlying dice that were rolled, as well as their values.
         /// If no dice were rolled, this will be an empty list.
         /// </summary>
@@ -45,7 +51,7 @@ namespace Dice.AST
         /// <param name="root">Root of the AST</param>
         /// <param name="depth">Current recursion depth</param>
         /// <returns>Total number of rolls taken to evaluate this subtree</returns>
-        internal long Evaluate(RollerConfig conf, DiceAST root, int depth)
+        protected internal long Evaluate(RollerConfig conf, DiceAST root, int depth)
         {
             if (this == root)
             {
@@ -76,7 +82,7 @@ namespace Dice.AST
         /// <param name="root">AST root</param>
         /// <param name="depth">Recursion depth</param>
         /// <returns>Number of dice rolls performed</returns>
-        internal long Reroll(RollerConfig conf, DiceAST root, int depth)
+        protected internal long Reroll(RollerConfig conf, DiceAST root, int depth)
         {
             if (!Evaluated)
             {
@@ -96,16 +102,6 @@ namespace Dice.AST
             }
 
             return rolls;
-        }
-
-        /// <summary>
-        /// Gets the roll node underneath this node, unless this node is a roll node of some sort.
-        /// Nodes that can branch (such as MathNode) may be returned as well.
-        /// </summary>
-        /// <returns></returns>
-        internal virtual DiceAST GetUnderlyingRollNode()
-        {
-            return this;
         }
 
         protected abstract long EvaluateInternal(RollerConfig conf, DiceAST root, int depth);

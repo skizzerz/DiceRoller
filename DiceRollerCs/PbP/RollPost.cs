@@ -44,7 +44,7 @@ namespace Dice.PbP
 
         /// <summary>
         /// Contains the current version of the post (the one being checked). This starts out empty even when deserializing, and is added to
-        /// via AddRoll(). The TamperWarning flag is set based on the value of this.
+        /// via AddRoll().
         /// </summary>
         public IReadOnlyList<RollResult> Current => _current;
 

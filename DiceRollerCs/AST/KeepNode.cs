@@ -37,6 +37,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
+
         internal KeepNode(KeepType keepType, DiceAST amount)
         {
             KeepType = keepType;
@@ -107,11 +109,6 @@ namespace Dice.AST
             rolls += ApplyKeep(conf, root, depth);
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            return Expression.GetUnderlyingRollNode();
         }
 
         private long ApplyKeep(RollerConfig conf, DiceAST root, int depth)

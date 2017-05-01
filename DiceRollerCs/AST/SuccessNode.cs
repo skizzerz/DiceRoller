@@ -47,6 +47,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
+
         internal SuccessNode(ComparisonNode success, ComparisonNode failure)
         {
             Expression = null;
@@ -133,11 +135,6 @@ namespace Dice.AST
             CountSuccesses();
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            return Expression.GetUnderlyingRollNode();
         }
 
         private void CountSuccesses()

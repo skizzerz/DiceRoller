@@ -27,6 +27,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Context.Expression?.UnderlyingRollNode ?? this;
+
         internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollerConfig conf)
         {
             try
@@ -83,16 +85,6 @@ namespace Dice.AST
             CallFunction();
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            if (Context.Expression == null)
-            {
-                return this;
-            }
-
-            return Context.Expression.GetUnderlyingRollNode();
         }
 
         private void CallFunction()

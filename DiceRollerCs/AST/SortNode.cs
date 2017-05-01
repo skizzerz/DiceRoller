@@ -28,6 +28,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
+
         internal SortNode(SortDirection direction)
         {
             Direction = direction;
@@ -69,11 +71,6 @@ namespace Dice.AST
             DoSort();
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            return Expression.GetUnderlyingRollNode();
         }
 
         private void DoSort()

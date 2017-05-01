@@ -41,6 +41,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
+
         internal ExplodeNode(ExplodeType explodeType, bool compound, ComparisonNode comparison)
         {
             ExplodeType = explodeType;
@@ -108,11 +110,6 @@ namespace Dice.AST
             rolls += DoExplode(conf);
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            return Expression.GetUnderlyingRollNode();
         }
 
         private long DoExplode(RollerConfig conf)

@@ -38,6 +38,8 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
+
         internal RerollNode(int maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
         {
             Comparison = comparison ?? throw new ArgumentNullException("comparison");
@@ -96,11 +98,6 @@ namespace Dice.AST
             rolls += MaybeReroll(conf, root, depth);
 
             return rolls;
-        }
-
-        internal override DiceAST GetUnderlyingRollNode()
-        {
-            return Expression.GetUnderlyingRollNode();
         }
 
         private long MaybeReroll(RollerConfig conf, DiceAST root, int depth)
