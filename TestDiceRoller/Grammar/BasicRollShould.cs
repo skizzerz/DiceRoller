@@ -58,6 +58,18 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_MathUnary()
+        {
+            EvaluateRoll("-1--1", Roll20Conf, 0, "-1 - -1 => -1 - -1 => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_MathNestedUnary()
+        {
+            EvaluateRoll("-(-1)", Roll20Conf, 0, "-(-1) => -(-1) => 1");
+        }
+
+        [TestMethod]
         public void Successfully_RollOneDie_Macro()
         {
             var conf = new RollerConfig() { ExecuteMacro = ExecuteMacro, GetRandomBytes = GetRNG(Roll9()) };

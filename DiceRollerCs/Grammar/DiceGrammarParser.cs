@@ -806,8 +806,8 @@ public partial class DiceGrammarParser : Parser {
 	}
 	public partial class UnaryExprMinusContext : Unary_exprContext {
 		public ITerminalNode T_MINUS() { return GetToken(DiceGrammarParser.T_MINUS, 0); }
-		public Unary_exprContext unary_expr() {
-			return GetRuleContext<Unary_exprContext>(0);
+		public Number_exprContext number_expr() {
+			return GetRuleContext<Number_exprContext>(0);
 		}
 		public UnaryExprMinusContext(Unary_exprContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -847,7 +847,7 @@ public partial class DiceGrammarParser : Parser {
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 137; Match(T_MINUS);
-				State = 138; unary_expr();
+				State = 138; number_expr();
 				}
 				break;
 			case T_NUMBER:
@@ -2910,7 +2910,7 @@ public partial class DiceGrammarParser : Parser {
 		'V', '\x3', '\x2', '\x2', '\x2', '\x89', 'g', '\x3', '\x2', '\x2', '\x2', 
 		'\x89', 'v', '\x3', '\x2', '\x2', '\x2', '\x89', '\x88', '\x3', '\x2', 
 		'\x2', '\x2', '\x8A', '\v', '\x3', '\x2', '\x2', '\x2', '\x8B', '\x8C', 
-		'\a', '\x13', '\x2', '\x2', '\x8C', '\x8F', '\x5', '\f', '\a', '\x2', 
+		'\a', '\x13', '\x2', '\x2', '\x8C', '\x8F', '\x5', '\x10', '\t', '\x2', 
 		'\x8D', '\x8F', '\x5', '\x10', '\t', '\x2', '\x8E', '\x8B', '\x3', '\x2', 
 		'\x2', '\x2', '\x8E', '\x8D', '\x3', '\x2', '\x2', '\x2', '\x8F', '\r', 
 		'\x3', '\x2', '\x2', '\x2', '\x90', '\x91', '\a', '\x13', '\x2', '\x2', 

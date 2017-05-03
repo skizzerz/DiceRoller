@@ -88,10 +88,10 @@ namespace Dice.AST
             }
 
             if (Right is MathNode mr
-                && (Operation == MathOp.Divide
-                    || Operation == MathOp.Subtract
-                    || Operation == MathOp.Negate
-                    || (Operation == MathOp.Multiply && (mr.Operation == MathOp.Add || mr.Operation == MathOp.Subtract))))
+                && ((Operation == MathOp.Divide && !mr.Operation.IsUnary())
+                    || (Operation == MathOp.Subtract && !mr.Operation.IsUnary())
+                    || (Operation == MathOp.Multiply && (mr.Operation == MathOp.Add || mr.Operation == MathOp.Subtract))
+                    || Operation.IsUnary()))
             {
                 sb.AppendFormat("({0})", Right.ToString());
             }
@@ -210,7 +210,8 @@ namespace Dice.AST
                     if (Operation == MathOp.Add
                         || Operation == MathOp.Subtract
                         || ml.Operation == MathOp.Multiply
-                        || ml.Operation == MathOp.Divide)
+                        || ml.Operation == MathOp.Divide
+                        || ml.Operation.IsUnary())
                     {
                         addLeftParen = false;
                     }
@@ -248,7 +249,9 @@ namespace Dice.AST
             {
                 if (rightRoll is MathNode mr)
                 {
-                    if (Operation == MathOp.Add || mr.Operation == MathOp.Multiply)
+                    if (Operation == MathOp.Add
+                        || mr.Operation == MathOp.Multiply
+                        || (mr.Operation.IsUnary() && !Operation.IsUnary()))
                     {
                         addRightParen = false;
                     }

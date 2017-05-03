@@ -34,7 +34,7 @@ roll_expr
     ;
 
 unary_expr
-    : T_MINUS unary_expr # UnaryExprMinus
+    : T_MINUS number_expr # UnaryExprMinus
     | number_expr # UnaryExprNone
     ;
 

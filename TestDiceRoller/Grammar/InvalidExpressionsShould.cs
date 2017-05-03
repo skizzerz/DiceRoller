@@ -89,5 +89,11 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("2asdf0894", Roll20Conf, DiceErrorCode.ParseError);
         }
+
+        [TestMethod]
+        public void ThrowParseError_WhenInvalidUnary()
+        {
+            EvaluateRoll("1---1", Roll20Conf, DiceErrorCode.ParseError);
+        }
     }
 }
