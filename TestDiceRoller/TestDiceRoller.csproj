@@ -75,7 +75,7 @@
     <Compile Include="PbP\RollPostShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AST\SuccessNodeShould.cs" />
-    <Compile Include="SerializationShould.cs" />
+    <Compile Include="BinarySerializationShould.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="AST\KeepNodeShould.cs" />
   </ItemGroup>

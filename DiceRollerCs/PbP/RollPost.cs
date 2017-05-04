@@ -13,7 +13,8 @@ namespace Dice.PbP
     /// get those results back without changing the rolled values, and check for evidence of roll tampering/cheating.</para>
     /// </summary>
     [Serializable]
-    public class RollPost : ISerializable, IDeserializationCallback
+    [DataContract]
+    public class RollPost : ISerializable, IDeserializationCallback, IExtensibleDataObject
     {
         private List<RollResult> _pristine = new List<RollResult>();
         private List<RollResult> _stored = new List<RollResult>();
@@ -29,6 +30,7 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Pristine. Subclasses can modify the list via this method.
         /// </summary>
+        [DataMember]
         protected IList<RollResult> PristineList { get; private set; }
 
         /// <summary>
@@ -40,6 +42,7 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Stored. Subclasses can modify the list via this method.
         /// </summary>
+        [DataMember]
         protected IList<RollResult> StoredList { get; private set; }
 
         /// <summary>
@@ -51,7 +54,19 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Current. Subclasses can modify the list via this method.
         /// </summary>
+        [DataMember]
         protected IList<RollResult> CurrentList { get; private set; }
+
+        /// <summary>
+        /// Forward-compatible versioning for DataContract Serialization.
+        /// This field is not serialized when calling RollPost.Serialize().
+        /// </summary>
+        public ExtensionDataObject ExtensionData { get; set; }
+
+        /// <summary>
+        /// For unit testing, to ensure serialization roundtrips correctly.
+        /// </summary>
+        internal int Diverged => _diverged;
 
         /// <summary>
         /// Constructs a new, empty RollPost. This represents a new post being made. If editing an existing post,
@@ -78,8 +93,15 @@ namespace Dice.PbP
 
             // array is deserialized before contents, so cannot do .ToList() to save directly in _pristine and _stored
             // as such, save to these lists instead for the time being, then fix when all is done.
+            int version = info.GetInt32("_Version");
             PristineList = (RollResult[])info.GetValue("Pristine", typeof(RollResult[]));
             StoredList = (RollResult[])info.GetValue("Stored", typeof(RollResult[]));
+
+            if (version >= 2)
+            {
+                CurrentList = (RollResult[])info.GetValue("Current", typeof(RollResult[]));
+                _diverged = info.GetInt32("Diverged");
+            }
         }
 
         /// <summary>
@@ -90,8 +112,10 @@ namespace Dice.PbP
         {
             _pristine = PristineList.ToList();
             _stored = StoredList.ToList();
+            _current = CurrentList.ToList();
             PristineList = _pristine;
             StoredList = _stored;
+            CurrentList = _current;
         }
 
         /// <summary>
@@ -106,11 +130,12 @@ namespace Dice.PbP
                 throw new ArgumentNullException("info");
             }
 
-            info.AddValue("_Version", 1);
+            // in v2, we roundtrip this as-is
+            info.AddValue("_Version", 2);
             info.AddValue("Pristine", _pristine.ToArray(), typeof(RollResult[]));
-            // not a typo: we save Current as Stored, overwriting the previous value of Stored.
-            // If Validate() succeeds, Pristine is set to Current. As such, it is already up-to-date on save time.
-            info.AddValue("Stored", _current.ToArray(), typeof(RollResult[]));
+            info.AddValue("Stored", _stored.ToArray(), typeof(RollResult[]));
+            info.AddValue("Current", _current.ToArray(), typeof(RollResult[]));
+            info.AddValue("Diverged", _diverged);
         }
 
         /// <summary>
@@ -177,6 +202,9 @@ namespace Dice.PbP
         /// <returns></returns>
         public virtual bool Validate()
         {
+            // update _stored
+            _stored = _current;
+
             if (_current.Count < _pristine.Count)
             {
                 // rolls were removed

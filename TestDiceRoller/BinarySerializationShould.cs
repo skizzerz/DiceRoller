@@ -11,7 +11,7 @@ using Dice.PbP;
 namespace TestDiceRoller
 {
     [TestClass]
-    public class SerializationShould : TestBase
+    public class BinarySerializationShould : TestBase
     {
         [TestMethod]
         public void Successfully_RoundtripDieResult()
@@ -62,7 +62,29 @@ namespace TestDiceRoller
             var post2 = (RollPost)formatter.Deserialize(stream);
 
             Assert.IsTrue(post.Pristine.SequenceEqual(post2.Pristine), "Pristine did not roundtrip");
-            Assert.IsTrue(post.Current.SequenceEqual(post2.Stored), "Current did not roundtrip to Stored");
+            Assert.IsTrue(post.Stored.SequenceEqual(post2.Stored), "Stored did not roundtrip");
+            Assert.IsTrue(post.Current.SequenceEqual(post2.Current), "Current did not roundtrip");
+            Assert.AreEqual(post.Diverged, post2.Diverged);
+        }
+
+        [TestMethod]
+        public void Successfully_RoundtripRollPost_NoValidate()
+        {
+            var formatter = new BinaryFormatter();
+            var stream = new MemoryStream();
+            var post = new RollPost();
+
+            post.AddRoll("1d20+4");
+            post.AddRoll("2d6+3");
+
+            formatter.Serialize(stream, post);
+            stream.Seek(0, SeekOrigin.Begin);
+            var post2 = (RollPost)formatter.Deserialize(stream);
+
+            Assert.IsTrue(post.Pristine.SequenceEqual(post2.Pristine), "Pristine did not roundtrip");
+            Assert.IsTrue(post.Stored.SequenceEqual(post2.Stored), "Stored did not roundtrip");
+            Assert.IsTrue(post.Current.SequenceEqual(post2.Current), "Current did not roundtrip");
+            Assert.AreEqual(post.Diverged, post2.Diverged);
         }
     }
 }
