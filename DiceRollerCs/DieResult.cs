@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using System.IO;
+
+using Dice.Serialization;
 
 namespace Dice
 {
@@ -178,6 +181,28 @@ namespace Dice
             return new { DieType, NumSides, Value, Flags }.GetHashCode();
         }
 
+        /// <summary>
+        /// Serializes binary data to the given stream.
+        /// This method should be called when serializing this object to the database, to ensure that it is deserialized in the correct state.
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        public void Serialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            formatter.Serialize(serializationStream, this);
+        }
+
+        /// <summary>
+        /// Deserializes binary data from the given stream, that data must have been serialized via RollPost.Serialize().
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        /// <returns></returns>
+        public static DieResult Deserialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            return (DieResult)formatter.Deserialize(serializationStream);
+        }
+
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -185,7 +210,8 @@ namespace Dice
                 throw new ArgumentNullException("info");
             }
 
-            info.AddValue("_Version", 1);
+            info.AddValue("_Version", 2);
+            info.AddValue("_Class", (sbyte)SerializedClass.DieResult);
             info.AddValue("DieType", (int)DieType);
             info.AddValue("NumSides", NumSides);
             info.AddValue("Value", Value);

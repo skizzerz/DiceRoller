@@ -111,6 +111,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RollerConfig.cs" />
     <Compile Include="RollResult.cs" />
+    <Compile Include="Serialization\NbtFormatterConverter.cs" />
+    <Compile Include="Serialization\NbtFormatter.cs" />
+    <Compile Include="Serialization\NbtTag.cs" />
+    <Compile Include="Serialization\NbtTagType.cs" />
+    <Compile Include="Serialization\SerializedClass.cs" />
     <Compile Include="SpecialDie.cs" />
   </ItemGroup>
   <ItemGroup>

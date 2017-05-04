@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using System.IO;
+
+using Dice.Serialization;
 
 namespace Dice.PbP
 {
@@ -96,16 +99,41 @@ namespace Dice.PbP
             int version = info.GetInt32("_Version");
             PristineList = (RollResult[])info.GetValue("Pristine", typeof(RollResult[]));
             StoredList = (RollResult[])info.GetValue("Stored", typeof(RollResult[]));
+            CurrentList = new List<RollResult>();
 
-            if (version >= 2)
+            if (version >= 2 && context.State != StreamingContextStates.Persistence)
             {
+                // when deserializing persisted data, current/diverged should have default values
                 CurrentList = (RollResult[])info.GetValue("Current", typeof(RollResult[]));
                 _diverged = info.GetInt32("Diverged");
             }
         }
 
         /// <summary>
+        /// Serializes binary data to the given stream. This will *not* roundtrip (when deserializing Current will be empty).
+        /// This method should be called when serializing this object to the database, to ensure that it is deserialized in the correct state.
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        public void Serialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            formatter.Serialize(serializationStream, this);
+        }
+
+        /// <summary>
+        /// Deserializes binary data from the given stream, that data must have been serialized via RollPost.Serialize().
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        /// <returns></returns>
+        public static RollPost Deserialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            return (RollPost)formatter.Deserialize(serializationStream);
+        }
+
+        /// <summary>
         /// Completes deserialization of the RollPost once the entire object graph has been deserialized.
+        /// <para>This method should not be directly called.</para>
         /// </summary>
         /// <param name="sender"></param>
         public virtual void OnDeserialization(object sender)
@@ -120,6 +148,7 @@ namespace Dice.PbP
 
         /// <summary>
         /// Serializes a RollPost.
+        /// <para>This method should not be directly called, use Serialize() instead.</para>
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
@@ -132,6 +161,7 @@ namespace Dice.PbP
 
             // in v2, we roundtrip this as-is
             info.AddValue("_Version", 2);
+            info.AddValue("_Class", (sbyte)SerializedClass.RollPost);
             info.AddValue("Pristine", _pristine.ToArray(), typeof(RollResult[]));
             info.AddValue("Stored", _stored.ToArray(), typeof(RollResult[]));
             info.AddValue("Current", _current.ToArray(), typeof(RollResult[]));

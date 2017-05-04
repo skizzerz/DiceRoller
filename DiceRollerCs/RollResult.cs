@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using System.IO;
 
 using Dice.AST;
+using Dice.Serialization;
 
 namespace Dice
 {
@@ -197,6 +199,28 @@ namespace Dice
         }
 
         /// <summary>
+        /// Serializes binary data to the given stream.
+        /// This method should be called when serializing this object to the database, to ensure that it is deserialized in the correct state.
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        public void Serialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            formatter.Serialize(serializationStream, this);
+        }
+
+        /// <summary>
+        /// Deserializes binary data from the given stream, that data must have been serialized via RollPost.Serialize().
+        /// </summary>
+        /// <param name="serializationStream"></param>
+        /// <returns></returns>
+        public static RollResult Deserialize(Stream serializationStream)
+        {
+            var formatter = new NbtFormatter();
+            return (RollResult)formatter.Deserialize(serializationStream);
+        }
+
+        /// <summary>
         /// Serializes the RollResult.
         /// </summary>
         /// <param name="info"></param>
@@ -208,7 +232,8 @@ namespace Dice
                 throw new ArgumentNullException("info");
             }
 
-            info.AddValue("_Version", 1);
+            info.AddValue("_Version", 2);
+            info.AddValue("_Class", (sbyte)SerializedClass.RollResult);
             info.AddValue("ResultType", (int)ResultType);
             info.AddValue("Value", Value);
             info.AddValue("Values", Values.ToArray(), typeof(DieResult[]));
