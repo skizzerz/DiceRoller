@@ -128,7 +128,8 @@ namespace Dice.PbP
         public static RollPost Deserialize(Stream serializationStream)
         {
             var formatter = new NbtFormatter();
-            return (RollPost)formatter.Deserialize(serializationStream);
+            var tag = (NbtTag)formatter.Deserialize(serializationStream);
+            return (RollPost)tag.Data;
         }
 
         /// <summary>

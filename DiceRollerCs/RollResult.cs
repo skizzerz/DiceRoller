@@ -16,12 +16,14 @@ namespace Dice
     /// as well as the individual die results of the roll.
     /// </summary>
     [Serializable]
+    [DataContract]
     public class RollResult : ISerializable, IEquatable<RollResult>
     {
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.
         /// ResultType can be used to determine which it is.
         /// </summary>
+        [DataMember]
         public decimal Value { get; private set; }
 
         /// <summary>
@@ -30,11 +32,13 @@ namespace Dice
         /// and that many d6s are rolled. Values will only contain the results of the d6s.
         /// Inspecting the d8 requires walking the AST beginning at RollRoot.
         /// </summary>
+        [DataMember]
         public IReadOnlyList<DieResult> Values { get; private set; }
 
         /// <summary>
         /// Whether or not Value represents the roll total or the number of successes.
         /// </summary>
+        [DataMember]
         public ResultType ResultType { get; private set; }
 
         /// <summary>
@@ -48,11 +52,13 @@ namespace Dice
         /// The normalized dice expression for the roll, equivalent to RollRoot.ToString(),
         /// except that this will be defined even if RollRoot is null.
         /// </summary>
+        [DataMember]
         public string Expression { get; private set; }
 
         /// <summary>
         /// The number of dice rolls that were needed to fully evaluate this expression.
         /// </summary>
+        [DataMember]
         public int NumRolls { get; private set; }
 
         /// <summary>
@@ -61,6 +67,7 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
+        [DataMember]
         private IReadOnlyList<uint> AllRolls;
 
         /// <summary>
@@ -69,6 +76,7 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
+        [DataMember]
         private IReadOnlyList<decimal> AllMacros;
 
         internal RollResult(RollerConfig conf, DiceAST rollRoot, int numRolls)
@@ -217,7 +225,8 @@ namespace Dice
         public static RollResult Deserialize(Stream serializationStream)
         {
             var formatter = new NbtFormatter();
-            return (RollResult)formatter.Deserialize(serializationStream);
+            var tag = (NbtTag)formatter.Deserialize(serializationStream);
+            return (RollResult)tag.Data;
         }
 
         /// <summary>

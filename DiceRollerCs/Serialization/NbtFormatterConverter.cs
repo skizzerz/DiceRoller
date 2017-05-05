@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using System.Net;
+using System.Reflection;
+
+using SConvert = System.Convert;
 
 namespace Dice.Serialization
 {
@@ -20,9 +21,33 @@ namespace Dice.Serialization
                 {
                     throw new SerializationException("Cannot convert non-list to array");
                 }
+
+                // http://i.imgur.com/c4jt321.png
+                object[] arr = (object[])tag.Data;
+                Type eleType = type.GetElementType();
+                var method = typeof(Enumerable)
+                    .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                    .First(m => m.Name == "Select" && m.GetGenericArguments().Length == 2 && m.GetParameters().Length == 2)
+                    .MakeGenericMethod(typeof(object), eleType);
+                var method2 = typeof(Enumerable).GetMethod("ToArray", BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(eleType);
+                var cmethod = typeof(SConvert).GetMethod(
+                    "ChangeType",
+                    BindingFlags.Static | BindingFlags.Public,
+                    null,
+                    CallingConventions.Any,
+                    new Type[] { typeof(object), typeof(Type) },
+                    null);
+
+                var ctype = typeof(Func<,>).MakeGenericType(typeof(object), eleType);
+                var cparam = Expression.Parameter(typeof(object));
+                var cbody = Expression.Convert(Expression.Call(cmethod, cparam, Expression.Constant(eleType)), eleType);
+                var cfunc = Expression.Lambda(ctype, cbody, cparam).Compile();
+
+                var convArr = method.Invoke(null, new object[] { arr, cfunc });
+                return method2.Invoke(null, new object[] { convArr });
             }
 
-            return System.Convert.ChangeType(tag.Data, type);
+            return SConvert.ChangeType(tag.Data, type);
         }
 
         public object Convert(object value, TypeCode typeCode)
@@ -39,7 +64,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-byte to boolean");
             }
 
-            return (sbyte)tag.Data != 0;
+            return SConvert.ToSByte(tag.Data) != 0;
         }
 
         public byte ToByte(object value)
@@ -51,7 +76,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-byte to byte");
             }
 
-            return unchecked((byte)tag.Data);
+            return SConvert.ToByte(tag.Data);
         }
 
         public char ToChar(object value)
@@ -73,17 +98,8 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-int-array to decimal");
             }
 
-            int[] arr = (int[])tag.Data;
-            if (BitConverter.IsLittleEndian)
-            {
-                // not sure if we need to also reverse the first 3 elements of arr as well...
-                for (int i = 0; i < arr.Length; i++)
-                {
-                    arr[i] = IPAddress.NetworkToHostOrder(arr[i]);
-                }
-            }
-
-            return new decimal(arr);
+            // was already converted back to host byte order in deserialization process
+            return new decimal((int[])tag.Data);
         }
 
         public double ToDouble(object value)
@@ -95,7 +111,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-double to double");
             }
 
-            return (double)tag.Data;
+            return SConvert.ToDouble(tag.Data);
         }
 
         public short ToInt16(object value)
@@ -107,7 +123,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-short to short");
             }
 
-            return (short)tag.Data;
+            return SConvert.ToInt16(tag.Data);
         }
 
         public int ToInt32(object value)
@@ -119,7 +135,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-int to int");
             }
 
-            return (int)tag.Data;
+            return SConvert.ToInt32(tag.Data);
         }
 
         public long ToInt64(object value)
@@ -131,7 +147,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-long to long");
             }
 
-            return (long)tag.Data;
+            return SConvert.ToInt64(tag.Data);
         }
 
         public sbyte ToSByte(object value)
@@ -143,7 +159,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-byte to sbyte");
             }
 
-            return (sbyte)tag.Data;
+            return SConvert.ToSByte(tag.Data);
         }
 
         public float ToSingle(object value)
@@ -155,19 +171,19 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-float to float");
             }
 
-            return (float)tag.Data;
+            return SConvert.ToSingle(tag.Data);
         }
 
         public string ToString(object value)
         {
             NbtTag tag = value as NbtTag;
 
-            if (tag.TagType != NbtTagType.String)
+            if (tag.TagType != NbtTagType.String && tag.Data != null)
             {
                 throw new SerializationException("Cannot convert non-string to string");
             }
 
-            return (string)tag.Data;
+            return SConvert.ToString(tag.Data);
         }
 
         public ushort ToUInt16(object value)
@@ -179,7 +195,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-short to ushort");
             }
 
-            return unchecked((ushort)tag.Data);
+            return SConvert.ToUInt16(tag.Data);
         }
 
         public uint ToUInt32(object value)
@@ -191,7 +207,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-int to uint");
             }
 
-            return unchecked((uint)tag.Data);
+            return SConvert.ToUInt32(tag.Data);
         }
 
         public ulong ToUInt64(object value)
@@ -203,7 +219,7 @@ namespace Dice.Serialization
                 throw new SerializationException("Cannot convert non-long to ulong");
             }
 
-            return unchecked((ulong)tag.Data);
+            return SConvert.ToUInt64(tag.Data);
         }
     }
 }

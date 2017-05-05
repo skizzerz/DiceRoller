@@ -83,22 +83,22 @@ namespace Dice.Serialization
             }
             else if (t == typeof(short) || t == typeof(ushort))
             {
-                WriteTag(serializationStream, NbtTagType.Short, header, IPAddress.HostToNetworkOrder((short)graph));
+                WriteTag(serializationStream, NbtTagType.Short, header, IPAddress.HostToNetworkOrder(Convert.ToInt16(graph)));
                 return;
             }
             else if (t == typeof(int) || t == typeof(uint))
             {
-                WriteTag(serializationStream, NbtTagType.Int, header, IPAddress.HostToNetworkOrder((int)graph));
+                WriteTag(serializationStream, NbtTagType.Int, header, IPAddress.HostToNetworkOrder(Convert.ToInt32(graph)));
                 return;
             }
             else if (t == typeof(long) || t == typeof(ulong))
             {
-                WriteTag(serializationStream, NbtTagType.Long, header, IPAddress.HostToNetworkOrder((long)graph));
+                WriteTag(serializationStream, NbtTagType.Long, header, IPAddress.HostToNetworkOrder(Convert.ToInt64(graph)));
                 return;
             }
             else if (t == typeof(float))
             {
-                byte[] bytes = BitConverter.GetBytes((float)graph);
+                byte[] bytes = BitConverter.GetBytes(Convert.ToSingle(graph));
                 if (BitConverter.IsLittleEndian)
                 {
                     Array.Reverse(bytes);
@@ -109,7 +109,7 @@ namespace Dice.Serialization
             }
             else if (t == typeof(double))
             {
-                byte[] bytes = BitConverter.GetBytes((double)graph);
+                byte[] bytes = BitConverter.GetBytes(Convert.ToDouble(graph));
                 if (BitConverter.IsLittleEndian)
                 {
                     Array.Reverse(bytes);
@@ -120,7 +120,7 @@ namespace Dice.Serialization
             }
             else if (t == typeof(decimal))
             {
-                int[] ints = Decimal.GetBits((decimal)graph);
+                int[] ints = Decimal.GetBits(Convert.ToDecimal(graph));
                 if (BitConverter.IsLittleEndian)
                 {
                     for (var i = 0; i < ints.Length; i++)
@@ -134,11 +134,11 @@ namespace Dice.Serialization
             }
             else if (t == typeof(string))
             {
-                WriteTag(serializationStream, NbtTagType.String, header, (string)graph);
+                WriteTag(serializationStream, NbtTagType.String, header, Convert.ToString(graph));
             }
             else if (t.IsArray)
             {
-                object[] arr = (object[])graph;
+                Array arr = (Array)graph;
                 WriteTag(serializationStream, NbtTagType.List, header, null);
 
                 if (arr.Length == 0)
@@ -147,14 +147,14 @@ namespace Dice.Serialization
                 }
                 else
                 {
-                    serializationStream.WriteByte((byte)GetTagType(arr[0].GetType()));
+                    serializationStream.WriteByte((byte)GetTagType(arr.GetValue(0).GetType()));
                 }
 
                 WriteTag(serializationStream, NbtTagType.Int, null, IPAddress.HostToNetworkOrder(arr.Length));
 
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    Serialize(serializationStream, arr[i], null);
+                    Serialize(serializationStream, arr.GetValue(i), null);
                 }
 
                 return;
@@ -181,7 +181,12 @@ namespace Dice.Serialization
                 NbtTagType tag;
                 object data;
 
-                if (e.ObjectType == typeof(byte) || e.ObjectType == typeof(sbyte))
+                if (e.Value == null)
+                {
+                    tag = NbtTagType.ByteArray;
+                    data = new byte[0];
+                }
+                else if (e.ObjectType == typeof(byte) || e.ObjectType == typeof(sbyte))
                 {
                     tag = NbtTagType.Byte;
                     data = e.Value;
@@ -189,22 +194,22 @@ namespace Dice.Serialization
                 else if (e.ObjectType == typeof(short) || e.ObjectType == typeof(ushort))
                 {
                     tag = NbtTagType.Short;
-                    data = IPAddress.HostToNetworkOrder((short)e.Value);
+                    data = IPAddress.HostToNetworkOrder(Convert.ToInt16(e.Value));
                 }
                 else if (e.ObjectType == typeof(int) || e.ObjectType == typeof(uint))
                 {
                     tag = NbtTagType.Int;
-                    data = IPAddress.HostToNetworkOrder((int)e.Value);
+                    data = IPAddress.HostToNetworkOrder(Convert.ToInt32(e.Value));
                 }
                 else if (e.ObjectType == typeof(long) || e.ObjectType == typeof(ulong))
                 {
                     tag = NbtTagType.Long;
-                    data = IPAddress.HostToNetworkOrder((long)e.Value);
+                    data = IPAddress.HostToNetworkOrder(Convert.ToInt64(e.Value));
                 }
                 else if (e.ObjectType == typeof(float))
                 {
                     tag = NbtTagType.Float;
-                    byte[] bytes = BitConverter.GetBytes((float)e.Value);
+                    byte[] bytes = BitConverter.GetBytes(Convert.ToSingle(e.Value));
                     if (BitConverter.IsLittleEndian)
                     {
                         Array.Reverse(bytes);
@@ -215,7 +220,7 @@ namespace Dice.Serialization
                 else if (e.ObjectType == typeof(double))
                 {
                     tag = NbtTagType.Double;
-                    byte[] bytes = BitConverter.GetBytes((double)e.Value);
+                    byte[] bytes = BitConverter.GetBytes(Convert.ToDouble(e.Value));
                     if (BitConverter.IsLittleEndian)
                     {
                         Array.Reverse(bytes);
@@ -226,7 +231,7 @@ namespace Dice.Serialization
                 else if (e.ObjectType == typeof(decimal))
                 {
                     tag = NbtTagType.IntArray;
-                    int[] ints = Decimal.GetBits((decimal)e.Value);
+                    int[] ints = Decimal.GetBits(Convert.ToDecimal(e.Value));
                     if (BitConverter.IsLittleEndian)
                     {
                         for (var i = 0; i < ints.Length; i++)
@@ -240,7 +245,7 @@ namespace Dice.Serialization
                 else if (e.ObjectType == typeof(string))
                 {
                     tag = NbtTagType.String;
-                    data = (string)e.Value;
+                    data = Convert.ToString(e.Value);
                 }
                 else if (e.ObjectType.IsArray)
                 {
@@ -261,21 +266,21 @@ namespace Dice.Serialization
 
                 if (e.ObjectType.IsArray)
                 {
-                    object[] arr = (object[])e.Value;
+                    Array arr = (Array)e.Value;
                     if (arr.Length == 0)
                     {
                         WriteTag(serializationStream, NbtTagType.End, null, null);
                     }
                     else
                     {
-                        serializationStream.WriteByte((byte)GetTagType(arr[0].GetType()));
+                        serializationStream.WriteByte((byte)GetTagType(arr.GetValue(0).GetType()));
                     }
 
                     WriteTag(serializationStream, NbtTagType.Int, null, IPAddress.HostToNetworkOrder(arr.Length));
 
                     for (int i = 0; i < arr.Length; i++)
                     {
-                        Serialize(serializationStream, arr[i], null);
+                        Serialize(serializationStream, arr.GetValue(i), null);
                     }
                 }
                 else if (e.Value is ISerializable)
@@ -312,16 +317,16 @@ namespace Dice.Serialization
             {
                 // End is handled above
                 case NbtTagType.Byte:
-                    s.WriteByte((byte)data);
+                    s.WriteByte(Convert.ToByte(data));
                     break;
                 case NbtTagType.Short:
-                    s.Write(BitConverter.GetBytes((short)data), 0, 2);
+                    s.Write(BitConverter.GetBytes(Convert.ToInt16(data)), 0, 2);
                     break;
                 case NbtTagType.Int:
-                    s.Write(BitConverter.GetBytes((int)data), 0, 4);
+                    s.Write(BitConverter.GetBytes(Convert.ToInt32(data)), 0, 4);
                     break;
                 case NbtTagType.Long:
-                    s.Write(BitConverter.GetBytes((long)data), 0, 8);
+                    s.Write(BitConverter.GetBytes(Convert.ToInt64(data)), 0, 8);
                     break;
                 case NbtTagType.Float:
                     s.Write((byte[])data, 0, 4);
@@ -338,9 +343,17 @@ namespace Dice.Serialization
                     }
                     break;
                 case NbtTagType.String:
-                    byte[] sbytes = Encoding.UTF8.GetBytes((string)data);
+                    byte[] sbytes = Encoding.UTF8.GetBytes(Convert.ToString(data));
                     s.Write(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)sbytes.Length)), 0, 2);
                     s.Write(sbytes, 0, sbytes.Length);
+                    break;
+                case NbtTagType.ByteArray:
+                    byte[] ba = (byte[])data;
+                    s.Write(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(ba.Length)), 0, 4);
+                    if (ba.Length > 0)
+                    {
+                        s.Write(ba, 0, ba.Length);
+                    }
                     break;
                 default:
                     throw new SerializationException("Unknown data/tag combination");
@@ -502,9 +515,15 @@ namespace Dice.Serialization
                         {
                             throw new SerializationException("Unexpected end of stream");
                         }
+
+                        data = babuf.Cast<sbyte>().ToArray();
+                    }
+                    else
+                    {
+                        // 0-length byte array is special case for null
+                        data = null;
                     }
 
-                    data = babuf.Cast<sbyte>().ToArray();
                     break;
                 case NbtTagType.String:
                     size = (short)ParseTag(s, NbtTagType.Short).Data;
