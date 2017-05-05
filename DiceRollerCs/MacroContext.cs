@@ -35,12 +35,35 @@ namespace Dice
         /// </summary>
         public string Param { get; private set; }
 
+        /// <summary>
+        /// The name of the macro, if using the recommended method of separating arguments with colons.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// The arguments of the macro (including the name), if using the recommended method of separating
+        /// arguments with colons.
+        /// </summary>
+        public IReadOnlyList<string> Arguments { get; private set; }
+
         internal MacroContext(string param)
         {
             Value = Decimal.MinValue;
             Values = null;
             ValueType = ResultType.Total;
             Param = param ?? throw new ArgumentNullException("param");
+
+            // parse Param
+            Param = Param.Trim();
+            string[] args = Param.Split(':');
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                args[i] = args[i].Trim();
+            }
+
+            Name = args[0];
+            Arguments = args;
         }
     }
 }

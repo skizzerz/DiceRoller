@@ -257,17 +257,15 @@ namespace Dice.PbP
         /// <param name="context"></param>
         private void PostMacros(MacroContext context)
         {
-            string[] args = context.Param.Split(':');
-
-            switch (args[0].ToLower())
+            switch (context.Name)
             {
                 case "roll":
-                    RollMacro(context, args);
+                    RollMacro(context, context.Arguments);
                     break;
             }
         }
 
-        private void RollMacro(MacroContext context, string[] args)
+        private void RollMacro(MacroContext context, IReadOnlyList<string> args)
         {
             // [roll:X] retrieves the Value of the Xth roll (first roll in the post is X=1). Can only retrieve values of past rolls.
             // [roll:X:Y] retrieves the Value of the Yth die on the Xth roll (actual die rolls only, aka normal/fudge/group). First die is Y=1.
@@ -279,7 +277,7 @@ namespace Dice.PbP
             // [roll:X:success] doesn't deduct 1 whenever it sees a failure roll, unlike [roll:X] which will give successes - failures.
             // All other formulations of the macro are an error (which we pass down, as someone else may have their own roll macro which implements extended features)
 
-            if (args.Length == 1)
+            if (args.Count == 1)
             {
                 return; // no X
             }
@@ -305,7 +303,7 @@ namespace Dice.PbP
                 return; // X is too big or small
             }
 
-            if (args.Length == 2)
+            if (args.Count == 2)
             {
                 // only have 2 args, return the value of the Xth roll
                 context.Value = Current[rollIdx].Value;
@@ -324,7 +322,7 @@ namespace Dice.PbP
                     return; // Y is too big or small
                 }
 
-                if (args.Length == 3)
+                if (args.Count == 3)
                 {
                     // only have 3 args, X and Y. Return the value of the Yth roll
                     context.Value = allRolls[dieIdx].Value;

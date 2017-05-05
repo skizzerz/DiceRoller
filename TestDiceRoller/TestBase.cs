@@ -151,7 +151,7 @@ namespace TestDiceRoller
 
         public static void ExecuteMacro(MacroContext context)
         {
-            switch (context.Param)
+            switch (context.Name)
             {
                 case "one":
                     context.Value = 1;
@@ -161,6 +161,9 @@ namespace TestDiceRoller
                     break;
                 case "twenty":
                     context.Value = 20;
+                    break;
+                case "x":
+                    context.Value = Decimal.Parse(context.Arguments[1]);
                     break;
             }
         }

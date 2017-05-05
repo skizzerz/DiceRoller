@@ -41,7 +41,15 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            return String.Format("[{0}]", Context.Param);
+            var sb = new StringBuilder("[");
+            sb.Append(Context.Name);
+            for (int i = 1; i < Context.Arguments.Count; i++)
+            {
+                sb.AppendFormat(":{0}", Context.Arguments[i]);
+            }
+            sb.Append("]");
+
+            return sb.ToString();
         }
 
         protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)

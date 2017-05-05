@@ -69,6 +69,7 @@
     <Compile Include="Grammar\GlobalFunctionsShould.cs" />
     <Compile Include="Grammar\InvalidExpressionsShould.cs" />
     <Compile Include="Grammar\KeepRollShould.cs" />
+    <Compile Include="Grammar\MacrosShould.cs" />
     <Compile Include="Grammar\RerollRollShould.cs" />
     <Compile Include="Grammar\SortRollShould.cs" />
     <Compile Include="Grammar\SuccessRollShould.cs" />
