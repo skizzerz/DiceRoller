@@ -72,7 +72,6 @@
     <Compile Include="Grammar\RerollRollShould.cs" />
     <Compile Include="Grammar\SortRollShould.cs" />
     <Compile Include="Grammar\SuccessRollShould.cs" />
-    <Compile Include="NbtSerializationShould.cs" />
     <Compile Include="PbP\RollPostShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AST\SuccessNodeShould.cs" />

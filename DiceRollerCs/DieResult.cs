@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-
-using Dice.Serialization;
 
 namespace Dice
 {
@@ -194,7 +193,7 @@ namespace Dice
         /// <param name="serializationStream"></param>
         public void Serialize(Stream serializationStream)
         {
-            var formatter = new NbtFormatter();
+            var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
             formatter.Serialize(serializationStream, this);
         }
 
@@ -205,9 +204,8 @@ namespace Dice
         /// <returns></returns>
         public static DieResult Deserialize(Stream serializationStream)
         {
-            var formatter = new NbtFormatter();
-            var tag = (NbtTag)formatter.Deserialize(serializationStream);
-            return (DieResult)tag.Data;
+            var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
+            return (DieResult)formatter.Deserialize(serializationStream);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -218,7 +216,6 @@ namespace Dice
             }
 
             info.AddValue("_Version", 2);
-            info.AddValue("_Class", (sbyte)SerializedClass.DieResult);
             info.AddValue("DieType", (int)DieType);
             info.AddValue("NumSides", NumSides);
             info.AddValue("Value", Value);

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-
-using Dice.Serialization;
 
 namespace Dice.PbP
 {
@@ -116,7 +115,7 @@ namespace Dice.PbP
         /// <param name="serializationStream"></param>
         public void Serialize(Stream serializationStream)
         {
-            var formatter = new NbtFormatter();
+            var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
             formatter.Serialize(serializationStream, this);
         }
 
@@ -127,9 +126,8 @@ namespace Dice.PbP
         /// <returns></returns>
         public static RollPost Deserialize(Stream serializationStream)
         {
-            var formatter = new NbtFormatter();
-            var tag = (NbtTag)formatter.Deserialize(serializationStream);
-            return (RollPost)tag.Data;
+            var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
+            return (RollPost)formatter.Deserialize(serializationStream);
         }
 
         /// <summary>
@@ -162,7 +160,6 @@ namespace Dice.PbP
 
             // in v2, we roundtrip this as-is
             info.AddValue("_Version", 2);
-            info.AddValue("_Class", (sbyte)SerializedClass.RollPost);
             info.AddValue("Pristine", _pristine.ToArray(), typeof(RollResult[]));
             info.AddValue("Stored", _stored.ToArray(), typeof(RollResult[]));
             info.AddValue("Current", _current.ToArray(), typeof(RollResult[]));

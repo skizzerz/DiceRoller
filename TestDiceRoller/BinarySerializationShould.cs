@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+using System.IO.Compression;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -85,6 +87,52 @@ namespace TestDiceRoller
             CollectionAssert.AreEqual(post.Stored.ToList(), post2.Stored.ToList());
             CollectionAssert.AreEqual(post.Current.ToList(), post2.Current.ToList());
             Assert.AreEqual(post.Diverged, post2.Diverged);
+        }
+
+        [TestMethod]
+        public void Successfully_RoundtripRollPost_ForPersistence()
+        {
+            var stream = new MemoryStream();
+            var post = new RollPost();
+
+            post.AddRoll("20d20+4");
+            post.AddRoll("2d6+3");
+            post.AddRoll("[roll:2]-2");
+            post.Validate();
+
+            post.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var post2 = RollPost.Deserialize(stream);
+
+            CollectionAssert.AreEqual(post.Pristine.ToList(), post2.Pristine.ToList());
+            CollectionAssert.AreEqual(post.Current.ToList(), post2.Stored.ToList());
+            CollectionAssert.AreEqual(new List<RollResult>(), post2.Current.ToList());
+            Assert.AreEqual(0, post2.Diverged);
+
+            post2.AddRoll("10d20+4");
+            Assert.AreEqual(2, post2.Diverged);
+        }
+
+        [TestMethod]
+        public void TestCompression()
+        {
+            var ustream = new MemoryStream();
+            var cstream = new MemoryStream();
+            var post = new RollPost();
+
+            post.AddRoll("20d20+100d6");
+            post.AddRoll("(4d8)d6+3");
+            post.AddRoll("[roll:2]-2");
+            post.AddRoll("1000d10000");
+
+            post.Serialize(ustream);
+
+            using (var dstream = new DeflateStream(cstream, CompressionLevel.Optimal, true))
+            {
+                post.Serialize(dstream);
+            }
+
+            Assert.IsTrue(cstream.Length < ustream.Length * 0.5, "Compression isn't significantly smaller");
         }
     }
 }
