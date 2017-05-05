@@ -179,12 +179,37 @@ namespace Dice
             }
 
             var lname = name.ToLower();
-            if (Contains(lname, scope))
-            {
-                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-            }
 
-            Callbacks.Add((lname, scope), (name, timing, callback));
+            switch (scope)
+            {
+                case FunctionScope.All:
+                    if (Contains(lname, FunctionScope.Global) || Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                    {
+                        throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                    }
+
+                    Callbacks.Add((lname, FunctionScope.Global), (name, timing, callback));
+                    Callbacks.Add((lname, FunctionScope.Basic), (name, timing, callback));
+                    Callbacks.Add((lname, FunctionScope.Group), (name, timing, callback));
+                    break;
+                case FunctionScope.Roll:
+                    if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
+                    {
+                        throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                    }
+
+                    Callbacks.Add((lname, FunctionScope.Basic), (name, timing, callback));
+                    Callbacks.Add((lname, FunctionScope.Group), (name, timing, callback));
+                    break;
+                default:
+                    if (Contains(lname, scope))
+                    {
+                        throw new InvalidOperationException("A function with the same name and scope has already been registered");
+                    }
+
+                    Callbacks.Add((lname, scope), (name, timing, callback));
+                    break;
+            }
         }
 
         /// <summary>

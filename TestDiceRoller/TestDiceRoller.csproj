@@ -58,6 +58,7 @@
     <Compile Include="AST\ExplodeNodeShould.cs" />
     <Compile Include="AST\GroupNodeShould.cs" />
     <Compile Include="AST\MathNodeShould.cs" />
+    <Compile Include="AST\RollPartialNodeShould.cs" />
     <Compile Include="AST\SortNodeShould.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="AST\RerollNodeShould.cs" />
