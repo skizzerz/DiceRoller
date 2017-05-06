@@ -15,8 +15,7 @@ namespace Dice.PbP
     /// get those results back without changing the rolled values, and check for evidence of roll tampering/cheating.</para>
     /// </summary>
     [Serializable]
-    [DataContract]
-    public class RollPost : ISerializable, IDeserializationCallback, IExtensibleDataObject
+    public class RollPost : ISerializable, IDeserializationCallback
     {
         private List<RollResult> _pristine = new List<RollResult>();
         private List<RollResult> _stored = new List<RollResult>();
@@ -32,7 +31,6 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Pristine. Subclasses can modify the list via this method.
         /// </summary>
-        [DataMember]
         protected IList<RollResult> PristineList { get; private set; }
 
         /// <summary>
@@ -44,7 +42,6 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Stored. Subclasses can modify the list via this method.
         /// </summary>
-        [DataMember]
         protected IList<RollResult> StoredList { get; private set; }
 
         /// <summary>
@@ -56,14 +53,7 @@ namespace Dice.PbP
         /// <summary>
         /// Mutable version of Current. Subclasses can modify the list via this method.
         /// </summary>
-        [DataMember]
         protected IList<RollResult> CurrentList { get; private set; }
-
-        /// <summary>
-        /// Forward-compatible versioning for DataContract Serialization.
-        /// This field is not serialized when calling RollPost.Serialize().
-        /// </summary>
-        public ExtensionDataObject ExtensionData { get; set; }
 
         /// <summary>
         /// For unit testing, to ensure serialization roundtrips correctly.

@@ -14,37 +14,31 @@ namespace Dice
     /// Contains the result of an individual die roll.
     /// </summary>
     [Serializable]
-    [DataContract]
     public struct DieResult : ISerializable, IEquatable<DieResult>
     {
         /// <summary>
         /// What type of die was rolled
         /// </summary>
-        [DataMember]
         public DieType DieType { get; set; }
 
         /// <summary>
         /// How many sides the die had
         /// </summary>
-        [DataMember]
         public int NumSides { get; set; }
 
         /// <summary>
         /// What the result of the roll was
         /// </summary>
-        [DataMember]
         public decimal Value { get; set; }
 
         /// <summary>
         /// Any special flags giving more information about the roll
         /// </summary>
-        [DataMember]
         public DieFlags Flags { get; set; }
 
         /// <summary>
         /// Additional data about the roll. Used with SpecialDie.Text to display arbitrary text
         /// </summary>
-        [DataMember]
         public string Data { get; set; }
 
         /// <summary>
