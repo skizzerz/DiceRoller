@@ -11,9 +11,14 @@ namespace Dice.Grammar
     /// <summary>
     /// Simple error listener which throws a DiceException upon encountering errors
     /// </summary>
-    public class DiceErrorListener : IAntlrErrorListener<IToken>
+    public class DiceErrorListener : IAntlrErrorListener<IToken>, IAntlrErrorListener<int>
     {
         public void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+        {
+            throw new DiceException(DiceErrorCode.ParseError, msg, e);
+        }
+
+        public void SyntaxError(TextWriter output, IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             throw new DiceException(DiceErrorCode.ParseError, msg, e);
         }

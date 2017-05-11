@@ -111,6 +111,7 @@ namespace Dice
             var walker = new ParseTreeWalker();
             var listener = new DiceGrammarListener(config);
 
+            lexer.AddErrorListener(new DiceErrorListener());
             parser.AddErrorListener(new DiceErrorListener());
             var context = parser.input();
             walker.Walk(listener, context);

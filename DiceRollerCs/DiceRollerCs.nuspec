@@ -8,12 +8,17 @@
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
-    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <licenseUrl>https://github.com/skizzerz/DiceRoller/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://skizzerz.net/DiceRoller</projectUrl>
     <iconUrl>https://skizzerz.net/DiceRoller/images/thumb/5/56/DiceRoller_Logo.svg/256px-DiceRoller_Logo.svg.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
-    <releaseNotes>See https://skizzerz.net/DiceRoller/Changelog for more changes.</releaseNotes>
+    <releaseNotes><![CDATA[
+      Bugfixes:
+      - Errors when lexing the dice expression now throw an error instead of being silently ignored.
+      
+      See https://skizzerz.net/DiceRoller/Changelog for more changes.
+    ]]></releaseNotes>
     <copyright>Copyright ©2017 Ryan Schmidt</copyright>
     <tags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</tags>
     <dependencies>
