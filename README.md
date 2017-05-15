@@ -1,7 +1,5 @@
 # DiceRoller
-This library consists of a .NET dice roller written in C#.
-A roller written in C is also available, however work on that roller is
-stopped and it does not support the full feature-set of the C# roller.
+This library consists of a .NET dice roller written in C# compatible with .NET Framework 4.5+.
 
 To download DiceRoller, it is recommended that you install it via [NuGet](https://www.nuget.org/packages/DiceRoller/):
 ```PM> Install-Package DiceRoller```
