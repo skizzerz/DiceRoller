@@ -41,7 +41,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DiceRollerCs.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>DiceRoller.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -82,11 +82,11 @@
     <Compile Include="AST\KeepNodeShould.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DiceRollerCs.snk" />
+    <None Include="DiceRoller.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DiceRollerCs\Dice.csproj">
+    <ProjectReference Include="..\DiceRoller\Dice.csproj">
       <Project>{806c407c-d9cc-4456-84c3-f25d810c3154}</Project>
       <Name>Dice</Name>
     </ProjectReference>

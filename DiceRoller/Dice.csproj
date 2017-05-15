@@ -39,7 +39,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DiceRollerCs.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>DiceRoller.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime.Standard, Version=4.7.0.0, Culture=neutral, PublicKeyToken=e78b2c5abd1fcb3f, processorArchitecture=MSIL">
@@ -116,10 +116,10 @@
     <None Include=".editorconfig" />
     <None Include="DiceGrammarLexer.g4" />
     <None Include="DiceGrammarParser.g4" />
-    <None Include="DiceRollerCs.nuspec">
+    <None Include="DiceRoller.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DiceRollerCs.snk" />
+    <None Include="DiceRoller.snk" />
     <None Include="Grammar\DiceGrammarLexer.tokens" />
     <None Include="Grammar\DiceGrammarParser.tokens" />
     <None Include="packages.config" />
