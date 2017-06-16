@@ -40,6 +40,23 @@ namespace TestDiceRoller
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
+        public void ThrowInvalidOperationException_WhenDuplicatingFunctionWithAll_Function()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction("c", FunctionContainer.A, FunctionScope.Basic);
+            registry.RegisterFunction("c", FunctionContainer.A, FunctionScope.All);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ThrowInvalidOperationException_WhenDuplicatingFunctionWithAll_Type()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterType(typeof(Invalid2));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void ThrowInvalidOperationException_WhenInvalidDiceFunctionAttribute()
         {
             new FunctionRegistry().RegisterType(typeof(Invalid1));
@@ -75,6 +92,23 @@ namespace TestDiceRoller
             public static int A(FunctionContext context)
             {
                 return 0;
+            }
+        }
+
+        private class Invalid2
+        {
+            [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
+            public static void A(FunctionContext context)
+            {
+                // adds one to the die
+                context.Value = context.Expression.Value + 1;
+            }
+
+            [DiceFunction("a", Scope = FunctionScope.All, Timing = FunctionTiming.First)]
+            public static void B(FunctionContext context)
+            {
+                // adds b to the die
+                context.Value = context.Expression.Value + 1;
             }
         }
     }

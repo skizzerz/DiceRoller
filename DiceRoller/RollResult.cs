@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
 using Dice.AST;
 
@@ -18,6 +19,22 @@ namespace Dice
     [Serializable]
     public class RollResult : ISerializable, IEquatable<RollResult>
     {
+        /// <summary>
+        /// This RollResult is used as a placeholder whenever an invalid roll is added to a RollPost.
+        /// </summary>
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "RollResult is immutable")]
+        public static readonly RollResult InvalidRoll = new RollResult()
+        {
+            Value = 0,
+            Values = new DieResult[0],
+            ResultType = ResultType.Total,
+            RollRoot = null,
+            Expression = "#INVALID",
+            NumRolls = 0,
+            AllRolls = new uint[0],
+            AllMacros = new decimal[0]
+        };
+
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.
         /// ResultType can be used to determine which it is.
@@ -70,6 +87,8 @@ namespace Dice
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
         private IReadOnlyList<decimal> AllMacros;
+
+        private RollResult() { }
 
         internal RollResult(RollerConfig conf, DiceAST rollRoot, int numRolls)
         {

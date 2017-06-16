@@ -39,4 +39,4 @@ using System.Runtime.InteropServices;
 // IMPORTANT: When updating, also update DiceRollerCs.nuspec
 [assembly: AssemblyVersion("2.0.2.0")]
 [assembly: AssemblyFileVersion("2.0.2.0")]
-[assembly: AssemblyInformationalVersion("2.0.2-alpha")]
+[assembly: AssemblyInformationalVersion("2.0.2")]

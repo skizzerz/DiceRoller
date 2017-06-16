@@ -4,7 +4,7 @@
     <id>DiceRoller</id>
     <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
     <!-- ALSO IMPORTANT: Fill in releaseNotes below with some release note snippets for the release -->
-    <version>2.0.2-alpha</version>
+    <version>2.0.2</version>
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
@@ -15,7 +15,8 @@
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
     <releaseNotes><![CDATA[
 Bugfixes:
-- Errors when lexing the dice expression now throw an error instead of being silently ignored.
+- Invalid dice expressions are now tracked in RollPost, so that fixing these expressions in an edit does not invalidate rolls that took place afterwards.
+- Turning a previously-rolled result into an invalid expression is now marked as a modified post.
       
 See https://skizzerz.net/DiceRoller/Changelog for more changes.
     ]]></releaseNotes>

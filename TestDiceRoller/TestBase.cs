@@ -167,5 +167,32 @@ namespace TestDiceRoller
                     break;
             }
         }
+
+        protected static void EatExceptions(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (DiceException)
+            {
+                
+            }
+        }
+
+        protected static void EatExceptions(DiceErrorCode errorCode, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (DiceException e)
+            {
+                if (e.ErrorCode != errorCode)
+                {
+                    throw;
+                }
+            }
+        }
     }
 }

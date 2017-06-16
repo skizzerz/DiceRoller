@@ -36,6 +36,25 @@ namespace TestDiceRoller
         }
 
         [TestMethod]
+        public void Successfully_RoundtripDieResult_ForPersistence()
+        {
+            var stream = new MemoryStream();
+            var die = new DieResult()
+            {
+                DieType = DieType.Fudge,
+                NumSides = 3,
+                Value = -2,
+                Flags = DieFlags.Extra | DieFlags.Failure,
+                Data = "Some Data"
+            };
+
+            die.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var die2 = DieResult.Deserialize(stream);
+            Assert.AreEqual(die, die2);
+        }
+
+        [TestMethod]
         public void Successfully_RoundtripRollResult()
         {
             var formatter = new BinaryFormatter();
@@ -45,6 +64,18 @@ namespace TestDiceRoller
             formatter.Serialize(stream, result);
             stream.Seek(0, SeekOrigin.Begin);
             var result2 = (RollResult)formatter.Deserialize(stream);
+            Assert.AreEqual(result, result2);
+        }
+
+        [TestMethod]
+        public void Successfully_RoundtripRollResult_ForPersistence()
+        {
+            var stream = new MemoryStream();
+            var result = Roller.Roll("1d20+4");
+
+            result.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var result2 = RollResult.Deserialize(stream);
             Assert.AreEqual(result, result2);
         }
 

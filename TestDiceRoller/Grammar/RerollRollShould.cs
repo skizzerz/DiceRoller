@@ -156,5 +156,53 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("3d6ro", Roll9Conf, DiceErrorCode.ParseError);
         }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenEmptyArgsReroll_Basic()
+        {
+            EvaluateRoll("1d20.reroll()", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenEmptyArgsReroll_Group()
+        {
+            EvaluateRoll("{1d20}.reroll()", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenEmptyArgsRerollN_Basic()
+        {
+            EvaluateRoll("1d20.rerollN()", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenOneArgRerollN_Basic()
+        {
+            EvaluateRoll("1d20.rerollN(2)", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArgType_WhenNonComparisonArgRerollN_Basic()
+        {
+            EvaluateRoll("1d20.rerollN(1, 2)", Roll20Conf, DiceErrorCode.IncorrectArgType);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenEmptyArgsRerollN_Group()
+        {
+            EvaluateRoll("{1d20}.rerollN()", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenOneArgRerollN_Group()
+        {
+            EvaluateRoll("{1d20}.rerollN(2)", Roll20Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArgType_WhenNonComparisonArgRerollN_Group()
+        {
+            EvaluateRoll("{1d20}.rerollN(1, 2)", Roll20Conf, DiceErrorCode.IncorrectArgType);
+        }
     }
 }

@@ -178,35 +178,89 @@ namespace Dice.PbP
             }
 
             int nextIdx = Current.Count;
-            var ast = Roller.Parse(diceExpr, config);
-            string normalizedExpr = ast.ToString();
+            AST.DiceAST ast = null;
+            string normalizedExpr = null;
             var pristineVersion = _pristine.ElementAtOrDefault(nextIdx);
             var storedVersion = _stored.ElementAtOrDefault(nextIdx);
 
-            // as later rolls may have macros that refer to earlier ones, we don't want to break out into a new roll
-            // and then re-use a previously-rolled value. If we do, those saved macros may be incorrect.
-            // As such, when we detect a divergence (pristine->stored->new roll), we ensure that we don't go back to
-            // a previous state (so no stored->pristine or new roll->stored).
-
-            if (_diverged == 0 && normalizedExpr == pristineVersion?.Expression)
+            Func<RollResult> DoRoll = () =>
             {
-                // use the pristine result for this roll
-                _current.Add(pristineVersion);
-            }
-            else if (_diverged <= 1 && normalizedExpr == storedVersion?.Expression)
-            {
-                _current.Add(storedVersion);
-                _diverged = 1;
-            }
-            else
-            {
-                // none of the versions for the current index matched, so reroll it
                 // ensure that our custom macro handler is attached to handle PbP-specific macros (accessing previous rolls)
+                // leading -= ensures that PostMacros is only attached once
                 config.ExecuteMacro -= PostMacros;
                 config.ExecuteMacro += PostMacros;
-                _current.Add(Roller.Roll(ast, config));
+                var res = Roller.Roll(ast, config);
                 config.ExecuteMacro -= PostMacros; // ensure we don't leave around our custom executor past this
-                _diverged = 2;
+                return res;
+            };
+
+            try
+            {
+                ast = Roller.Parse(diceExpr, config);
+                normalizedExpr = ast.ToString();
+
+                // as later rolls may have macros that refer to earlier ones, we don't want to break out into a new roll
+                // and then re-use a previously-rolled value. If we do, those saved macros may be incorrect.
+                // As such, when we detect a divergence (pristine->stored->new roll), we ensure that we don't go back to
+                // a previous state (so no stored->pristine or new roll->stored).
+
+                if (_diverged == 0 && normalizedExpr == pristineVersion?.Expression)
+                {
+                    // use the pristine result for this roll
+                    _current.Add(pristineVersion);
+                }
+                else if (_diverged == 0 && pristineVersion?.Expression == RollResult.InvalidRoll.Expression)
+                {
+                    // pristine was previously invalid and we now have a valid roll, so roll what we have and adjust pristine
+                    var roll = DoRoll();
+                    _current.Add(roll);
+                    _pristine[nextIdx] = roll;
+                }
+                else if (_diverged <= 1 && normalizedExpr == storedVersion?.Expression)
+                {
+                    _current.Add(storedVersion);
+                    _diverged = 1;
+                }
+                else if (_diverged <= 1 && storedVersion?.Expression == RollResult.InvalidRoll.Expression)
+                {
+                    var roll = DoRoll();
+                    _current.Add(roll);
+                    _stored[nextIdx] = roll;
+                    _diverged = 1;
+                }
+                else
+                {
+                    // none of the versions for the current index matched, so reroll it
+                    _current.Add(DoRoll());
+                    _diverged = 2;
+                }
+            }
+            catch (DiceException)
+            {
+                // if this roll does not parse or had a roll error, we want to still save that fact so if the user later edits their post
+                // to fix the roll, it does not invalidate any rolls which happen afterwards. Additionally, if a user
+                // edits their post to make a roll invalid, we want to catch that and react accordingly.
+                normalizedExpr = RollResult.InvalidRoll.Expression;
+
+                if (_diverged == 0 && normalizedExpr == pristineVersion?.Expression)
+                {
+                    // pristine was invalid as well, so this expression was never fixed
+                    _current.Add(pristineVersion);
+                }
+                else if (_diverged <= 1 && normalizedExpr == storedVersion?.Expression)
+                {
+                    _current.Add(storedVersion);
+                    _diverged = 1;
+                }
+                else
+                {
+                    // brand new invalid roll, or modified a previously-good roll to be invalid
+                    _current.Add(RollResult.InvalidRoll);
+                    _diverged = 2;
+                }
+
+                // re-throw our error so it can be shownt to the user
+                throw;
             }
         }
 
