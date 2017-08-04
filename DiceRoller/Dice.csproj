@@ -75,6 +75,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="DiceErrorCode.cs" />
     <Compile Include="DiceFunctionAttribute.cs" />
+    <Compile Include="DiceMacroAttribute.cs" />
     <Compile Include="DieFlags.cs" />
     <Compile Include="DieResult.cs" />
     <Compile Include="DieType.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Grammar\DiceGrammarParserListener.cs" />
     <Compile Include="InternalContext.cs" />
     <Compile Include="MacroContext.cs" />
+    <Compile Include="MacroRegistry.cs" />
     <Compile Include="PbP\RollPost.cs" />
     <Compile Include="ResultType.cs" />
     <Compile Include="Roller.cs" />

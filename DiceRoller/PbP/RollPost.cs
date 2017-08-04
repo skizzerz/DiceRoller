@@ -177,6 +177,11 @@ namespace Dice.PbP
                 config = Roller.DefaultConfig;
             }
 
+            if (!config.MacroRegistry.Contains("roll"))
+            {
+                config.MacroRegistry.RegisterMacro("roll", RollMacro);
+            }
+
             int nextIdx = Current.Count;
             AST.DiceAST ast = null;
             string normalizedExpr = null;
@@ -295,21 +300,7 @@ namespace Dice.PbP
             return true;
         }
 
-        /// <summary>
-        /// Executes PbP-specific macros, which are documented on the DiceRoller wiki in the Dice Reference.
-        /// </summary>
-        /// <param name="context"></param>
-        private void PostMacros(MacroContext context)
-        {
-            switch (context.Name)
-            {
-                case "roll":
-                    RollMacro(context, context.Arguments);
-                    break;
-            }
-        }
-
-        private void RollMacro(MacroContext context, IReadOnlyList<string> args)
+        private void RollMacro(MacroContext context)
         {
             // [roll:X] retrieves the Value of the Xth roll (first roll in the post is X=1). Can only retrieve values of past rolls.
             // [roll:X:Y] retrieves the Value of the Yth die on the Xth roll (actual die rolls only, aka normal/fudge/group). First die is Y=1.
@@ -320,6 +311,8 @@ namespace Dice.PbP
             // for success/failure, it only counts number of successes or number of failures, returning an integer >= 0 for each. In other words,
             // [roll:X:success] doesn't deduct 1 whenever it sees a failure roll, unlike [roll:X] which will give successes - failures.
             // All other formulations of the macro are an error (which we pass down, as someone else may have their own roll macro which implements extended features)
+
+            var args = context.Arguments;
 
             if (args.Count == 1)
             {

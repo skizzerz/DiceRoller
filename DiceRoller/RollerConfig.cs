@@ -60,7 +60,21 @@ namespace Dice
         /// If set, this is the function used to execute macros specified by the roll. If unset, attempting
         /// to use a macro in the roll will result in a DiceException being thrown.
         /// </summary>
-        public MacroCallback ExecuteMacro { get; set; }
+        /// <remarks>
+        /// The ExecuteMacro property is deprecated and will be removed in a future version. Use the
+        /// MacroRegistry property instead.
+        /// </remarks>
+        [Obsolete("The ExecuteMacro property is deprecated and will be removed in a future version. Use the MacroRegistry property instead.")]
+        public MacroCallback ExecuteMacro
+        {
+            get { return MacroRegistry.GlobalCallbacks; }
+            set { MacroRegistry.GlobalCallbacks = value; }
+        }
+
+        /// <summary>
+        /// Contains the MacroRegistry that maps all known macros to their callbacks.
+        /// </summary>
+        public MacroRegistry MacroRegistry { get; set; }
 
         /// <summary>
         /// Contains the FunctionRegistry that maps all known functions to their callbacks.
@@ -80,7 +94,6 @@ namespace Dice
             MaxRerolls = 100;
             NormalSidesOnly = false;
             GetRandomBytes = null;
-            ExecuteMacro = null;
             FunctionRegistry = new FunctionRegistry();
             FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
             InternalContext = new InternalContext();
