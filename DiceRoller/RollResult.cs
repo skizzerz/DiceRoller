@@ -31,6 +31,7 @@ namespace Dice
             RollRoot = null,
             Expression = "#INVALID",
             NumRolls = 0,
+            Metadata = null,
             AllRolls = new uint[0],
             AllMacros = new decimal[0]
         };
@@ -73,6 +74,11 @@ namespace Dice
         public int NumRolls { get; private set; }
 
         /// <summary>
+        /// An optional object which contains metadata about the roll.
+        /// </summary>
+        public object Metadata { get; private set; }
+
+        /// <summary>
         /// The rolled value for every die, from left-to-right according to the normalized Expression.
         /// By taking Expression, AllRolls, and AllMacros, it is possible to reconstruct the full
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
@@ -90,7 +96,7 @@ namespace Dice
 
         private RollResult() { }
 
-        internal RollResult(RollerConfig conf, DiceAST rollRoot, int numRolls)
+        internal RollResult(RollData data, DiceAST rollRoot, int numRolls)
         {
             RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
             // cache some commonly-referenced information directly in this class instead of requiring
@@ -101,8 +107,9 @@ namespace Dice
             Values = rollRoot.Values;
             NumRolls = numRolls;
             Expression = rollRoot.ToString();
-            AllRolls = conf.InternalContext.AllRolls;
-            AllMacros = conf.InternalContext.AllMacros;
+            Metadata = data.Metadata;
+            AllRolls = data.InternalContext.AllRolls;
+            AllMacros = data.InternalContext.AllMacros;
         }
 
         /// <summary>
@@ -118,6 +125,8 @@ namespace Dice
             }
 
             RollRoot = null;
+            int version = info.GetInt32("_Version");
+
             ResultType = (ResultType)info.GetInt32("ResultType");
             Value = info.GetDecimal("Value");
             Values = (DieResult[])info.GetValue("Values", typeof(DieResult[]));
@@ -125,6 +134,15 @@ namespace Dice
             Expression = info.GetString("Expression");
             AllRolls = (uint[])info.GetValue("AllRolls", typeof(uint[]));
             AllMacros = (decimal[])info.GetValue("AllMacros", typeof(decimal[]));
+
+            if (version >= 3)
+            {
+                Metadata = info.GetValue("Metadata", typeof(object));
+            }
+            else
+            {
+                Metadata = null;
+            }
         }
 
         /// <summary>
@@ -251,12 +269,13 @@ namespace Dice
                 throw new ArgumentNullException("info");
             }
 
-            info.AddValue("_Version", 2);
+            info.AddValue("_Version", 3);
             info.AddValue("ResultType", (int)ResultType);
             info.AddValue("Value", Value);
             info.AddValue("Values", Values.ToArray(), typeof(DieResult[]));
             info.AddValue("NumRolls", NumRolls);
             info.AddValue("Expression", Expression);
+            info.AddValue("Metadata", Metadata);
             info.AddValue("AllRolls", AllRolls.ToArray(), typeof(uint[]));
             info.AddValue("AllMacros", AllMacros.ToArray(), typeof(decimal[]));
         }
@@ -276,6 +295,7 @@ namespace Dice
             // RollRoot is not considered when determining if two RollResults are equal.
             // This is because RollRoot is not preserved on serialization, and does not contain
             // any information that is not represented via other properties/fields.
+            // Metadata is not considered because it doesn't impact the result itself.
             return ResultType == r.ResultType
                 && Value == r.Value
                 && Values.SequenceEqual(r.Values)
@@ -286,7 +306,7 @@ namespace Dice
 
         public override int GetHashCode()
         {
-            // See above for why RollRoot isn't present in the hash code
+            // See above for why RollRoot and Metadata isn't present in the hash code
             return new { ResultType, Value, Values = Values.ToArray(), NumRolls, Expression, AllRolls = AllRolls.ToArray(), AllMacros = AllMacros.ToArray() }.GetHashCode();
         }
 

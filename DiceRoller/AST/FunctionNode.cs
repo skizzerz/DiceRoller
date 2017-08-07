@@ -29,11 +29,19 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Context.Expression?.UnderlyingRollNode ?? this;
 
-        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollerConfig conf)
+        internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
             try
             {
-                (name, Timing, Function) = conf.FunctionRegistry.Get(name, scope);
+                if (data.FunctionRegistry.Contains(name, scope, includeReserved: false))
+                {
+                    (name, Timing, Function) = data.FunctionRegistry.Get(name, scope);
+                }
+                else
+                {
+                    (name, Timing, Function) = data.Config.FunctionRegistry.Get(name, scope);
+                }
+
                 Context = new FunctionContext(scope, name, arguments);
                 _values = new List<DieResult>();
             }
@@ -59,13 +67,13 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Context.Expression?.Evaluate(conf, root, depth + 1) ?? 0;
+            long rolls = Context.Expression?.Evaluate(data, root, depth + 1) ?? 0;
 
             foreach (var arg in Context.Arguments)
             {
-                rolls += arg.Evaluate(conf, root, depth + 1);
+                rolls += arg.Evaluate(data, root, depth + 1);
             }
 
             CallFunction();
@@ -73,13 +81,13 @@ namespace Dice.AST
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Context.Expression?.Reroll(conf, root, depth + 1) ?? 0;
+            long rolls = Context.Expression?.Reroll(data, root, depth + 1) ?? 0;
 
             foreach (var arg in Context.Arguments)
             {
-                rolls += arg.Reroll(conf, root, depth + 1);
+                rolls += arg.Reroll(data, root, depth + 1);
             }
 
             CallFunction();

@@ -16,8 +16,8 @@ namespace Dice.Grammar
         // holds the state of the current parse tree, the bottom of the stack is the root of the AST,
         // which is accessible via the Root property after parsing is complete.
         private Stack<DiceAST> Stack;
-        // holds the RollerConfig that's directing this
-        private RollerConfig Config;
+        // holds the RollData that's directing this
+        private RollData Data;
 
         /// <summary>
         /// Accesses the root of the parsed AST. This is only valid if parsing is complete. If this
@@ -36,9 +36,9 @@ namespace Dice.Grammar
             }
         }
 
-        public DiceGrammarListener(RollerConfig config)
+        public DiceGrammarListener(RollData data)
         {
-            Config = config ?? throw new ArgumentNullException("config");
+            Data = data ?? throw new ArgumentNullException("data");
         }
 
         public override void EnterInput([NotNull] DiceGrammarParser.InputContext context)
@@ -357,7 +357,7 @@ namespace Dice.Grammar
                     Stack.Push(new SortNode(SortDirection.Descending));
                     break;
                 default:
-                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Config));
+                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Data));
                     break;
             }
         }
@@ -739,7 +739,7 @@ namespace Dice.Grammar
                     Stack.Push(new SortNode(SortDirection.Descending));
                     break;
                 default:
-                    Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Config));
+                    Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Data));
                     break;
             }
         }
@@ -758,7 +758,7 @@ namespace Dice.Grammar
 
             args.Reverse();
             var fname = context.T_IDENTIFIER().GetText().ToLower();
-            Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Config));
+            Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
         }
 
         public override void ExitKeepHigh([NotNull] DiceGrammarParser.KeepHighContext context)

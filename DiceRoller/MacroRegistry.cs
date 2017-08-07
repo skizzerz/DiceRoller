@@ -155,6 +155,11 @@ namespace Dice
             GlobalCallbacks -= callback;
         }
 
+        internal (string name, MacroCallback callback) Get(string lname)
+        {
+            return Callbacks[lname.ToLower()];
+        }
+
         internal bool Contains(string name)
         {
             return Callbacks.ContainsKey(name.ToLower());

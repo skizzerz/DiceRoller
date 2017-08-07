@@ -15,28 +15,28 @@ namespace TestDiceRoller.AST
         public void Successfully_Reroll_WhenConditionMet()
         {
             var node = new RerollNode(0, less5) { Expression = _1d20 };
-            EvaluateNode(node, RerollConf, 4, "1d20.reroll(<5) => 1!* + 2* + 1!* + 10 => 10");
+            EvaluateNode(node, Data(RerollConf), 4, "1d20.reroll(<5) => 1!* + 2* + 1!* + 10 => 10");
         }
 
         [TestMethod]
         public void Successfully_NotReroll_WhenConditionNotMet()
         {
             var node = new RerollNode(0, less5) { Expression = _1d20 };
-            EvaluateNode(node, Roll9Conf, 1, "1d20.reroll(<5) => 9 => 9");
+            EvaluateNode(node, Data(Roll9Conf), 1, "1d20.reroll(<5) => 9 => 9");
         }
 
         [TestMethod]
         public void Successfully_RerollOnce_WhenConditionMet()
         {
             var node = new RerollNode(1, less5) { Expression = _1d20 };
-            EvaluateNode(node, RerollConf, 2, "1d20.rerollOnce(<5) => 1!* + 2 => 2");
+            EvaluateNode(node, Data(RerollConf), 2, "1d20.rerollOnce(<5) => 1!* + 2 => 2");
         }
 
         [TestMethod]
         public void Successfully_RerollN_WhenConditionMet()
         {
             var node = new RerollNode(2, less5, Two) { Expression = _1d20 };
-            EvaluateNode(node, RerollConf, 3, "1d20.rerollN(2, <5) => 1!* + 2* + 1! => 1");
+            EvaluateNode(node, Data(RerollConf), 3, "1d20.rerollN(2, <5) => 1!* + 2* + 1! => 1");
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace TestDiceRoller.AST
         {
             var conf = new RollerConfig() { MaxDice = 10, GetRandomBytes = GetRNG(Roll1()) };
             var node = new RerollNode(0, equal1) { Expression = _1d20 };
-            EvaluateNode(node, conf, DiceErrorCode.TooManyDice);
+            EvaluateNode(node, Data(conf), DiceErrorCode.TooManyDice);
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace TestDiceRoller.AST
         {
             var conf = new RollerConfig() { MaxRerolls = 2, GetRandomBytes = GetRNG(Roll1()) };
             var node = new RerollNode(0, equal1) { Expression = _1d20 };
-            EvaluateNode(node, conf, 3, "1d20.reroll(=1) => 1!* + 1!* + 1! => 1");
+            EvaluateNode(node, Data(conf), 3, "1d20.reroll(=1) => 1!* + 1!* + 1! => 1");
         }
     }
 }

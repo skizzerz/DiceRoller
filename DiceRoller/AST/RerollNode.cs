@@ -82,25 +82,25 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            var rolls = MaxRerollsExpr?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Comparison.Evaluate(conf, root, depth + 1);
-            rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += MaybeReroll(conf, root, depth);
+            var rolls = MaxRerollsExpr?.Evaluate(data, root, depth + 1) ?? 0;
+            rolls += Comparison.Evaluate(data, root, depth + 1);
+            rolls += Expression.Evaluate(data, root, depth + 1);
+            rolls += MaybeReroll(data, root, depth);
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            var rolls = Expression.Reroll(conf, root, depth + 1);
-            rolls += MaybeReroll(conf, root, depth);
+            var rolls = Expression.Reroll(data, root, depth + 1);
+            rolls += MaybeReroll(data, root, depth);
 
             return rolls;
         }
 
-        private long MaybeReroll(RollerConfig conf, DiceAST root, int depth)
+        private long MaybeReroll(RollData data, DiceAST root, int depth)
         {
             long rolls = 0;
             int rerolls = 0;
@@ -114,7 +114,7 @@ namespace Dice.AST
 
                 maxRerolls = (int)MaxRerollsExpr.Value;
             }
-            maxRerolls = maxRerolls == 0 ? conf.MaxRerolls : Math.Min(maxRerolls, conf.MaxRerolls);
+            maxRerolls = maxRerolls == 0 ? data.Config.MaxRerolls : Math.Min(maxRerolls, data.Config.MaxRerolls);
             _values.Clear();
 
             void DoReroll(DieResult die, out DieResult reroll)
@@ -123,8 +123,8 @@ namespace Dice.AST
 
                 if (die.DieType == DieType.Group)
                 {
-                    var group = conf.InternalContext.GetGroupExpression(die.Data);
-                    rolls += group.Reroll(conf, root, depth + 1);
+                    var group = data.InternalContext.GetGroupExpression(die.Data);
+                    rolls += group.Reroll(data, root, depth + 1);
 
                     reroll = new DieResult()
                     {
@@ -155,7 +155,7 @@ namespace Dice.AST
                             throw new InvalidOperationException("Unsupported die type in reroll");
                     }
 
-                    reroll = RollNode.DoRoll(conf, rt, die.NumSides, DieFlags.Extra);
+                    reroll = RollNode.DoRoll(data, rt, die.NumSides, DieFlags.Extra);
                 }
             }
 

@@ -105,7 +105,7 @@ namespace Dice.AST
             _comparisons.AddRange(comparison.Comparisons);
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             // this doesn't increase depth as there is no actual logic that a ComparisonNode itself performs
             // (in other words, the Expression can be viewed as the ComparisonNode's evaluation)
@@ -114,19 +114,19 @@ namespace Dice.AST
 
             foreach (var c in Comparisons)
             {
-                rolls += c.expr.Evaluate(conf, root, depth);
+                rolls += c.expr.Evaluate(data, root, depth);
             }
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = 0;
 
             foreach (var c in Comparisons)
             {
-                rolls += c.expr.Reroll(conf, root, depth);
+                rolls += c.expr.Reroll(data, root, depth);
             }
 
             return rolls;

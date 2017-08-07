@@ -280,12 +280,12 @@ namespace Dice.AST
             }
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");
         }

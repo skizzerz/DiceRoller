@@ -38,7 +38,7 @@ namespace Dice
                 throw new ArgumentNullException("diceExpr");
             }
 
-            return Roll(diceExpr, null);
+            return Roll(diceExpr, null, null);
         }
 
         /// <summary>
@@ -55,50 +55,68 @@ namespace Dice
                 throw new ArgumentNullException("diceExpr");
             }
 
-            var root = Parse(diceExpr, config);
+            return Roll(diceExpr, config, null);
+        }
 
-            return Roll(root, config);
+        /// <summary>
+        /// Rolls dice according to the given dice expression and configuration. Please see
+        /// the documentation for more details on the formatting for this string.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to roll.</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <param name="data">Additional data that is scoped to this roll.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Roll(string diceExpr, RollerConfig config, RollData data)
+        {
+            if (diceExpr == null)
+            {
+                throw new ArgumentNullException("diceExpr");
+            }
+
+            if (data == null)
+            {
+                data = new RollData();
+            }
+
+            if (config == null)
+            {
+                config = DefaultConfig;
+            }
+
+            data.Config = config;
+
+            var root = Parse(diceExpr, data);
+
+            return Roll(root, data);
         }
 
         /// <summary>
         /// Evaluates the root of the tree, returning the RollResult.
         /// </summary>
         /// <param name="root"></param>
-        /// <param name="config"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        internal static RollResult Roll(DiceAST root, RollerConfig config)
+        internal static RollResult Roll(DiceAST root, RollData data)
         {
-            // validate config
-            if (config == null)
-            {
-                config = DefaultConfig;
-            }
-
-            if (config.MaxDice < 1 || config.MaxRecursionDepth < 0 || config.MaxRerolls < 0 || config.MaxSides < 1)
+            if (data.Config.MaxDice < 1 || data.Config.MaxRecursionDepth < 0 || data.Config.MaxRerolls < 0 || data.Config.MaxSides < 1)
             {
                 throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
             }
 
-            var numRolls = root.Evaluate(config, root, 0);
+            var numRolls = root.Evaluate(data, root, 0);
 
-            return new RollResult(config, root, (int)numRolls);
+            return new RollResult(data, root, (int)numRolls);
         }
 
         /// <summary>
         /// Parses the diceExpr into an AST without evaluating it.
         /// </summary>
         /// <param name="diceExpr"></param>
-        /// <param name="config"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        internal static DiceAST Parse(string diceExpr, RollerConfig config)
+        internal static DiceAST Parse(string diceExpr, RollData data)
         {
-            // validate config
-            if (config == null)
-            {
-                config = DefaultConfig;
-            }
-
-            if (config.MaxDice < 1 || config.MaxRecursionDepth < 0 || config.MaxRerolls < 0 || config.MaxSides < 1)
+            if (data.Config.MaxDice < 1 || data.Config.MaxRecursionDepth < 0 || data.Config.MaxRerolls < 0 || data.Config.MaxSides < 1)
             {
                 throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
             }
@@ -109,7 +127,7 @@ namespace Dice
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new DiceGrammarParser(tokenStream);
             var walker = new ParseTreeWalker();
-            var listener = new DiceGrammarListener(config);
+            var listener = new DiceGrammarListener(data);
 
             lexer.AddErrorListener(new DiceErrorListener());
             parser.AddErrorListener(new DiceErrorListener());

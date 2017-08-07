@@ -74,6 +74,8 @@ namespace TestDiceRoller
         protected static readonly RollerConfig Roll20Conf = new RollerConfig() { GetRandomBytes = GetRNG(Roll20()) };
         protected static readonly RollerConfig NormalOnlyConf = new RollerConfig() { NormalSidesOnly = true, GetRandomBytes = GetRNG(Roll1()) };
 
+        protected static RollData Data(RollerConfig config) => new RollData() { Config = config };
+
         protected static readonly RollNode _1d8 = new RollNode(RollType.Normal, One, Eight);
         protected static readonly RollNode _1d20 = new RollNode(RollType.Normal, One, Twenty);
         protected static readonly RollNode _2d20 = new RollNode(RollType.Normal, Two, Twenty);
@@ -97,9 +99,9 @@ namespace TestDiceRoller
         /// <param name="conf"></param>
         /// <param name="expectedRolls"></param>
         /// <param name="expectedResult"></param>
-        protected static void EvaluateNode(DiceAST node, RollerConfig conf, int expectedRolls, string expectedResult)
+        protected static void EvaluateNode(DiceAST node, RollData data, int expectedRolls, string expectedResult)
         {
-            var result = Roller.Roll(node, conf);
+            var result = Roller.Roll(node, data);
             Assert.AreEqual(expectedRolls, result.NumRolls);
             Assert.AreEqual(expectedResult, result.ToString());
         }
@@ -110,11 +112,11 @@ namespace TestDiceRoller
         /// <param name="node"></param>
         /// <param name="conf"></param>
         /// <param name="error"></param>
-        protected static void EvaluateNode(DiceAST node, RollerConfig conf, DiceErrorCode error)
+        protected static void EvaluateNode(DiceAST node, RollData data, DiceErrorCode error)
         {
             try
             {
-                Roller.Roll(node, conf);
+                Roller.Roll(node, data);
                 Assert.Fail("Expected DiceException with error code {0}, but did not receive an exception.", error.ToString());
             }
             catch (DiceException e)

@@ -14,35 +14,35 @@ namespace TestDiceRoller.AST
         public void Successfully_Add()
         {
             var node = new MathNode(MathOp.Add, One, One);
-            EvaluateNode(node, Roll1Conf, 0, "1 + 1 => 1 + 1 => 2");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 + 1 => 1 + 1 => 2");
         }
 
         [TestMethod]
         public void Successfully_Subtract()
         {
             var node = new MathNode(MathOp.Subtract, One, One);
-            EvaluateNode(node, Roll1Conf, 0, "1 - 1 => 1 - 1 => 0");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 - 1 => 1 - 1 => 0");
         }
 
         [TestMethod]
         public void Successfully_Multiply()
         {
             var node = new MathNode(MathOp.Multiply, One, One);
-            EvaluateNode(node, Roll1Conf, 0, "1 * 1 => 1 * 1 => 1");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 * 1 => 1 * 1 => 1");
         }
 
         [TestMethod]
         public void Successfully_Divide()
         {
             var node = new MathNode(MathOp.Divide, One, One);
-            EvaluateNode(node, Roll1Conf, 0, "1 / 1 => 1 / 1 => 1");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 / 1 => 1 / 1 => 1");
         }
 
         [TestMethod]
         public void ThrowDivideByZero_WhenDividingByZero()
         {
             var node = new MathNode(MathOp.Divide, One, Zero);
-            EvaluateNode(node, Roll1Conf, DiceErrorCode.DivideByZero);
+            EvaluateNode(node, Data(Roll1Conf), DiceErrorCode.DivideByZero);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace TestDiceRoller.AST
         {
             var inner = new MathNode(MathOp.Add, One, One);
             var node = new MathNode(MathOp.Add, inner, One);
-            EvaluateNode(node, Roll1Conf, 0, "1 + 1 + 1 => 1 + 1 + 1 => 3");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 + 1 + 1 => 1 + 1 + 1 => 3");
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace TestDiceRoller.AST
         {
             var inner = new MathNode(MathOp.Multiply, Two, Two);
             var node = new MathNode(MathOp.Multiply, inner, Two);
-            EvaluateNode(node, Roll1Conf, 0, "2 * 2 * 2 => 2 * 2 * 2 => 8");
+            EvaluateNode(node, Data(Roll1Conf), 0, "2 * 2 * 2 => 2 * 2 * 2 => 8");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace TestDiceRoller.AST
         {
             var inner = new MathNode(MathOp.Multiply, Two, Two);
             var node = new MathNode(MathOp.Add, One, inner);
-            EvaluateNode(node, Roll1Conf, 0, "1 + 2 * 2 => 1 + 2 * 2 => 5");
+            EvaluateNode(node, Data(Roll1Conf), 0, "1 + 2 * 2 => 1 + 2 * 2 => 5");
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace TestDiceRoller.AST
         {
             var inner = new MathNode(MathOp.Add, Two, Two);
             var node = new MathNode(MathOp.Negate, null, inner);
-            EvaluateNode(node, Roll1Conf, 0, "-(2 + 2) => -(2 + 2) => -4");
+            EvaluateNode(node, Data(Roll1Conf), 0, "-(2 + 2) => -(2 + 2) => -4");
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace TestDiceRoller.AST
         public void Successfully_DoUnaryWithLeftNull()
         {
             var node = new MathNode(MathOp.Negate, null, Two);
-            EvaluateNode(node, Roll1Conf, 0, "-2 => -2 => -2");
+            EvaluateNode(node, Data(Roll1Conf), 0, "-2 => -2 => -2");
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace TestDiceRoller.AST
         {
             var group = new GroupNode(null, new List<DiceAST> { _2d20, _2d20 });
             var node = new MathNode(MathOp.Multiply, group, Two);
-            EvaluateNode(node, Roll9Conf, 4, "{2d20, 2d20} * 2 => (18 + 18) * 2 => 72");
+            EvaluateNode(node, Data(Roll9Conf), 4, "{2d20, 2d20} * 2 => (18 + 18) * 2 => 72");
         }
 
         [TestMethod]
@@ -111,7 +111,7 @@ namespace TestDiceRoller.AST
         {
             var group = new GroupNode(Two, new List<DiceAST> { _2d20, _2d20 });
             var node = new MathNode(MathOp.Multiply, group, Two);
-            EvaluateNode(node, Roll9Conf, 8, "2{2d20, 2d20} * 2 => ((18 + 18) + (18 + 18)) * 2 => 144");
+            EvaluateNode(node, Data(Roll9Conf), 8, "2{2d20, 2d20} * 2 => ((18 + 18) + (18 + 18)) * 2 => 144");
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace TestDiceRoller.AST
         {
             var group = new GroupNode(Two, new List<DiceAST> { _2d20, _2d20 });
             var node = new MathNode(MathOp.Add, group, Two);
-            EvaluateNode(node, Roll9Conf, 8, "2{2d20, 2d20} + 2 => (18 + 18) + (18 + 18) + 2 => 74");
+            EvaluateNode(node, Data(Roll9Conf), 8, "2{2d20, 2d20} + 2 => (18 + 18) + (18 + 18) + 2 => 74");
         }
     }
 }

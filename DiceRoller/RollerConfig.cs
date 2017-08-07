@@ -14,21 +14,21 @@ namespace Dice
         /// will result in a DiceException being thrown.
         /// Default: 1,000
         /// </summary>
-        public int MaxDice { get; set; }
+        public int MaxDice { get; set; } = 1000;
 
         /// <summary>
         /// The maximum number of sides that any individual die can have.
         /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 10,000
         /// </summary>
-        public int MaxSides { get; set; }
+        public int MaxSides { get; set; } = 10000;
 
         /// <summary>
         /// The maximum amount of nesting that can happen in dice expressions.
         /// Exceeding this limit will result in a DiceException being thrown.
         /// Default: 20
         /// </summary>
-        public short MaxRecursionDepth { get; set; }
+        public short MaxRecursionDepth { get; set; } = 20;
 
         /// <summary>
         /// The maximum amount of times a die can be rerolled, either due to
@@ -37,14 +37,14 @@ namespace Dice
         /// (no exception is thrown).
         /// Default: 100
         /// </summary>
-        public int MaxRerolls { get; set; }
+        public int MaxRerolls { get; set; } = 100;
 
         /// <summary>
         /// If true, only standard dice sizes (d2, d3, d4, d6, d8, d10, d12, d20, d100, d1,000, d10,000)
         /// may be rolled. If false, any die size from 1 to MaxSides, inclusive, can be rolled.
         /// Default: false
         /// </summary>
-        public bool NormalSidesOnly { get; set; }
+        public bool NormalSidesOnly { get; set; } = false;
 
         /// <summary>
         /// If set, this function will be called whenever a random number is needed. The function
@@ -74,29 +74,16 @@ namespace Dice
         /// <summary>
         /// Contains the MacroRegistry that maps all known macros to their callbacks.
         /// </summary>
-        public MacroRegistry MacroRegistry { get; set; }
+        public MacroRegistry MacroRegistry { get; set; } = new MacroRegistry();
 
         /// <summary>
         /// Contains the FunctionRegistry that maps all known functions to their callbacks.
         /// </summary>
-        public FunctionRegistry FunctionRegistry { get; set; }
-
-        /// <summary>
-        /// Opaque contextual information used when evaluating dice expressions
-        /// </summary>
-        internal InternalContext InternalContext { get; set; }
+        public FunctionRegistry FunctionRegistry { get; set; } = new FunctionRegistry();
 
         public RollerConfig()
         {
-            MaxDice = 1000;
-            MaxSides = 10000;
-            MaxRecursionDepth = 20;
-            MaxRerolls = 100;
-            NormalSidesOnly = false;
-            GetRandomBytes = null;
-            FunctionRegistry = new FunctionRegistry();
             FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
-            InternalContext = new InternalContext();
         }
     }
 }

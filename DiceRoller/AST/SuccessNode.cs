@@ -108,30 +108,30 @@ namespace Dice.AST
             }
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             if (Success == null)
             {
                 throw new DiceException(DiceErrorCode.InvalidSuccess);
             }
 
-            long rolls = Expression.Evaluate(conf, root, depth + 1);
-            rolls += Success.Evaluate(conf, root, depth + 1);
-            rolls += Failure?.Evaluate(conf, root, depth + 1) ?? 0;
+            long rolls = Expression.Evaluate(data, root, depth + 1);
+            rolls += Success.Evaluate(data, root, depth + 1);
+            rolls += Failure?.Evaluate(data, root, depth + 1) ?? 0;
 
             CountSuccesses();
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             if (Success == null)
             {
                 throw new DiceException(DiceErrorCode.InvalidSuccess);
             }
 
-            long rolls = Expression.Reroll(conf, root, depth + 1);
+            long rolls = Expression.Reroll(data, root, depth + 1);
             CountSuccesses();
 
             return rolls;

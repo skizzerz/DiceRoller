@@ -224,6 +224,11 @@ namespace Dice
                 throw new ArgumentNullException("name");
             }
 
+            if (scope == FunctionScope.All || scope == FunctionScope.Roll)
+            {
+                throw new ArgumentException("Cannot remove with scope All or Roll, specify individual scopes.", "scope");
+            }
+
             var lname = name.ToLower();
 
             if (BuiltinFunctions.ReservedNames.ContainsKey(lname))

@@ -85,21 +85,21 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = NumDice.Evaluate(conf, root, depth + 1);
-            rolls += NumSides?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Roll(conf);
+            long rolls = NumDice.Evaluate(data, root, depth + 1);
+            rolls += NumSides?.Evaluate(data, root, depth + 1) ?? 0;
+            rolls += Roll(data);
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            return Roll(conf);
+            return Roll(data);
         }
 
-        private long Roll(RollerConfig conf)
+        private long Roll(RollData data)
         {
             long numDice = (long)NumDice.Value;
             long numSides = (long)(NumSides?.Value ?? 1);
@@ -109,7 +109,7 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.NegativeDice);
             }
 
-            if (numDice > conf.MaxDice)
+            if (numDice > data.Config.MaxDice)
             {
                 throw new DiceException(DiceErrorCode.TooManyDice);
             }
@@ -133,7 +133,7 @@ namespace Dice.AST
 
             for (int i = 0; i < numDice; i++)
             {
-                var result = DoRoll(conf, RollType, (int)numSides);
+                var result = DoRoll(data, RollType, (int)numSides);
 
                 _values.MaybeAddPlus();
                 _values.Add(result);
@@ -144,14 +144,14 @@ namespace Dice.AST
             return numDice;
         }
 
-        internal static DieResult DoRoll(RollerConfig conf, RollType rollType, int numSides, DieFlags flags = 0)
+        internal static DieResult DoRoll(RollData data, RollType rollType, int numSides, DieFlags flags = 0)
         {
-            if (numSides < 1 || numSides > conf.MaxSides)
+            if (numSides < 1 || numSides > data.Config.MaxSides)
             {
-                throw new DiceException(DiceErrorCode.BadSides, conf.MaxSides);
+                throw new DiceException(DiceErrorCode.BadSides, data.Config.MaxSides);
             }
 
-            if (conf.NormalSidesOnly && !_normalSides.Contains(numSides))
+            if (data.Config.NormalSidesOnly && !_normalSides.Contains(numSides))
             {
                 throw new DiceException(DiceErrorCode.WrongSides);
             }
@@ -177,9 +177,9 @@ namespace Dice.AST
 
             do
             {
-                if (conf.GetRandomBytes != null)
+                if (data.Config.GetRandomBytes != null)
                 {
-                    conf.GetRandomBytes(roll);
+                    data.Config.GetRandomBytes(roll);
                 }
                 else
                 {
@@ -191,7 +191,7 @@ namespace Dice.AST
             uint rollValue = BitConverter.ToUInt32(roll, 0) % sides;
             int rollAmt = (int)rollValue;
 
-            conf.InternalContext.AllRolls.Add(rollValue);
+            data.InternalContext.AllRolls.Add(rollValue);
 
             // first, mark if this was a critical or fumble. This may be overridden later by a CritNode.
             if (rollAmt == 0)

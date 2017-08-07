@@ -70,9 +70,11 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void Successfully_RollOneDie_Macro()
+        public void Successfully_RollOneDie_MacroDeprecated()
         {
+#pragma warning disable CS0618 // Type or member is obsolete -- we want to ensure that the deprecated version still works
             var conf = new RollerConfig() { ExecuteMacro = ExecuteMacro, GetRandomBytes = GetRNG(Roll9()) };
+#pragma warning restore CS0618 // Type or member is obsolete
             EvaluateRoll("[one]d[twenty]", conf, 1, "[one]d[twenty] => 9 => 9");
         }
 

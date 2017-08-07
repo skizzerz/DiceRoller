@@ -94,28 +94,28 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            var rolls = Amount?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += ApplyKeep(conf, root, depth);
+            var rolls = Amount?.Evaluate(data, root, depth + 1) ?? 0;
+            rolls += Expression.Evaluate(data, root, depth + 1);
+            rolls += ApplyKeep(data, root, depth);
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Expression.Reroll(conf, root, depth + 1);
-            rolls += ApplyKeep(conf, root, depth);
+            long rolls = Expression.Reroll(data, root, depth + 1);
+            rolls += ApplyKeep(data, root, depth);
 
             return rolls;
         }
 
-        private long ApplyKeep(RollerConfig conf, DiceAST root, int depth)
+        private long ApplyKeep(RollData data, DiceAST root, int depth)
         {
             if (KeepType == KeepType.Advantage || KeepType == KeepType.Disadvantage)
             {
-                return ApplyAdvantage(conf, root, depth);
+                return ApplyAdvantage(data, root, depth);
             }
 
             var sortedValues = Expression.Values
@@ -182,12 +182,12 @@ namespace Dice.AST
             return 0;
         }
 
-        private long ApplyAdvantage(RollerConfig conf, DiceAST root, int depth)
+        private long ApplyAdvantage(RollData data, DiceAST root, int depth)
         {
             Value = Expression.Value;
             ValueType = Expression.ValueType;
             _values = Expression.Values.ToList();
-            var rolls = Expression.Reroll(conf, root, depth + 1);
+            var rolls = Expression.Reroll(data, root, depth + 1);
 
             if ((KeepType == KeepType.Advantage && Expression.Value > Value)
                 || (KeepType == KeepType.Disadvantage && Expression.Value < Value))

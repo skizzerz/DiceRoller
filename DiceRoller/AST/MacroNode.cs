@@ -52,17 +52,23 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            if (conf.ExecuteMacro == null)
+            if (data.MacroRegistry.Contains(Context.Name))
             {
-                throw new DiceException(DiceErrorCode.InvalidMacro);
+                data.MacroRegistry.Get(Context.Name).callback(Context);
+            }
+            else if (data.Config.MacroRegistry.Contains(Context.Name))
+            {
+                data.Config.MacroRegistry.Get(Context.Name).callback(Context);
             }
 
-            conf.ExecuteMacro(Context);
+            data.MacroRegistry.GlobalCallbacks?.Invoke(Context);
+            data.Config.MacroRegistry.GlobalCallbacks?.Invoke(Context);
+
             Value = Context.Value;
             ValueType = Context.ValueType;
-            conf.InternalContext.AllMacros.Add(Value);
+            data.InternalContext.AllMacros.Add(Value);
 
             if (Context.Value == Decimal.MinValue)
             {
@@ -89,7 +95,7 @@ namespace Dice.AST
             return 0;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             // Macros are currently only evaluated once. This may change in the future
             // once it is more understood what these can be used for.

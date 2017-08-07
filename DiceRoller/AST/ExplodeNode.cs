@@ -95,24 +95,24 @@ namespace Dice.AST
             Comparison.Add(comp ?? throw new ArgumentNullException("comp"));
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Comparison?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Expression.Evaluate(conf, root, depth + 1);
-            rolls += DoExplode(conf);
+            long rolls = Comparison?.Evaluate(data, root, depth + 1) ?? 0;
+            rolls += Expression.Evaluate(data, root, depth + 1);
+            rolls += DoExplode(data);
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Expression.Reroll(conf, root, depth + 1);
-            rolls += DoExplode(conf);
+            long rolls = Expression.Reroll(data, root, depth + 1);
+            rolls += DoExplode(data);
 
             return rolls;
         }
 
-        private long DoExplode(RollerConfig conf)
+        private long DoExplode(RollData data)
         {
             long rolls = 0;
             Func<DieResult, decimal, bool> shouldExplode;
@@ -173,12 +173,12 @@ namespace Dice.AST
                     {
                         rolls++;
 
-                        if (rolls > conf.MaxDice)
+                        if (rolls > data.Config.MaxDice)
                         {
-                            throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
+                            throw new DiceException(DiceErrorCode.TooManyDice, data.Config.MaxDice);
                         }
 
-                        if (rolls > conf.MaxRerolls)
+                        if (rolls > data.Config.MaxRerolls)
                         {
                             break;
                         }
@@ -200,7 +200,7 @@ namespace Dice.AST
                             }
                         }
 
-                        result = RollNode.DoRoll(conf, rt, numSides, DieFlags.Extra);
+                        result = RollNode.DoRoll(data, rt, numSides, DieFlags.Extra);
                         switch (ExplodeType)
                         {
                             case ExplodeType.Explode:

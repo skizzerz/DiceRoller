@@ -57,17 +57,17 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            var rolls = Expression.Evaluate(conf, root, depth + 1);
+            var rolls = Expression.Evaluate(data, root, depth + 1);
             DoSort();
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            var rolls = Expression.Reroll(conf, root, depth + 1);
+            var rolls = Expression.Reroll(data, root, depth + 1);
             DoSort();
 
             return rolls;

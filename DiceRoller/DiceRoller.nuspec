@@ -4,7 +4,7 @@
     <id>DiceRoller</id>
     <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
     <!-- ALSO IMPORTANT: Fill in releaseNotes below with some release note snippets for the release -->
-    <version>2.1.0</version>
+    <version>3.0.0</version>
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
@@ -14,8 +14,16 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
     <releaseNotes><![CDATA[
+Breaking changes:
+- DiceAST subclasses have their RollerConfig parameters swapped with RollData. This change is only breaking if you have implemented custom AST nodes.
+  If you have not implemented custom AST nodes, no code changes need to be made to your project.
+
 New features:
 - RollerConfig.MacroRegistry can be used to associate macro callbacks to specific names instead of registering a global handler.
+- A new [DiceMacro] attribute is added to be used in conjunction with MacroRegistry.RegisterType.
+- Roller.Roll can now take an optional RollData object as a 3rd parameter. This can be used to add in custom functions or macros
+  only valid for that roll (as opposed to global across multiple rolls as is the case for RollerConfig). Functions or macros
+  defined here with the same name as global ones override the global ones.
 
 Deprecated:
 - RollerConfig.ExecuteMacro is deprecated and will be removed in a future version. Use RollerConfig.MacroRegistry instead.

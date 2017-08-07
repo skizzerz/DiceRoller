@@ -162,7 +162,7 @@ namespace Dice.PbP
         /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
         public void AddRoll(string diceExpr)
         {
-            AddRoll(diceExpr, null);
+            AddRoll(diceExpr, null, null);
         }
 
         /// <summary>
@@ -172,15 +172,29 @@ namespace Dice.PbP
         /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
         public void AddRoll(string diceExpr, RollerConfig config)
         {
+            AddRoll(diceExpr, config, null);
+        }
+
+        /// <summary>
+        /// Adds a new roll to the post using the given config if the roll needs to be evaluated, and with additional data.
+        /// </summary>
+        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
+        /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
+        /// <param name="data">Additional data that is scoped to this roll.</param>
+        public void AddRoll(string diceExpr, RollerConfig config, RollData data)
+        {
             if (config == null)
             {
                 config = Roller.DefaultConfig;
             }
 
-            if (!config.MacroRegistry.Contains("roll"))
+            if (data == null)
             {
-                config.MacroRegistry.RegisterMacro("roll", RollMacro);
+                data = new RollData();
             }
+
+            data.Config = config;
+            data.MacroRegistry.RegisterMacro("roll", RollMacro);
 
             int nextIdx = Current.Count;
             AST.DiceAST ast = null;
@@ -188,20 +202,9 @@ namespace Dice.PbP
             var pristineVersion = _pristine.ElementAtOrDefault(nextIdx);
             var storedVersion = _stored.ElementAtOrDefault(nextIdx);
 
-            Func<RollResult> DoRoll = () =>
-            {
-                // ensure that our custom macro handler is attached to handle PbP-specific macros (accessing previous rolls)
-                // leading -= ensures that PostMacros is only attached once
-                config.ExecuteMacro -= PostMacros;
-                config.ExecuteMacro += PostMacros;
-                var res = Roller.Roll(ast, config);
-                config.ExecuteMacro -= PostMacros; // ensure we don't leave around our custom executor past this
-                return res;
-            };
-
             try
             {
-                ast = Roller.Parse(diceExpr, config);
+                ast = Roller.Parse(diceExpr, data);
                 normalizedExpr = ast.ToString();
 
                 // as later rolls may have macros that refer to earlier ones, we don't want to break out into a new roll
@@ -217,7 +220,7 @@ namespace Dice.PbP
                 else if (_diverged == 0 && pristineVersion?.Expression == RollResult.InvalidRoll.Expression)
                 {
                     // pristine was previously invalid and we now have a valid roll, so roll what we have and adjust pristine
-                    var roll = DoRoll();
+                    var roll = Roller.Roll(ast, data);
                     _current.Add(roll);
                     _pristine[nextIdx] = roll;
                 }
@@ -228,7 +231,7 @@ namespace Dice.PbP
                 }
                 else if (_diverged <= 1 && storedVersion?.Expression == RollResult.InvalidRoll.Expression)
                 {
-                    var roll = DoRoll();
+                    var roll = Roller.Roll(ast, data);
                     _current.Add(roll);
                     _stored[nextIdx] = roll;
                     _diverged = 1;
@@ -236,7 +239,7 @@ namespace Dice.PbP
                 else
                 {
                     // none of the versions for the current index matched, so reroll it
-                    _current.Add(DoRoll());
+                    _current.Add(Roller.Roll(ast, data));
                     _diverged = 2;
                 }
             }

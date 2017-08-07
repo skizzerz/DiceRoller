@@ -47,27 +47,27 @@ namespace Dice.AST
         /// <summary>
         /// Evaluates the node, causing it to store its result in Value.
         /// </summary>
-        /// <param name="conf">Configuration of the roller</param>
+        /// <param name="data">Configuration of the roller</param>
         /// <param name="root">Root of the AST</param>
         /// <param name="depth">Current recursion depth</param>
         /// <returns>Total number of rolls taken to evaluate this subtree</returns>
-        protected internal long Evaluate(RollerConfig conf, DiceAST root, int depth)
+        protected internal long Evaluate(RollData data, DiceAST root, int depth)
         {
             if (this == root)
             {
-                conf.InternalContext = new InternalContext();
+                data.InternalContext = new InternalContext();
             }
 
-            if (depth > conf.MaxRecursionDepth)
+            if (depth > data.Config.MaxRecursionDepth)
             {
-                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
+                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, data.Config.MaxRecursionDepth);
             }
 
-            long rolls = EvaluateInternal(conf, root, depth);
+            long rolls = EvaluateInternal(data, root, depth);
 
-            if (rolls > conf.MaxDice)
+            if (rolls > data.Config.MaxDice)
             {
-                throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
+                throw new DiceException(DiceErrorCode.TooManyDice, data.Config.MaxDice);
             }
 
             Evaluated = true;
@@ -78,33 +78,33 @@ namespace Dice.AST
         /// <summary>
         /// Re-do the roll without re-evaluating the entire subtree again
         /// </summary>
-        /// <param name="conf">Roller config</param>
+        /// <param name="data">Roller config</param>
         /// <param name="root">AST root</param>
         /// <param name="depth">Recursion depth</param>
         /// <returns>Number of dice rolls performed</returns>
-        protected internal long Reroll(RollerConfig conf, DiceAST root, int depth)
+        protected internal long Reroll(RollData data, DiceAST root, int depth)
         {
             if (!Evaluated)
             {
-                return Evaluate(conf, root, depth);
+                return Evaluate(data, root, depth);
             }
 
-            if (depth > conf.MaxRecursionDepth)
+            if (depth > data.Config.MaxRecursionDepth)
             {
-                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, conf.MaxRecursionDepth);
+                throw new DiceException(DiceErrorCode.RecursionDepthExceeded, data.Config.MaxRecursionDepth);
             }
 
-            long rolls = RerollInternal(conf, root, depth);
+            long rolls = RerollInternal(data, root, depth);
 
-            if (rolls > conf.MaxDice)
+            if (rolls > data.Config.MaxDice)
             {
-                throw new DiceException(DiceErrorCode.TooManyDice, conf.MaxDice);
+                throw new DiceException(DiceErrorCode.TooManyDice, data.Config.MaxDice);
             }
 
             return rolls;
         }
 
-        protected abstract long EvaluateInternal(RollerConfig conf, DiceAST root, int depth);
-        protected abstract long RerollInternal(RollerConfig conf, DiceAST root, int depth);
+        protected abstract long EvaluateInternal(RollData data, DiceAST root, int depth);
+        protected abstract long RerollInternal(RollData data, DiceAST root, int depth);
     }
 }

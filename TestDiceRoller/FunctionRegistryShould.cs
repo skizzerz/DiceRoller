@@ -23,6 +23,10 @@ namespace TestDiceRoller
             var registry = new FunctionRegistry();
             var cont = new FunctionContainer(2);
             registry.RegisterType(cont);
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Basic));
+            Assert.IsTrue(registry.Contains("b", FunctionScope.Global));
+            Assert.IsFalse(registry.Contains("c", FunctionScope.Global));
+
             var conf = new RollerConfig() { FunctionRegistry = registry, GetRandomBytes = GetRNG(Roll9()) };
             EvaluateRoll("1d20.a()", conf, 1, "1d20.a() => 9 => 10");
             EvaluateRoll("1d20.b()", conf, 1, "1d20.b() => 9 => 11");
@@ -62,6 +66,57 @@ namespace TestDiceRoller
             new FunctionRegistry().RegisterType(typeof(Invalid1));
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenRemovingNullFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.Remove(null, FunctionScope.All);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenRemovingBuiltinFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.Remove("reroll", FunctionScope.Basic);
+        }
+
+        [TestMethod]
+        public void Successfully_RemoveFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction("a", Invalid2.A, FunctionScope.All);
+
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Basic));
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Group));
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Global));
+
+            registry.Remove("a", FunctionScope.Basic);
+
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Basic));
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Group));
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Global));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenRemoveAll()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction("a", Invalid2.A, FunctionScope.All);
+            registry.Remove("a", FunctionScope.All);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenRemoveRoll()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction("a", Invalid2.A, FunctionScope.All);
+            registry.Remove("a", FunctionScope.Roll);
+        }
+
         private class FunctionContainer
         {
             [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
@@ -84,6 +139,9 @@ namespace TestDiceRoller
                 // adds b to the die
                 context.Value = (context.Expression?.Value ?? 0) + b;
             }
+
+            [DiceFunction("c", Scope = FunctionScope.Global)]
+            private void C(FunctionContext context) { }
         }
 
         private class Invalid1
@@ -98,18 +156,10 @@ namespace TestDiceRoller
         private class Invalid2
         {
             [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
-            public static void A(FunctionContext context)
-            {
-                // adds one to the die
-                context.Value = context.Expression.Value + 1;
-            }
+            public static void A(FunctionContext context) { }
 
             [DiceFunction("a", Scope = FunctionScope.All, Timing = FunctionTiming.First)]
-            public static void B(FunctionContext context)
-            {
-                // adds b to the die
-                context.Value = context.Expression.Value + 1;
-            }
+            public static void B(FunctionContext context) { }
         }
     }
 }

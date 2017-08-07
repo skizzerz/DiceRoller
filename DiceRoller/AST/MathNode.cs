@@ -103,19 +103,19 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Left?.Evaluate(conf, root, depth + 1) ?? 0;
-            rolls += Right.Evaluate(conf, root, depth + 1);
+            long rolls = Left?.Evaluate(data, root, depth + 1) ?? 0;
+            rolls += Right.Evaluate(data, root, depth + 1);
             DoMath();
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = Left?.Reroll(conf, root, depth + 1) ?? 0;
-            rolls += Right.Reroll(conf, root, depth + 1);
+            long rolls = Left?.Reroll(data, root, depth + 1) ?? 0;
+            rolls += Right.Reroll(data, root, depth + 1);
             DoMath();
 
             return rolls;

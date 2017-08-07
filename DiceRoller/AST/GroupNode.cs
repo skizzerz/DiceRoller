@@ -71,21 +71,21 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        protected override long EvaluateInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
-            long rolls = NumTimes?.Evaluate(conf, root, depth + 1) ?? 0;
+            long rolls = NumTimes?.Evaluate(data, root, depth + 1) ?? 0;
 
-            rolls += Roll(conf, root, depth);
+            rolls += Roll(data, root, depth);
 
             return rolls;
         }
 
-        protected override long RerollInternal(RollerConfig conf, DiceAST root, int depth)
+        protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
-            return Roll(conf, root, depth);
+            return Roll(data, root, depth);
         }
 
-        internal long Roll(RollerConfig conf, DiceAST root, int depth)
+        internal long Roll(RollData data, DiceAST root, int depth)
         {
             long rolls = 0;
             ushort numTimes = (ushort)(NumTimes?.Value ?? 1);
@@ -119,7 +119,7 @@ namespace Dice.AST
                     // for example, in the group 2{(1d6)d8}, we want to roll 1d6 once and then treat it as if the
                     // group was 2{3d8} (or whatever the 1d6 rolled); in other words, we don't re-evaluate the 1d6
                     // every iteration. Note that Reroll() calls Evaluate() if the expr wasn't already evaluated.
-                    rolls += ast.Reroll(conf, root, depth + 1);
+                    rolls += ast.Reroll(data, root, depth + 1);
                     _values.MaybeAddPlus();
 
                     // If the group contains exactly one member, we want to expose all dice rolled in the subtree
@@ -143,7 +143,7 @@ namespace Dice.AST
                                 .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
                                 .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
                                 .Aggregate((d1, d2) => d1 | d2),
-                            Data = conf.InternalContext.AddGroupExpression(ast)
+                            Data = data.InternalContext.AddGroupExpression(ast)
                         });
                     }
 
