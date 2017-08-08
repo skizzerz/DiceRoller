@@ -98,7 +98,7 @@ namespace Dice
 
         internal RollResult(RollData data, DiceAST rollRoot, int numRolls)
         {
-            RollRoot = rollRoot ?? throw new ArgumentNullException("rollRoot");
+            RollRoot = rollRoot;
             // cache some commonly-referenced information directly in this class instead of requiring
             // the user to drill down into RollRoot for everything (and because RollRoot isn't available
             // if deserializing).
@@ -138,10 +138,6 @@ namespace Dice
             if (version >= 3)
             {
                 Metadata = info.GetValue("Metadata", typeof(object));
-            }
-            else
-            {
-                Metadata = null;
             }
         }
 

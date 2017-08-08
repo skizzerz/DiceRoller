@@ -117,6 +117,14 @@ namespace TestDiceRoller
             registry.Remove("a", FunctionScope.Roll);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenNullDiceFunctionAttribute()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterType(typeof(Invalid3));
+        }
+
         private class FunctionContainer
         {
             [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
@@ -160,6 +168,12 @@ namespace TestDiceRoller
 
             [DiceFunction("a", Scope = FunctionScope.All, Timing = FunctionTiming.First)]
             public static void B(FunctionContext context) { }
+        }
+
+        private class Invalid3
+        {
+            [DiceFunction(null)]
+            public static void A(FunctionContext context) { }
         }
     }
 }

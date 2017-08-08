@@ -51,7 +51,7 @@ namespace Dice
             Value = Decimal.MinValue;
             Values = null;
             ValueType = ResultType.Total;
-            Param = param ?? throw new ArgumentNullException("param");
+            Param = param;
 
             // parse Param
             Param = Param.Trim();

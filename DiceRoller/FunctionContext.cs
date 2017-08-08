@@ -54,17 +54,12 @@ namespace Dice
         internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
         {
             Scope = scope;
-            Name = name ?? throw new ArgumentNullException("name");
-            Arguments = arguments ?? throw new ArgumentNullException("arguments");
+            Name = name;
+            Arguments = arguments;
             Expression = null;
             Value = Decimal.MinValue;
             ValueType = ResultType.Total;
             Values = null;
-
-            if (Arguments.Any(d => d == null))
-            {
-                throw new ArgumentException("Function argument list cannot contain null arguments");
-            }
         }
     }
 }

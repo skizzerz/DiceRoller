@@ -51,17 +51,45 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void Successfully_Max()
+        public void Successfully_Max_BiggerRight()
         {
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(4, 9) };
             EvaluateRoll("max(1d20, 1d20)", conf, 2, "max(1d20, 1d20) => max(5*, 10) => 10");
         }
 
         [TestMethod]
-        public void Successfully_Min()
+        public void Successfully_Max_BiggerLeft()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(9, 4) };
+            EvaluateRoll("max(1d20, 1d20)", conf, 2, "max(1d20, 1d20) => max(10, 5*) => 10");
+        }
+
+        [TestMethod]
+        public void Successfully_Max_Successes()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(9, 4, 5, 5) };
+            EvaluateRoll("max(2d10>5, 2d10>5)", conf, 4, "max(2d10.success(>5), 2d10.success(>5)) => max(10!* + 5*, $6 + $6) => 2 successes");
+        }
+
+        [TestMethod]
+        public void Successfully_Min_BiggerRight()
         {
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(4, 9) };
             EvaluateRoll("min(1d20, 1d20)", conf, 2, "min(1d20, 1d20) => min(5, 10*) => 5");
+        }
+
+        [TestMethod]
+        public void Successfully_Min_BiggerLeft()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(9, 4) };
+            EvaluateRoll("min(1d20, 1d20)", conf, 2, "min(1d20, 1d20) => min(10*, 5) => 5");
+        }
+
+        [TestMethod]
+        public void Successfully_Min_Successes()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 7, 5, 5) };
+            EvaluateRoll("min(2d10>5f1, 2d10>5f1)", conf, 4, "min(2d10.success(>5).failure(=1), 2d10.success(>5).failure(=1)) => min(#1! + $8, 6* + 6*) => 0 successes");
         }
 
         [TestMethod]
