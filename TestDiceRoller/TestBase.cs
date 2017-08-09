@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Dice;
@@ -10,6 +11,7 @@ using Dice.AST;
 
 namespace TestDiceRoller
 {
+    [ExcludeFromCodeCoverage]
     public class TestBase
     {
         protected static Action<byte[]> GetRNG(params uint[] values)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Dice;
@@ -6,6 +7,7 @@ using Dice;
 namespace TestDiceRoller
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class FunctionRegistryShould : TestBase
     {
         [TestMethod]

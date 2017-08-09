@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO.Compression;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,6 +13,7 @@ using Dice.PbP;
 namespace TestDiceRoller.PbP
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class RollPostShould : TestBase
     {
         [TestMethod]
