@@ -131,5 +131,19 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("{2{2d20, 2d20}}", Roll9Conf, 8, "{2{2d20, 2d20}} => (72) => 72");
         }
+
+        [TestMethod]
+        public void ThrowRecursionDepthExceeded_WhenExceedingRecursion()
+        {
+            var conf = new RollerConfig() { MaxRecursionDepth = 0, GetRandomBytes = GetRNG(0, 2) };
+            EvaluateRoll("1d20rr1", conf, DiceErrorCode.RecursionDepthExceeded);
+        }
+
+        [TestMethod]
+        public void ThrowBadSides_WhenExceedingMaxSides()
+        {
+            var conf = new RollerConfig() { MaxSides = 100, GetRandomBytes = GetRNG(0, 2) };
+            EvaluateRoll("1d1000", conf, DiceErrorCode.BadSides);
+        }
     }
 }

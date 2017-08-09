@@ -73,6 +73,11 @@ namespace Dice
                 config = DefaultConfig;
             }
 
+            if (config.MaxDice < 1 || config.MaxRecursionDepth < 0 || config.MaxRerolls < 0 || config.MaxSides < 1)
+            {
+                throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
+            }
+
             data.Config = config;
 
             var root = Parse(diceExpr, data);
@@ -88,11 +93,6 @@ namespace Dice
         /// <returns></returns>
         internal static RollResult Roll(DiceAST root, RollData data)
         {
-            if (data.Config.MaxDice < 1 || data.Config.MaxRecursionDepth < 0 || data.Config.MaxRerolls < 0 || data.Config.MaxSides < 1)
-            {
-                throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
-            }
-
             var numRolls = root.Evaluate(data, root, 0);
 
             return new RollResult(data, root, (int)numRolls);
@@ -106,11 +106,6 @@ namespace Dice
         /// <returns></returns>
         internal static DiceAST Parse(string diceExpr, RollData data)
         {
-            if (data.Config.MaxDice < 1 || data.Config.MaxRecursionDepth < 0 || data.Config.MaxRerolls < 0 || data.Config.MaxSides < 1)
-            {
-                throw new InvalidOperationException("RollerConfig is invalid, cannot have negative values for maximums.");
-            }
-
             // parse diceExpr
             var inputStream = new AntlrInputStream(diceExpr);
             var lexer = new DiceGrammarLexer(inputStream);

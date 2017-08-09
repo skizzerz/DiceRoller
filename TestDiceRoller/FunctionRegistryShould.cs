@@ -127,6 +127,14 @@ namespace TestDiceRoller
             registry.RegisterType(typeof(Invalid3));
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ThrowInvalidOperationException_WhenDuplicatingRollFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterType(new Invalid4());
+        }
+
         private class FunctionContainer
         {
             [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
@@ -152,6 +160,12 @@ namespace TestDiceRoller
 
             [DiceFunction("c", Scope = FunctionScope.Global)]
             private void C(FunctionContext context) { }
+
+            [DiceFunction("d", Scope = FunctionScope.All)]
+            public static void D(FunctionContext context) { }
+
+            [DiceFunction("e", Scope = FunctionScope.Basic)]
+            public void E(FunctionContext context) { }
         }
 
         private class Invalid1
@@ -176,6 +190,15 @@ namespace TestDiceRoller
         {
             [DiceFunction(null)]
             public static void A(FunctionContext context) { }
+        }
+
+        private class Invalid4
+        {
+            [DiceFunction("a", Scope = FunctionScope.Basic)]
+            public void A(FunctionContext context) { }
+
+            [DiceFunction("a", Scope = FunctionScope.Roll)]
+            public static void B(FunctionContext context) { }
         }
     }
 }
