@@ -127,7 +127,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RegisterGlobalMacro(MacroCallback callback)
         {
-            GlobalCallbacks += callback;
+            GlobalCallbacks += callback ?? throw new ArgumentNullException("callback");
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RemoveGlobal(MacroCallback callback)
         {
-            GlobalCallbacks -= callback;
+            GlobalCallbacks -= callback ?? throw new ArgumentNullException("callback");
         }
 
         internal (string name, MacroCallback callback) Get(string lname)

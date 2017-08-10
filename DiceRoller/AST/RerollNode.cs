@@ -42,7 +42,7 @@ namespace Dice.AST
 
         internal RerollNode(int maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
         {
-            Comparison = comparison ?? throw new ArgumentNullException("comparison");
+            Comparison = comparison;
             Expression = null;
             MaxRerolls = maxRerolls;
             MaxRerollsExpr = maxRerollsExpr;

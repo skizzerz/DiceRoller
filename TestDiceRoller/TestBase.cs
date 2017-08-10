@@ -136,6 +136,13 @@ namespace TestDiceRoller
             Assert.AreEqual(expectedResult, result.ToString());
         }
 
+        protected static void EvaluateRoll(string diceExpr, RollerConfig conf, RollData data, int expectedRolls, string expectedResult)
+        {
+            var result = Roller.Roll(diceExpr, conf, data);
+            Assert.AreEqual(expectedRolls, result.NumRolls);
+            Assert.AreEqual(expectedResult, result.ToString());
+        }
+
         protected static void EvaluateRoll(string diceExpr, RollerConfig conf, DiceErrorCode error)
         {
             try

@@ -100,12 +100,86 @@ namespace TestDiceRoller
             registry.RegisterType(typeof(Invalid3));
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenRegisteringNullMacro()
+        {
+            var registry = new MacroRegistry();
+            registry.RegisterMacro(null, Invalid2.A);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenRegisteringEmptyMacro()
+        {
+            var registry = new MacroRegistry();
+            registry.RegisterMacro("", Invalid2.A);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenRegisteringNullGlobalMacro()
+        {
+            var registry = new MacroRegistry();
+            registry.RegisterGlobalMacro(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenRemovingNullGlobalMacro()
+        {
+            var registry = new MacroRegistry();
+            registry.RemoveGlobal(null);
+        }
+
+        [TestMethod]
+        public void Successfully_RegisterGlobalMacro_Config()
+        {
+            var registry = new MacroRegistry();
+            registry.RegisterType(new MacroContainer(3));
+            registry.RegisterGlobalMacro(MacroContainer.A);
+
+            var config = new RollerConfig() { MacroRegistry = registry };
+            EvaluateRoll("[b]", config, 0, "[b] => 3 => 3");
+            EvaluateRoll("[bb]", config, 0, "[bb] => 1 => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_RegisterGlobalMacro_Data()
+        {
+            var registry = new MacroRegistry();
+            registry.RegisterType(new MacroContainer(3));
+            registry.RegisterGlobalMacro(MacroContainer.A);
+
+            var data = new RollData() { MacroRegistry = registry };
+            EvaluateRoll("[b]", null, data, 0, "[b] => 3 => 3");
+            EvaluateRoll("[bb]", null, data, 0, "[bb] => 1 => 1");
+        }
+
+        [TestMethod]
+        public void Successfully_ShadowConfigWithData()
+        {
+            var registry1 = new MacroRegistry();
+            var registry2 = new MacroRegistry();
+            var cont = new MacroContainer(3);
+            registry1.RegisterType(cont);
+            registry2.RegisterMacro("a", cont.B);
+
+            var config = new RollerConfig() { MacroRegistry = registry1 };
+            var data = new RollData() { MacroRegistry = registry2 };
+            EvaluateRoll("[b]", config, data, 0, "[b] => 3 => 3");
+            EvaluateRoll("[a]", config, data, 0, "[a] => 3 => 3");
+        }
+
         private class MacroContainer
         {
             [DiceMacro("a")]
             public static void A(MacroContext context)
             {
-                context.Value = 1;
+                if (context.Value == Decimal.MinValue)
+                {
+                    context.Value = 1;
+                }
             }
 
             private int b;

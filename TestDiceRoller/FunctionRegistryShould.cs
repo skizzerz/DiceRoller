@@ -134,6 +134,22 @@ namespace TestDiceRoller
             registry.RegisterType(new Invalid4());
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowArgumentNullException_WhenRegisteringNullFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction(null, Invalid2.A);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ThrowArgumentException_WhenRegisteringEmptyFunction()
+        {
+            var registry = new FunctionRegistry();
+            registry.RegisterFunction("", Invalid2.A);
+        }
+
         private class FunctionContainer
         {
             [DiceFunction("a", Scope = FunctionScope.Roll, Timing = FunctionTiming.First)]
