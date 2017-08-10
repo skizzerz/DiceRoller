@@ -13,7 +13,6 @@ using Dice.PbP;
 namespace TestDiceRoller.PbP
 {
     [TestClass]
-    [ExcludeFromCodeCoverage]
     public class RollPostShould : TestBase
     {
         [TestMethod]
@@ -90,6 +89,25 @@ namespace TestDiceRoller.PbP
             post2.AddRoll("1d20");
 
             Assert.IsTrue(post2.Validate());
+        }
+
+        [TestMethod]
+        public void Successfully_PreserveMetadata()
+        {
+            var metadata = "foobar";
+            var stream = new MemoryStream();
+            var post = new RollPost();
+
+            post.AddRoll("1d20", null, new RollData() { Metadata = metadata });
+            post.Validate();
+
+            post.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var post2 = RollPost.Deserialize(stream);
+            post2.AddRoll("1d20");
+            post2.Validate();
+
+            Assert.AreEqual(metadata, (string)post2.Current[0].Metadata);
         }
 
         [TestMethod]

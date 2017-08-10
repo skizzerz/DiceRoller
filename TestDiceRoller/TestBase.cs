@@ -11,7 +11,6 @@ using Dice.AST;
 
 namespace TestDiceRoller
 {
-    [ExcludeFromCodeCoverage]
     public class TestBase
     {
         protected static Action<byte[]> GetRNG(params uint[] values)

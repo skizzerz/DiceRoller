@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -303,7 +304,10 @@ namespace Dice
         public override int GetHashCode()
         {
             // See above for why RollRoot and Metadata isn't present in the hash code
-            return new { ResultType, Value, Values = Values.ToArray(), NumRolls, Expression, AllRolls = AllRolls.ToArray(), AllMacros = AllMacros.ToArray() }.GetHashCode();
+            int valuesCode = StructuralComparisons.StructuralEqualityComparer.GetHashCode(Values.ToArray());
+            int rollsCode = StructuralComparisons.StructuralEqualityComparer.GetHashCode(AllRolls.ToArray());
+            int macrosCode = StructuralComparisons.StructuralEqualityComparer.GetHashCode(AllMacros.ToArray());
+            return new { ResultType, Value, Values = valuesCode, NumRolls, Expression, AllRolls = rollsCode, AllMacros = macrosCode }.GetHashCode();
         }
 
         public static bool operator ==(RollResult a, RollResult b)

@@ -7,7 +7,6 @@ using Dice;
 namespace TestDiceRoller
 {
     [TestClass]
-    [ExcludeFromCodeCoverage]
     public class FunctionRegistryShould : TestBase
     {
         [TestMethod]
