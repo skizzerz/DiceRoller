@@ -42,7 +42,7 @@ namespace Dice.AST
                     (name, Timing, Function) = data.Config.FunctionRegistry.Get(name, scope);
                 }
 
-                Context = new FunctionContext(scope, name, arguments);
+                Context = new FunctionContext(scope, name, arguments, data);
                 _values = new List<DieResult>();
             }
             catch (KeyNotFoundException)

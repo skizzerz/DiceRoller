@@ -121,6 +121,13 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_HandleNestedRerolls()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 0, 1, 1, 0, 2, 3) };
+            EvaluateRoll("{2d20rr1}rr<5", conf, 7, "{2d20.reroll(=1)}.reroll(<5) => (4* + 7) => 7");
+        }
+
+        [TestMethod]
         public void ThrowTooManyDice_WhenTooManyDice()
         {
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(Roll9()), MaxDice = 2 };
@@ -137,6 +144,18 @@ namespace TestDiceRoller.Grammar
         public void ThrowBadRerollCount_WhenNegativeRerollCount()
         {
             EvaluateRoll("1d20.rerollN(-2, >=1)", Roll9Conf, DiceErrorCode.BadRerollCount);
+        }
+
+        [TestMethod]
+        public void ThrowBadRerollCount_WhenTooHighRerollCount()
+        {
+            EvaluateRoll("1d20.rerollN(10000000000, >=1)", Roll9Conf, DiceErrorCode.BadRerollCount);
+        }
+
+        [TestMethod]
+        public void ThrowBadRerollCount_WhenDecimalRerollCount()
+        {
+            EvaluateRoll("1d20.rerollN(1.5, >=1)", Roll9Conf, DiceErrorCode.BadRerollCount);
         }
 
         [TestMethod]

@@ -30,6 +30,11 @@ namespace Dice
         public IReadOnlyList<DiceAST> Arguments { get; private set; }
 
         /// <summary>
+        /// RollData attached to this function execution
+        /// </summary>
+        public RollData Data { get; private set; }
+
+        /// <summary>
         /// The dice expression this function is attached to, or null
         /// if this is a global function call.
         /// </summary>
@@ -51,7 +56,7 @@ namespace Dice
         /// </summary>
         public IEnumerable<DieResult> Values { get; set; }
         
-        internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments)
+        internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
             Scope = scope;
             Name = name;
@@ -60,6 +65,7 @@ namespace Dice
             Value = Decimal.MinValue;
             ValueType = ResultType.Total;
             Values = null;
+            Data = data;
         }
     }
 }

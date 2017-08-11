@@ -371,5 +371,44 @@ namespace Dice
             values.Add(new DieResult(SpecialDie.CloseParen));
             context.Values = values;
         }
+
+        [DiceFunction("expand", Scope = FunctionScope.Group, Timing = FunctionTiming.BeforeSort)]
+        public static void Expand(FunctionContext context)
+        {
+            if (context.Arguments.Count > 0)
+            {
+                throw new DiceException(DiceErrorCode.IncorrectArity, "expand");
+            }
+
+            List<DieResult> values = new List<DieResult>();
+            context.Value = context.Expression.Value;
+            context.ValueType = context.Expression.ValueType;
+
+            foreach (var value in context.Expression.Values)
+            {
+                if (value.DieType != DieType.Group)
+                {
+                    values.Add(value);
+                    continue;
+                }
+
+                var group = context.Data.InternalContext.GetGroupExpression(value.Data);
+                bool markDropped = value.Flags.HasFlag(DieFlags.Dropped);
+
+                foreach (var die in group.Values)
+                {
+                    if (markDropped && die.IsLiveDie())
+                    {
+                        values.Add(die.Drop());
+                    }
+                    else
+                    {
+                        values.Add(die);
+                    }
+                }
+            }
+
+            context.Values = values;
+        }
     }
 }

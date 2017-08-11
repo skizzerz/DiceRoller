@@ -29,14 +29,17 @@ namespace TestDiceRoller.AST
         [TestMethod]
         public void Successfully_SortAscendingWithNestedMath()
         {
+            var data = Data(SortConf);
             var inner1 = new MathNode(MathOp.Add, Three, Two);
             var inner2 = new MathNode(MathOp.Add, Five, Four);
             var sub = new MathNode(MathOp.Subtract, inner1, inner2);
             var inner3 = new MathNode(MathOp.Multiply, Six, One);
             var add = new MathNode(MathOp.Add, sub, inner3);
             var group = new GroupNode(null, new List<DiceAST> { add });
-            var node = new SortNode(SortDirection.Ascending) { Expression = group };
-            EvaluateNode(node, Data(SortConf), 0, "{3 + 2 - (5 + 4) + 6 * 1}.sortAsc() => (2 + 3 - (4 + 5) + 1 * 6) => 2");
+            var func = new FunctionNode(FunctionScope.Group, "expand", new DiceAST[0], data);
+            func.Context.Expression = group;
+            var node = new SortNode(SortDirection.Ascending) { Expression = func };
+            EvaluateNode(node, data, 0, "{3 + 2 - (5 + 4) + 6 * 1}.expand().sortAsc() => (2 + 3 - (4 + 5) + 1 * 6) => 2");
         }
     }
 }

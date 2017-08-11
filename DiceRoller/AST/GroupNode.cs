@@ -122,30 +122,19 @@ namespace Dice.AST
                     rolls += ast.Reroll(data, root, depth + 1);
                     _values.MaybeAddPlus();
 
-                    // If the group contains exactly one member, we want to expose all dice rolled in the subtree
-                    // e.g. {3d6+4d8} should contain a list of 7 final values, three for the d6s and four for the d8s.
-                    // However, if the group contains more than one member, or if the group's sole member is another group,
-                    // we want to expose the aggregate instead. e.g. {3d6,4d8} should expose 2 final values, and {{3d6+4d8}}
-                    // should expose 1 final value.
-                    if (Expressions.Count == 1 && !(ast is GroupNode))
+                    // Add a node containing the aggregate result of this expression
+                    _values.Add(new DieResult()
                     {
-                        _values.AddRange(ast.Values);
-                    }
-                    else
-                    {
-                        _values.Add(new DieResult()
-                        {
-                            DieType = DieType.Group,
-                            NumSides = 0,
-                            Value = ast.Value,
-                            // maintain any crit/fumble flags from the underlying dice, combining them together
-                            Flags = ast.Values
-                                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
-                                .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
-                                .Aggregate((d1, d2) => d1 | d2),
-                            Data = data.InternalContext.AddGroupExpression(ast)
-                        });
-                    }
+                        DieType = DieType.Group,
+                        NumSides = 0,
+                        Value = ast.Value,
+                        // maintain any crit/fumble flags from the underlying dice, combining them together
+                        Flags = ast.Values
+                            .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                            .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                            .Aggregate((d1, d2) => d1 | d2),
+                        Data = data.InternalContext.AddGroupExpression(ast)
+                    });
 
                     Value += ast.Value;
                     // we make our final ValueType successes if *all* underlying expressions in this group which actually contain rolls are success types

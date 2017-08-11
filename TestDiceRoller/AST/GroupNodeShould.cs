@@ -28,18 +28,31 @@ namespace TestDiceRoller.AST
         public void Successfully_EvaluateTwice()
         {
             var node = new GroupNode(Two, new List<DiceAST> { _2d20 });
-            EvaluateNode(node, Data(Roll9Conf), 4, "2{2d20} => (9 + 9) + (9 + 9) => 36");
+            EvaluateNode(node, Data(Roll9Conf), 4, "2{2d20} => (18) + (18) => 36");
         }
 
         [TestMethod]
-        public void Successfully_ListAllValuesForSingleExpr()
+        public void Successfully_EvaluateTwice_Expand()
         {
-            var node = new GroupNode(null, new List<DiceAST> { _2d20 });
-            EvaluateNode(node, Data(Roll9Conf), 2, "{2d20} => (9 + 9) => 18");
+            var data = Data(Roll9Conf);
+            var group = new GroupNode(Two, new List<DiceAST> { _2d20 });
+            var node = new FunctionNode(FunctionScope.Group, "expand", new DiceAST[0], data);
+            node.Context.Expression = group;
+            EvaluateNode(node, data, 4, "2{2d20}.expand() => (9 + 9) + (9 + 9) => 36");
         }
 
         [TestMethod]
-        public void Successfully_CompressValuesForNestedSingleExpr()
+        public void Successfully_ListAllValuesForSingleExpr_Expand()
+        {
+            var data = Data(Roll9Conf);
+            var group = new GroupNode(null, new List<DiceAST> { _2d20 });
+            var node = new FunctionNode(FunctionScope.Group, "expand", new DiceAST[0], data);
+            node.Context.Expression = group;
+            EvaluateNode(node, data, 2, "{2d20}.expand() => (9 + 9) => 18");
+        }
+
+        [TestMethod]
+        public void Successfully_HandleNestedGroupExpr()
         {
             var inner = new GroupNode(null, new List<DiceAST> { _2d20 });
             var node = new GroupNode(null, new List<DiceAST> { inner });
@@ -52,7 +65,7 @@ namespace TestDiceRoller.AST
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(2, 2, 2, 2, 3, 3, 3, 3, 3) };
             var roll = new RollNode(RollType.Normal, _1d8, Six);
             var node = new GroupNode(Two, new List<DiceAST> { roll });
-            EvaluateNode(node, Data(conf), 7, "2{(1d8)d6} => (3 + 3 + 3) + (4 + 4 + 4) => 21");
+            EvaluateNode(node, Data(conf), 7, "2{(1d8)d6} => (9) + (12) => 21");
         }
 
         [TestMethod]

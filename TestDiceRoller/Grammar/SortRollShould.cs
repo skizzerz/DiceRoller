@@ -85,7 +85,7 @@ namespace TestDiceRoller.Grammar
         [TestMethod]
         public void Successfully_SortAscendingWithNestedMath()
         {
-            EvaluateRoll("{3+2-(5+4)+6*1}sa", SortConf, 0, "{3 + 2 - (5 + 4) + 6 * 1}.sortAsc() => (2 + 3 - (4 + 5) + 1 * 6) => 2");
+            EvaluateRoll("{3+2-(5+4)+6*1}sa.expand()", SortConf, 0, "{3 + 2 - (5 + 4) + 6 * 1}.expand().sortAsc() => (2 + 3 - (4 + 5) + 1 * 6) => 2");
         }
     }
 }

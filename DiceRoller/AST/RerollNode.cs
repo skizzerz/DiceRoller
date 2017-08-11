@@ -47,11 +47,6 @@ namespace Dice.AST
             MaxRerolls = maxRerolls;
             MaxRerollsExpr = maxRerollsExpr;
             _values = new List<DieResult>();
-
-            if (maxRerolls < 0 && maxRerollsExpr == null)
-            {
-                throw new DiceException(DiceErrorCode.BadRerollCount);
-            }
         }
 
         public override string ToString()

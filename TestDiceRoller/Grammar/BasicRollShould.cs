@@ -81,13 +81,13 @@ namespace TestDiceRoller.Grammar
         [TestMethod]
         public void Successfully_RollGroup_OneElement()
         {
-            EvaluateRoll("{4d20}", Roll9Conf, 4, "{4d20} => (9 + 9 + 9 + 9) => 36");
+            EvaluateRoll("{4d20}", Roll9Conf, 4, "{4d20} => (36) => 36");
         }
 
         [TestMethod]
         public void Successfully_RollGroupTwice_OneElement()
         {
-            EvaluateRoll("2{2d20}", Roll9Conf, 4, "2{2d20} => (9 + 9) + (9 + 9) => 36");
+            EvaluateRoll("2{2d20}", Roll9Conf, 4, "2{2d20} => (18) + (18) => 36");
         }
 
         [TestMethod]
@@ -145,5 +145,7 @@ namespace TestDiceRoller.Grammar
             var conf = new RollerConfig() { MaxSides = 100, GetRandomBytes = GetRNG(0, 2) };
             EvaluateRoll("1d1000", conf, DiceErrorCode.BadSides);
         }
+
+        [TestMethod]
     }
 }
