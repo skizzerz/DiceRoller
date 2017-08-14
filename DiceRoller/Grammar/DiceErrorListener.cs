@@ -15,12 +15,12 @@ namespace Dice.Grammar
     {
         public void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            throw new DiceException(DiceErrorCode.ParseError, msg, e);
+            throw new DiceException(DiceErrorCode.ParseError, String.Format("{0}; line {1} position {2}", msg, line, charPositionInLine), e);
         }
 
         public void SyntaxError(TextWriter output, IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            throw new DiceException(DiceErrorCode.ParseError, msg, e);
+            throw new DiceException(DiceErrorCode.ParseError, String.Format("{0}; line {1} position {2}", msg, line, charPositionInLine), e);
         }
     }
 }

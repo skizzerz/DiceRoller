@@ -26,11 +26,7 @@ namespace Dice.AST
 
         internal MacroNode(string param)
         {
-            if (param == null)
-            {
-                throw new ArgumentNullException("param");
-            }
-            else if (String.IsNullOrWhiteSpace(param))
+            if (String.IsNullOrWhiteSpace(param))
             {
                 throw new DiceException(DiceErrorCode.InvalidMacro, new ArgumentException("Macro param cannot consist of only whitespace", "param"));
             }

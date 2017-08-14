@@ -133,6 +133,12 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_GroupNumTimesExpr()
+        {
+            EvaluateRoll("(1d10){1d20}", Roll9Conf, 10, "(1d10){1d20} => (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) => 81");
+        }
+
+        [TestMethod]
         public void ThrowRecursionDepthExceeded_WhenExceedingRecursion()
         {
             var conf = new RollerConfig() { MaxRecursionDepth = 0, GetRandomBytes = GetRNG(0, 2) };
@@ -145,7 +151,5 @@ namespace TestDiceRoller.Grammar
             var conf = new RollerConfig() { MaxSides = 100, GetRandomBytes = GetRNG(0, 2) };
             EvaluateRoll("1d1000", conf, DiceErrorCode.BadSides);
         }
-
-        [TestMethod]
     }
 }
