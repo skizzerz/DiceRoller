@@ -95,7 +95,7 @@ namespace Dice.Grammar
         {
             // T_MACRO includes the surrounding [], so strip those out (via Substring)
             var macro = context.T_MACRO().GetText();
-            Stack.Push(new MacroNode(macro.Substring(1, macro.Length - 2)));
+            Stack.Push(new MacroNode(macro.Substring(1, macro.Length - 2), Data));
         }
 
         public override void EnterRollGroup([NotNull] DiceGrammarParser.RollGroupContext context)

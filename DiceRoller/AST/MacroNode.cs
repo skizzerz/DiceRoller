@@ -24,14 +24,14 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal MacroNode(string param)
+        internal MacroNode(string param, RollData data)
         {
             if (String.IsNullOrWhiteSpace(param))
             {
                 throw new DiceException(DiceErrorCode.InvalidMacro, new ArgumentException("Macro param cannot consist of only whitespace", "param"));
             }
 
-            Context = new MacroContext(param.Trim());
+            Context = new MacroContext(param.Trim(), data);
             _values = new List<DieResult>();
         }
 

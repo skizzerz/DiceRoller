@@ -46,12 +46,18 @@ namespace Dice
         /// </summary>
         public IReadOnlyList<string> Arguments { get; private set; }
 
-        internal MacroContext(string param)
+        /// <summary>
+        /// RollData attached to this function execution
+        /// </summary>
+        public RollData Data { get; private set; }
+
+        internal MacroContext(string param, RollData data)
         {
             Value = Decimal.MinValue;
             Values = null;
             ValueType = ResultType.Total;
             Param = param;
+            Data = data;
 
             // parse Param
             Param = Param.Trim();
