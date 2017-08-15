@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Dice
 {
+    /// <summary>
+    /// Stores a mapping of all macros to their appropriate callbacks.
+    /// </summary>
     public class MacroRegistry
     {
         /// <summary>
@@ -15,7 +18,7 @@ namespace Dice
         /// Currently internal due to ExecuteMacro wiring up to this.
         /// When ExecuteMacro is removed, this will become private.
         /// </remarks>
-        internal MacroCallback GlobalCallbacks { get; set; }
+        internal MacroCallback GlobalCallbacks;
 
         private Dictionary<string, (string name, MacroCallback callback)> Callbacks = new Dictionary<string, (string, MacroCallback)>();
 
