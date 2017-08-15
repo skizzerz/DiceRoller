@@ -47,7 +47,7 @@ namespace Dice
         public IReadOnlyList<string> Arguments { get; private set; }
 
         /// <summary>
-        /// RollData attached to this function execution
+        /// RollData attached to this macro execution
         /// </summary>
         public RollData Data { get; private set; }
 
