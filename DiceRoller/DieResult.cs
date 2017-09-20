@@ -100,11 +100,17 @@ namespace Dice
         /// <returns></returns>
         public DieResult Success()
         {
+            if (DieType == DieType.Special)
+            {
+                return this;
+            }
+
             return new DieResult()
             {
                 DieType = DieType,
                 NumSides = NumSides,
                 Value = Value,
+                Data = Data,
                 Flags = (Flags & ~DieFlags.Failure) | DieFlags.Success
             };
         }
@@ -116,11 +122,17 @@ namespace Dice
         /// <returns></returns>
         public DieResult Failure()
         {
+            if (DieType == DieType.Special)
+            {
+                return this;
+            }
+
             return new DieResult()
             {
                 DieType = DieType,
                 NumSides = NumSides,
                 Value = Value,
+                Data = Data,
                 Flags = (Flags & ~DieFlags.Success) | DieFlags.Failure
             };
         }
@@ -132,11 +144,17 @@ namespace Dice
         /// <returns></returns>
         public DieResult Drop()
         {
+            if (DieType == DieType.Special)
+            {
+                return this;
+            }
+
             return new DieResult()
             {
                 DieType = DieType,
                 NumSides = NumSides,
                 Value = Value,
+                Data = Data,
                 Flags = (Flags & ~(DieFlags.Success | DieFlags.Failure)) | DieFlags.Dropped
             };
         }

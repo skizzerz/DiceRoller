@@ -14,19 +14,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
     <releaseNotes><![CDATA[
-Breaking changes:
-- DiceAST subclasses have their RollerConfig parameters swapped with RollData. This change is only breaking if you have implemented custom AST nodes.
-  If you have not implemented custom AST nodes, no code changes need to be made to your project.
-
-New features:
-- RollerConfig.MacroRegistry can be used to associate macro callbacks to specific names instead of registering a global handler.
-- A new [DiceMacro] attribute is added to be used in conjunction with MacroRegistry.RegisterType.
-- Roller.Roll can now take an optional RollData object as a 3rd parameter. This can be used to add in custom functions or macros
-  only valid for that roll (as opposed to global across multiple rolls as is the case for RollerConfig). Functions or macros
-  defined here with the same name as global ones override the global ones.
-
-Deprecated:
-- RollerConfig.ExecuteMacro is deprecated and will be removed in a future version. Use RollerConfig.MacroRegistry instead.
+Bug fixes:
+- Using DieResult methods to drop dice, mark as failures/successes, etc. stripped the Data property. The Data property is now retained in such cases.
       
 See https://skizzerz.net/DiceRoller/Changelog for more changes.
     ]]></releaseNotes>

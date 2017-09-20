@@ -93,6 +93,13 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_MinMax_BiggerLeft()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(17) };
+            EvaluateRoll("min(max(1d20, 10), 9)", conf, 1, "min(max(1d20, 10), 9) => min(max(18*, 10*), 9) => 9");
+        }
+
+        [TestMethod]
         public void Successfully_If_Success_NoElse()
         {
             EvaluateRoll("if(1, =1, 2)", Roll9Conf, 0, "if(1, =1, 2) => (2) => 2");
