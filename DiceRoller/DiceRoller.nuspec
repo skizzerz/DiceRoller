@@ -4,7 +4,7 @@
     <id>DiceRoller</id>
     <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
     <!-- ALSO IMPORTANT: Fill in releaseNotes below with some release note snippets for the release -->
-    <version>3.0.0</version>
+    <version>3.0.2</version>
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
@@ -22,8 +22,8 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.
     <copyright>Copyright ©2017 Ryan Schmidt</copyright>
     <tags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</tags>
     <dependencies>
-      <dependency id="Antlr4.Runtime.Standard" version="4.7" />
-      <dependency id="System.ValueTuple" version="4.3" />
+      <dependency id="Antlr4.Runtime.Standard" version="4.7.1" />
+      <dependency id="System.ValueTuple" version="4.3.1" />
     </dependencies>
   </metadata>
   <files>
