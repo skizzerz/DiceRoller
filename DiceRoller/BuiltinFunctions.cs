@@ -383,6 +383,7 @@ namespace Dice
             List<DieResult> values = new List<DieResult>();
             context.Value = context.Expression.Value;
             context.ValueType = context.Expression.ValueType;
+            var groupNode = (GroupNode)context.Expression.UnderlyingRollNode;
 
             foreach (var value in context.Expression.Values)
             {
@@ -392,10 +393,16 @@ namespace Dice
                     continue;
                 }
 
-                var group = context.Data.InternalContext.GetGroupExpression(value.Data);
+                var groupValues = context.Data.InternalContext.GetGroupValues(value.Data);
                 bool markDropped = value.Flags.HasFlag(DieFlags.Dropped);
+                bool needParens = groupNode.Expressions.Count > 1;
 
-                foreach (var die in group.Values)
+                if (needParens)
+                {
+                    values.Add(new DieResult(SpecialDie.OpenParen));
+                }
+
+                foreach (var die in groupValues.Values)
                 {
                     if (markDropped && die.IsLiveDie())
                     {
@@ -405,6 +412,11 @@ namespace Dice
                     {
                         values.Add(die);
                     }
+                }
+
+                if (needParens)
+                {
+                    values.Add(new DieResult(SpecialDie.CloseParen));
                 }
             }
 

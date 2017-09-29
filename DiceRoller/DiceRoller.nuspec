@@ -14,8 +14,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
     <releaseNotes><![CDATA[
+Updates:
+- Updated ANTLR version from 4.7.0 to 4.7.1
+
 Bug fixes:
-- Using DieResult methods to drop dice, mark as failures/successes, etc. stripped the Data property. The Data property is now retained in such cases.
+- New installations will now properly install the correction version of dependencies. Before, a fresh install would install System.ValueTuple 4.3.0 when 4.3.1+ was required.
+- The .expand() function on multiplied group rolls, e.g. 2{3d6}.expand(), would show the first set of rolled dice each time instead of showing each set.
       
 See https://skizzerz.net/DiceRoller/Changelog for more changes.
     ]]></releaseNotes>
