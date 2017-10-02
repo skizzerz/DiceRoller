@@ -4,7 +4,7 @@
     <id>DiceRoller</id>
     <!-- IMPORTANT: When updating, also update AssemblyInfo.cs; this should be in sync with AssemblyInformationalVersion -->
     <!-- ALSO IMPORTANT: Fill in releaseNotes below with some release note snippets for the release -->
-    <version>3.0.2</version>
+    <version>3.1.0</version>
     <title>DiceRoller</title>
     <authors>Ryan Schmidt</authors>
     <owners>skizzerz</owners>
@@ -14,12 +14,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</description>
     <releaseNotes><![CDATA[
-Updates:
-- Updated ANTLR runtime version from 4.7.0 to 4.7.1
-
-Bug fixes:
-- New installations will now properly install the correction version of dependencies. Before, a fresh install would install System.ValueTuple 4.3.0 when 4.3.1+ was required.
-- The .expand() function on multiplied group rolls, e.g. 2{3d6}.expand(), would show the last set of rolled dice each time instead of showing each set.
+New features:
+- Global functions can now show up inside math expressions without needing to wrap them in parenthesis. For example, -max(1, 2)+6 will return 4. They still cannot show up inside of a roll expression without additional parenthesis.
       
 See https://skizzerz.net/DiceRoller/Changelog for more changes.
     ]]></releaseNotes>

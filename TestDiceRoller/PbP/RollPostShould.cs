@@ -16,6 +16,16 @@ namespace TestDiceRoller.PbP
     public class RollPostShould : TestBase
     {
         [TestMethod]
+        public void Successfully_AttackRollExpression()
+        {
+            var post = new RollPost();
+            post.AddRoll("1d20", Roll9Conf);
+            post.AddRoll("if([roll:-1:critical], =0, 2d10, 2{2d10})+3", Roll9Conf);
+
+            Assert.AreEqual("if([roll:-1:critical], =0, 2d10, 2{2d10}) + 3 => (9 + 9) + 3 => 21", post.Current[1].ToString());
+        }
+
+        [TestMethod]
         public void Successfully_RollMacro_XPositive()
         {
             var post = new RollPost();

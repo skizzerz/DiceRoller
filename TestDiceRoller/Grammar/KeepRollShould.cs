@@ -336,5 +336,29 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("3d6dl", Roll9Conf, DiceErrorCode.ParseError);
         }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_BasicAdvantage()
+        {
+            EvaluateRoll("1d20.advantage(2)", Roll9Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_BasicDisadvantage()
+        {
+            EvaluateRoll("1d20.disadvantage(2)", Roll9Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_GroupAdvantage()
+        {
+            EvaluateRoll("{1d20, 1d20}.advantage(2)", Roll9Conf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_GroupDisadvantage()
+        {
+            EvaluateRoll("{1d20, 1d20}.disadvantage(2)", Roll9Conf, DiceErrorCode.IncorrectArity);
+        }
     }
 }

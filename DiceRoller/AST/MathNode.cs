@@ -201,6 +201,16 @@ namespace Dice.AST
             var leftRoll = Left?.UnderlyingRollNode;
             var rightRoll = Right.UnderlyingRollNode;
 
+            if (Left is FunctionNode && ((FunctionNode)Left).IsGlobalFunction())
+            {
+                addLeftParen = false;
+            }
+
+            if (Right is FunctionNode && ((FunctionNode)Right).IsGlobalFunction())
+            {
+                addRightParen = false;
+            }
+
             if (addLeftParen && leftRoll != null)
             {
                 if (leftRoll is MathNode ml)

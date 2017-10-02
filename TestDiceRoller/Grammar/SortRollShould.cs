@@ -87,5 +87,29 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("{3+2-(5+4)+6*1}sa.expand()", SortConf, 0, "{3 + 2 - (5 + 4) + 6 * 1}.expand().sortAsc() => (2 + 3 - (4 + 5) + 1 * 6) => 2");
         }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_BasicAsc()
+        {
+            EvaluateRoll("2d20.sortAsc(2)", SortConf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_BasicDesc()
+        {
+            EvaluateRoll("2d20.sortDesc(2)", SortConf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_GroupAsc()
+        {
+            EvaluateRoll("{2d20, 2d20}.sortAsc(2)", SortConf, DiceErrorCode.IncorrectArity);
+        }
+
+        [TestMethod]
+        public void ThrowIncorrectArity_WhenPassingArg_GroupDesc()
+        {
+            EvaluateRoll("{2d20, 2d20}.sortDesc(2)", SortConf, DiceErrorCode.IncorrectArity);
+        }
     }
 }

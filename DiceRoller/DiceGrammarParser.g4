@@ -11,7 +11,6 @@ input
 
 math_expr
     : add_expr # MathNormal
-    | global_function # MathFunction
     ;
 
 add_expr
@@ -30,7 +29,13 @@ roll_expr
     : (unary_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
     | unary_expr T_D number_expr (basic_extras)* (basic_function)* # RollBasic
     | unary_expr T_D T_FUDGE (unary_expr)? (basic_extras)* (basic_function)* # RollFudge
-    | unary_expr # RollNone
+    | func_expr # RollNone
+    ;
+
+func_expr
+    : T_MINUS global_function # FuncMinus
+    | global_function # FuncFunction
+    | unary_expr # FuncNone
     ;
 
 unary_expr

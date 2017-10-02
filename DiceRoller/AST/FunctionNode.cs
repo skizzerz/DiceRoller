@@ -51,10 +51,15 @@ namespace Dice.AST
             }
         }
 
+        public bool IsGlobalFunction()
+        {
+            return Context.Scope == FunctionScope.Global;
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder(Context.Expression?.ToString() ?? String.Empty);
-            if (Context.Scope != FunctionScope.Global)
+            if (!IsGlobalFunction())
             {
                 sb.Append(".");
             }

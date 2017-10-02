@@ -74,6 +74,12 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Subtract, left, right));
         }
 
+        public override void ExitFuncMinus([NotNull] DiceGrammarParser.FuncMinusContext context)
+        {
+            var param = Stack.Pop();
+            Stack.Push(new MathNode(MathOp.Negate, null, param));
+        }
+
         public override void ExitUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context)
         {
             var param = Stack.Pop();
