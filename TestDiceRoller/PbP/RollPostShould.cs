@@ -287,6 +287,123 @@ namespace TestDiceRoller.PbP
         }
 
         [TestMethod]
+        public void Successfully_PostsDontDiverge_LargerFirst()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll9Conf);
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+
+            Assert.IsFalse(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDontDiverge_LargerSecond()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+
+            Assert.IsFalse(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDontDiverge_SameSize()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll9Conf);
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+
+            Assert.IsFalse(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDontDiverge_Empty()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            Assert.IsFalse(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDiverge_LargerFirst()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll1Conf);
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+
+            Assert.IsTrue(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDiverge_LargerSecond()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll1Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+
+            Assert.IsTrue(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDiverge_SameSize()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+
+            post1.AddRoll("1d20", Roll9Conf);
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll1Conf);
+
+            Assert.IsTrue(post1.HasDivergedFrom(post2));
+        }
+
+        [TestMethod]
+        public void Successfully_PostsDiverge_Stored()
+        {
+            var post1 = new RollPost();
+            var post2 = new RollPost();
+            var stream = new MemoryStream();
+
+            post1.AddRoll("1d20", Roll9Conf);
+            post1.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll9Conf);
+            post2.AddRoll("1d20", Roll1Conf);
+            post1.Validate();
+            post2.Validate();
+
+            post1.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var post3 = RollPost.Deserialize(stream);
+            stream.Dispose();
+
+            stream = new MemoryStream();
+            post2.Serialize(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var post4 = RollPost.Deserialize(stream);
+            stream.Dispose();
+
+            Assert.IsTrue(post3.HasDivergedFrom(post4));
+        }
+
+        [TestMethod]
         public void ThrowInvalidMacro_WhenNoArgs_RollMacro()
         {
             EvaluatePost("[roll]", DiceErrorCode.InvalidMacro);

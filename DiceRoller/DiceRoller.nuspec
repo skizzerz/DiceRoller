@@ -16,6 +16,7 @@
     <releaseNotes><![CDATA[
 New features:
 - Global functions can now show up inside math expressions without needing to wrap them in parenthesis. For example, -max(1, 2)+6 will return 4. They still cannot show up inside of a roll expression without additional parenthesis.
+- New API RollPost.HasDivergedFrom() to test whether two RollPosts have Diverged. (Two RollPosts diverge when one is not a prefix of the other)
       
 See https://skizzerz.net/DiceRoller/Changelog for more changes.
     ]]></releaseNotes>

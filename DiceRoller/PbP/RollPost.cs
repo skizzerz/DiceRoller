@@ -303,6 +303,28 @@ namespace Dice.PbP
             return true;
         }
 
+        /// <summary>
+        /// Test if two RollPosts have diverged. Much like Validate, two RollPosts are considered to be divergent if one is not
+        /// a prefix of the other.
+        /// </summary>
+        /// <param name="other">RollPost to check against</param>
+        /// <returns>True if the two RollPosts have diverged, false if they have not</returns>
+        public virtual bool HasDivergedFrom(RollPost other)
+        {
+            var ourList = Current.Count == 0 ? Stored : Current;
+            var otherList = other.Current.Count == 0 ? other.Stored : other.Current;
+
+            // To simplify logic, we only consider this case where 'this' is the larger of the two lists
+            if (otherList.Count > ourList.Count)
+            {
+                return other.HasDivergedFrom(this);
+            }
+
+            var isSame = otherList.SequenceEqual(ourList.Take(otherList.Count));
+
+            return !isSame;
+        }
+
         private void RollMacro(MacroContext context)
         {
             // [roll:X] retrieves the Value of the Xth roll (first roll in the post is X=1). Can only retrieve values of past rolls.
