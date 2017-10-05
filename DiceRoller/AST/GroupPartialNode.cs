@@ -39,16 +39,11 @@ namespace Dice.AST
 
         internal void AddExpression(DiceAST expression)
         {
-            GroupExpressions.Add(expression ?? throw new ArgumentNullException("expression"));
+            GroupExpressions.Add(expression);
         }
 
         internal void AddKeep(KeepNode keep)
         {
-            if (keep == null)
-            {
-                throw new ArgumentNullException("keep");
-            }
-
             if (keep.KeepType == KeepType.Advantage || keep.KeepType == KeepType.Disadvantage)
             {
                 if (Keep.Count > 0)
@@ -80,16 +75,11 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.TooManySort);
             }
 
-            Sort = sort ?? throw new ArgumentNullException("sort");
+            Sort = sort;
         }
 
         internal void AddSuccess(SuccessNode success)
         {
-            if (success == null)
-            {
-                throw new ArgumentNullException("success");
-            }
-
             if (Success == null)
             {
                 Success = success;
@@ -104,16 +94,11 @@ namespace Dice.AST
 
         internal void AddFunction(FunctionNode fn)
         {
-            Functions.Add(fn ?? throw new ArgumentNullException("fn"));
+            Functions.Add(fn);
         }
 
         internal void AddReroll(RerollNode reroll)
         {
-            if (reroll == null)
-            {
-                throw new ArgumentNullException("reroll");
-            }
-
             if (RerollNode != null && RerollNode.MaxRerolls != reroll.MaxRerolls)
             {
                 throw new DiceException(DiceErrorCode.MixedReroll);

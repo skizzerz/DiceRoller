@@ -27,7 +27,7 @@ namespace Dice.AST
 
         internal RollPartialNode(RollNode roll)
         {
-            Roll = roll ?? throw new ArgumentNullException("roll");
+            Roll = roll;
             Keep = new List<KeepNode>();
             Sort = null;
             RerollNode = null;
@@ -85,11 +85,6 @@ namespace Dice.AST
 
         internal void AddKeep(KeepNode keep)
         {
-            if (keep == null)
-            {
-                throw new ArgumentNullException("keep");
-            }
-
             if (keep.KeepType == KeepType.Advantage || keep.KeepType == KeepType.Disadvantage)
             {
                 if (Keep.Count > 0)
@@ -121,16 +116,11 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.TooManySort);
             }
 
-            Sort = sort ?? throw new ArgumentNullException("sort");
+            Sort = sort;
         }
 
         internal void AddReroll(RerollNode reroll)
         {
-            if (reroll == null)
-            {
-                throw new ArgumentNullException("reroll");
-            }
-
             if (RerollNode != null && RerollNode.MaxRerolls != reroll.MaxRerolls)
             {
                 throw new DiceException(DiceErrorCode.MixedReroll);
@@ -148,11 +138,6 @@ namespace Dice.AST
 
         internal void AddExplode(ExplodeNode explode)
         {
-            if (explode == null)
-            {
-                throw new ArgumentNullException("explode");
-            }
-
             if (Explode != null && (Explode.ExplodeType != explode.ExplodeType || Explode.Compound != explode.Compound))
             {
                 throw new DiceException(DiceErrorCode.MixedExplodeType);
@@ -170,11 +155,6 @@ namespace Dice.AST
 
         internal void AddCritical(CritNode crit)
         {
-            if (crit == null)
-            {
-                throw new ArgumentNullException("crit");
-            }
-
             if (Critical == null)
             {
                 Critical = crit;
@@ -189,11 +169,6 @@ namespace Dice.AST
 
         internal void AddSuccess(SuccessNode success)
         {
-            if (success == null)
-            {
-                throw new ArgumentNullException("success");
-            }
-
             if (Success == null)
             {
                 Success = success;
@@ -208,7 +183,7 @@ namespace Dice.AST
 
         internal void AddFunction(FunctionNode fn)
         {
-            Functions.Add(fn ?? throw new ArgumentNullException("fn"));
+            Functions.Add(fn);
         }
 
         /// <summary>
