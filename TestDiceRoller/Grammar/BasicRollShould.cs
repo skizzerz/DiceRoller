@@ -139,6 +139,20 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_NoExtraneousParens_MathWithIf()
+        {
+            EvaluateRoll("if(0, =0, 2d8, 2{2d8}.expand())+4", Roll1Conf, 6, "if(0, =0, 2d8, 2{2d8}.expand()) + 4 => (1! + 1!) + 4 => 6");
+            EvaluateRoll("if(1, =0, 2d8, 2{2d8}.expand())+4", Roll1Conf, 6, "if(1, =0, 2d8, 2{2d8}.expand()) + 4 => ((1! + 1!) + (1! + 1!)) + 4 => 8");
+        }
+
+        [TestMethod]
+        public void Successfully_StripExtraneousParenthesisInExpression()
+        {
+            EvaluateRoll("(2d20)", Roll9Conf, 2, "2d20 => 9 + 9 => 18");
+            EvaluateRoll("(if(0, =0, 2d8, 2{2d8}.expand()))+4", Roll1Conf, 6, "if(0, =0, 2d8, 2{2d8}.expand()) + 4 => (1! + 1!) + 4 => 6");
+        }
+
+        [TestMethod]
         public void ThrowRecursionDepthExceeded_WhenExceedingRecursion()
         {
             var conf = new RollerConfig() { MaxRecursionDepth = 0, GetRandomBytes = GetRNG(0, 2) };
