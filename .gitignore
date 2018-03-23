@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # Helper script for packaging nuget release
 release.bat
+
+# ANTLR generates .interp files which we do not need nor want
+*.interp
