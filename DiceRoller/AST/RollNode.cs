@@ -140,6 +140,7 @@ namespace Dice.AST
             }
 
             Value = _values.Sum(d => d.Value);
+            data.InternalContext.AddRollExpression(this);
 
             return numDice;
         }

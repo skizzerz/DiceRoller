@@ -151,11 +151,37 @@ namespace Dice.AST
                 if (Critical?.Compare(die.Value) == true)
                 {
                     flags |= DieFlags.Critical;
+
+                    // if tracking successes; a critical success is worth 2 successes
+                    if (ValueType == ResultType.Successes)
+                    {
+                        // just in case the die wasn't already marked as a success
+                        if ((die.Flags & DieFlags.Success) == 0)
+                        {
+                            flags |= DieFlags.Success;
+                            Value++;
+                        }
+
+                        Value++;
+                    }
                 }
 
                 if (Fumble?.Compare(die.Value) == true)
                 {
                     flags |= DieFlags.Fumble;
+
+                    // if tracking failures; a critical failure is worth -2 successes
+                    if (ValueType == ResultType.Successes)
+                    {
+                        // just in case the die wasn't already marked as a failure
+                        if ((die.Flags & DieFlags.Failure) == 0)
+                        {
+                            flags |= DieFlags.Failure;
+                            Value--;
+                        }
+
+                        Value--;
+                    }
                 }
 
                 _values.Add(new DieResult()

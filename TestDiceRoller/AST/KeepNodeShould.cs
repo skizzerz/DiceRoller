@@ -67,7 +67,7 @@ namespace TestDiceRoller.AST
         {
             var success = new SuccessNode(greaterEqual5, equal1) { Expression = _4d6 };
             var node = new KeepNode(KeepType.DropLow, One) { Expression = success };
-            EvaluateNode(node, Data(StatConf), 4, "4d6.success(>=5).failure(=1).dropLowest(1) => $5 + 3 + $6! + 1!* => 2 successes");
+            EvaluateNode(node, Data(StatConf), 4, "4d6.success(>=5).failure(=1).dropLowest(1) => $5 + 3 + $6 + 1* => 2 successes");
         }
 
         [TestMethod]

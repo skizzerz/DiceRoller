@@ -111,7 +111,7 @@ namespace Dice
                 NumSides = NumSides,
                 Value = Value,
                 Data = Data,
-                Flags = (Flags & ~DieFlags.Failure) | DieFlags.Success
+                Flags = (Flags & ~DieFlags.Failure & ~DieFlags.Critical & ~DieFlags.Fumble) | DieFlags.Success
             };
         }
 
@@ -133,7 +133,7 @@ namespace Dice
                 NumSides = NumSides,
                 Value = Value,
                 Data = Data,
-                Flags = (Flags & ~DieFlags.Success) | DieFlags.Failure
+                Flags = (Flags & ~DieFlags.Success & ~DieFlags.Critical & ~DieFlags.Fumble) | DieFlags.Failure
             };
         }
 

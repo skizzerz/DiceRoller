@@ -422,5 +422,19 @@ namespace Dice
 
             context.Values = values;
         }
+
+        [DiceMacro("numDice")]
+        public static void NumDice(MacroContext context)
+        {
+            long dice = 0;
+
+            foreach (var roll in context.Data.InternalContext.RollExpressions)
+            {
+                dice += (long)roll.NumDice.Value;
+            }
+
+            context.Value = dice;
+            context.ValueType = ResultType.Total;
+        }
     }
 }

@@ -142,12 +142,26 @@ namespace Dice.AST
             Successes = 0;
             Failures = 0;
             _values.Clear();
+            var mask = DieFlags.Critical | DieFlags.Fumble | DieFlags.Success | DieFlags.Failure;
 
             foreach (var die in Expression.Values)
             {
-                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
+                if (die.DieType == DieType.Special)
                 {
                     _values.Add(die);
+                    continue;
+                }
+                else if (die.Flags.HasFlag(DieFlags.Dropped))
+                {
+                    // strip success/failure and crit/fumble data from dropped dice
+                    _values.Add(new DieResult()
+                    {
+                        DieType = die.DieType,
+                        NumSides = die.NumSides,
+                        Value = die.Value,
+                        Data = die.Data,
+                        Flags = die.Flags & ~mask
+                    });
                     continue;
                 }
 
@@ -163,7 +177,14 @@ namespace Dice.AST
                 }
                 else
                 {
-                    _values.Add(die);
+                    _values.Add(new DieResult()
+                    {
+                        DieType = die.DieType,
+                        NumSides = die.NumSides,
+                        Value = die.Value,
+                        Data = die.Data,
+                        Flags = die.Flags & ~mask
+                    });
                 }
             }
 

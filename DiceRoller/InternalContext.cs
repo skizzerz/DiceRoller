@@ -12,8 +12,16 @@ namespace Dice
     {
         internal List<uint> AllRolls = new List<uint>();
         internal List<decimal> AllMacros = new List<decimal>();
+        internal List<RollNode> RollExpressions = new List<RollNode>();
+        internal List<ValueSnapshot> RollValues = new List<ValueSnapshot>();
         internal List<DiceAST> GroupExpressions = new List<DiceAST>();
         internal List<ValueSnapshot> GroupValues = new List<ValueSnapshot>();
+
+        internal void AddRollExpression(RollNode roll)
+        {
+            RollExpressions.Add(roll);
+            RollValues.Add(new ValueSnapshot(roll));
+        }
 
         internal string AddGroupExpression(DiceAST expr)
         {
