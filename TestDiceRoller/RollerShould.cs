@@ -135,5 +135,53 @@ namespace TestDiceRoller
 
             Assert.AreEqual(metadata, (string)res2.Metadata);
         }
+
+        [TestMethod]
+        public void Successfully_Min_SimpleRoll()
+        {
+            var res = Roller.Min("4d6");
+            Assert.AreEqual("4d6 => 1! + 1! + 1! + 1! => 4", res.ToString());
+        }
+
+        [TestMethod]
+        public void ThrowTooManyDice_Min_Reroll1s()
+        {
+            try
+            {
+                var conf = new RollerConfig()
+                {
+                    MaxDice = 20,
+                    MaxRerolls = 100
+                };
+
+                var res = Roller.Min("4d6rr1", conf);
+                Assert.Fail("Expected an exception and none was thrown");
+            }
+            catch (DiceException e)
+            {
+                Assert.AreEqual(DiceErrorCode.TooManyDice, e.ErrorCode);
+            }
+        }
+
+        [TestMethod]
+        public void Successfully_Max_SimpleRoll()
+        {
+            var res = Roller.Max("4d6");
+            Assert.AreEqual("4d6 => 6! + 6! + 6! + 6! => 24", res.ToString());
+        }
+
+        [TestMethod]
+        public void Successfully_Average_OddDice()
+        {
+            var res = Roller.Average("3d6");
+            Assert.AreEqual("3d6 => 3 + 4 + 3 => 10", res.ToString());
+        }
+
+        [TestMethod]
+        public void Successfully_Average_EvenDice()
+        {
+            var res = Roller.Average("4d6");
+            Assert.AreEqual("4d6 => 3 + 4 + 3 + 4 => 14", res.ToString());
+        }
     }
 }

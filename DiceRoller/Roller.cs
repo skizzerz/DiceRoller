@@ -31,6 +31,7 @@ namespace Dice
         /// the documentation for more details on the formatting for this string.
         /// </summary>
         /// <param name="diceExpr">Dice expression to roll.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr)
         {
             return Roll(diceExpr, null, null);
@@ -96,6 +97,178 @@ namespace Dice
             var numRolls = root.Evaluate(data, root, 0);
 
             return new RollResult(data, root, (int)numRolls);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their minimum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Min(string diceExpr)
+        {
+            return Min(diceExpr, null, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their minimum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Min(string diceExpr, RollerConfig config)
+        {
+            return Min(diceExpr, config, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their minimum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <param name="data">Additional data that is scoped to this roll.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Min(string diceExpr, RollerConfig config, RollData data)
+        {
+            if (config == null)
+            {
+                config = DefaultConfig;
+            }
+
+            var savedRollDie = config.RollDie;
+            config.RollDie = (min, max) => min;
+
+            try
+            {
+                return Roll(diceExpr, config, data);
+            }
+            finally
+            {
+                config.RollDie = savedRollDie;
+            }
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their maximum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Max(string diceExpr)
+        {
+            return Max(diceExpr, null, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their maximum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Max(string diceExpr, RollerConfig config)
+        {
+            return Max(diceExpr, config, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their maximum value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <param name="data">Additional data that is scoped to this roll.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Max(string diceExpr, RollerConfig config, RollData data)
+        {
+            if (config == null)
+            {
+                config = DefaultConfig;
+            }
+
+            var savedRollDie = config.RollDie;
+            config.RollDie = (min, max) => max;
+
+            try
+            {
+                return Roll(diceExpr, config, data);
+            }
+            finally
+            {
+                config.RollDie = savedRollDie;
+            }
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their average value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Average(string diceExpr)
+        {
+            return Average(diceExpr, null, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their average value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Average(string diceExpr, RollerConfig config)
+        {
+            return Average(diceExpr, config, null);
+        }
+
+        /// <summary>
+        /// Evaluates the dice expression using the default configuration,
+        /// and fixing all dice to roll their average value.
+        /// </summary>
+        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
+        /// <param name="data">Additional data that is scoped to this roll.</param>
+        /// <returns>A RollResult containing the details of the roll.</returns>
+        public static RollResult Average(string diceExpr, RollerConfig config, RollData data)
+        {
+            if (config == null)
+            {
+                config = DefaultConfig;
+            }
+
+            if (data == null)
+            {
+                data = new RollData();
+            }
+
+            var savedRollDie = config.RollDie;
+            config.RollDie = (min, max) => {
+                // we round down if we're doing an odd roll and up on an even roll.
+                // e.g. in 2d6 the first die is 3 and the second is 4.
+                var avg = (min + max) / 2.0;
+
+                if (data.InternalContext.AllRolls.Count % 2 == 0)
+                {
+                    // we've completed an even number of rolls, which means the current roll is odd. Round down.
+                    return (int)Math.Floor(avg);
+                }
+                else
+                {
+                    return (int)Math.Ceiling(avg);
+                }
+            };
+
+            try
+            {
+                return Roll(diceExpr, config, data);
+            }
+            finally
+            {
+                config.RollDie = savedRollDie;
+            }
         }
 
         /// <summary>

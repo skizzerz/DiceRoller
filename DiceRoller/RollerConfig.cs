@@ -47,6 +47,15 @@ namespace Dice
         public bool NormalSidesOnly { get; set; } = false;
 
         /// <summary>
+        /// If set, this function will be called whenever a die is rolled to retrieve its result.
+        /// The function takes the minimum and maximum results as parameters, and should return an integer
+        /// between those two values, inclusive.
+        /// If unset, the default algorithm gets random numbers repeatedly until it gets a result within
+        /// a desired range.
+        /// </summary>
+        public Func<int, int, int> RollDie { get; set; }
+
+        /// <summary>
         /// If set, this function will be called whenever a random number is needed. The function
         /// should fill the passed-in byte array with a number, which will be used as the die roll.
         /// The BitConverter.GetBytes() method may be useful here, if the random number generator
@@ -69,6 +78,7 @@ namespace Dice
         public RollerConfig()
         {
             FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
+            MacroRegistry.RegisterType(typeof(BuiltinMacros));
         }
     }
 }

@@ -145,62 +145,95 @@ namespace Dice.AST
 
             byte[] roll = new byte[4];
             uint sides = (uint)numSides;
+            int min, max;
+            uint rollValue;
+            int rollAmt;
             DieType dt;
 
             switch (rollType)
             {
                 case RollType.Normal:
                     dt = DieType.Normal;
+                    min = 1;
+                    max = numSides;
                     break;
                 case RollType.Fudge:
                     dt = DieType.Fudge;
                     // fudge dice go from -sides to sides, so we need to double
                     // numSides and include an extra side for a "0" value as well.
                     sides = (sides * 2) + 1;
+                    min = -numSides;
+                    max = numSides;
                     break;
                 default:
                     throw new InvalidOperationException("Unknown RollType");
             }
 
-            do
+            if (data.Config.RollDie != null)
             {
-                if (data.Config.GetRandomBytes != null)
+                rollAmt = data.Config.RollDie(min, max);
+                if (rollAmt < min || rollAmt > max)
                 {
-                    data.Config.GetRandomBytes(roll);
+                    throw new InvalidOperationException("RollerConfig.RollDie returned a value not within the expected range.");
                 }
-                else
-                {
-                    _rand.GetBytes(roll);
-                }
-            } while (!IsFairRoll(roll, sides));
 
-            // rollAmt is a number from 0 to sides-1, need to convert to a proper number
-            uint rollValue = BitConverter.ToUInt32(roll, 0) % sides;
-            int rollAmt = (int)rollValue;
+                // convert rollValue into the 0-based number for serialization
+                switch (rollType)
+                {
+                    case RollType.Normal:
+                        rollValue = (uint)(rollAmt - 1);
+                        break;
+                    case RollType.Fudge:
+                        rollValue = (uint)(rollAmt + numSides);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown RollType");
+                }
+            }
+            else
+            {
+                do
+                {
+                    if (data.Config.GetRandomBytes != null)
+                    {
+                        data.Config.GetRandomBytes(roll);
+                    }
+                    else
+                    {
+                        _rand.GetBytes(roll);
+                    }
+                } while (!IsFairRoll(roll, sides));
+
+                // rollAmt is a number from 0 to sides-1, need to convert to a proper number
+                rollValue = BitConverter.ToUInt32(roll, 0) % sides;
+                rollAmt = (int)rollValue;
+
+                switch (rollType)
+                {
+                    case RollType.Normal:
+                        // change from 0 to sides-1 into 1 to sides
+                        rollAmt++;
+                        break;
+                    case RollType.Fudge:
+                        // normalize back into -numSides to +numSides
+                        rollAmt -= ((int)sides - 1) / 2;
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown RollType");
+                }
+            }
 
             data.InternalContext.AllRolls.Add(rollValue);
 
-            // first, mark if this was a critical or fumble. This may be overridden later by a CritNode.
-            if (rollAmt == 0)
+            // finally, mark if this was a critical or fumble. This may be overridden later by a CritNode.
+            if (rollAmt == min)
             {
                 flags |= DieFlags.Fumble;
             }
 
-            if (rollAmt == sides - 1)
+            if (rollAmt == max)
             {
                 flags |= DieFlags.Critical;
-            }
-
-            switch (rollType)
-            {
-                case RollType.Normal:
-                    // change from 0 to sides-1 into 1 to sides
-                    rollAmt++;
-                    break;
-                case RollType.Fudge:
-                    // normalize back into -numSides to +numSides
-                    rollAmt -= ((int)sides - 1) / 2;
-                    break;
             }
 
             return new DieResult()

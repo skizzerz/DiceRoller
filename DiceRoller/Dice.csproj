@@ -25,9 +25,12 @@
             - DiceRoller is now packaged for both .NET Standard 2.0 as well as .NET Framework 4.5.2. .NET Standard 2.0 supports .NET Framework 4.6.1+ and .NET Core 2.0.
             - Success/failure rolls can now be decorated with critical/fumbles. A critical success (a roll that is both a critical and a success) is worth 2 successes, and a critical failure (a roll that is both a fumble and a failure) is worth -2 successes. This expands support into game systems which use success-based rolls but have varying degrees of success beyond just +1 or -1.
             - Unless a success/failure roll is explicitly decorated with a critical/fumble, those rolls will not be marked as criticals or fumbles even if the max or min amount is rolled. This keeps default behavior with such rolls consistent with how they worked previously.
-            - A new [numDice] macro was added, which returns the total number of dice rolled up to this point.
+            - A new [numDice] macro was added, which returns the total number of dice rolled up to this point. This macro is available in all scenarios, including the stand-alone Roller.Roll; using the Play-by-Post helper is not required to use this macro.
             - A new property RollerConfig.RollDie was added to allow customizing the result of a die roll in a more friendly way. This property is a callback which receives the minimum and maximum value it can roll for a die, and should return a number within that range. By default, it will call RollerConfig.GetRandomBytes repeatedly until it gets a result it can transform into the output range without introducing any bias.
-            - New APIs Roller.Max(), Roller.Min(), and Roller.Average() evaluate the dice expression and return the maximum, minimum, or average result.
+            - New APIs Roller.Max(), Roller.Min(), and Roller.Average() evaluate the dice expression and return the result as if all dice rolled their minimum, maximum, or average values.
+
+            Bugfixes:
+            - It is now possible to put an expression in parenthesis (a "nested roll") everywhere a number is expected. Previously, comparisons incorrectly rejected nested rolls.
 
             Dependency updates:
             - Updated Antlr4.Runtime.Standard from 4.7.1 to 4.7.2
@@ -38,7 +41,7 @@
 
             See https://skizzerz.net/DiceRoller/Changelog for more changes.
             ]]>
-          </PackageReleaseNotes>
+        </PackageReleaseNotes>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>DiceRoller.snk</AssemblyOriginatorKeyFile>
         <DelaySign>false</DelaySign>
