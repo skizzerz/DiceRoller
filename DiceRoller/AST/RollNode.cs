@@ -53,15 +53,8 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            if (NumDice is LiteralNode || NumDice is MacroNode)
-            {
-                sb.Append(NumDice.ToString());
-            }
-            else
-            {
-                sb.AppendFormat("({0})", NumDice.ToString());
-            }
+            var sb = new StringBuilder();
+            sb.Append(NumDice.Value.ToString());
 
             sb.Append("d");
 
@@ -72,14 +65,7 @@ namespace Dice.AST
 
             if (NumSides != null)
             {
-                if (NumSides is LiteralNode || NumSides is MacroNode)
-                {
-                    sb.Append(NumSides.ToString());
-                }
-                else
-                {
-                    sb.AppendFormat("({0})", NumSides.ToString());
-                }
+                sb.Append(NumSides.Value.ToString());
             }
 
             return sb.ToString();

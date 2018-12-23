@@ -1,5 +1,6 @@
-& "C:\Program Files (x86)\Windows Kits\10\bin\x86\signtool.exe" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a bin\Release\Dice.dll
-D:\Programs\nuget.exe pack DiceRoller.nuspec
+& "C:\Program Files (x86)\Windows Kits\10\bin\x86\signtool.exe" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a bin\Release\net452\Dice.dll
+& "C:\Program Files (x86)\Windows Kits\10\bin\x86\signtool.exe" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a bin\Release\netstandard2.0\Dice.dll
+D:\Programs\nuget.exe pack DiceRoller.csproj
 $vers = Get-ChildItem DiceRoller.*.nupkg | ForEach-Object { New-Object System.Version($_.Name.Substring(11, $_.Name.Length - 17)) } | Sort-Object -Descending
 $pkg = "DiceRoller.$($vers[0].Major).$($vers[0].Minor).$($vers[0].Build).nupkg"
 # Publish to NuGet; api key must be saved via nuget setApiKey beforehand

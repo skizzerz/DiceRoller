@@ -78,7 +78,7 @@ namespace TestDiceRoller.AST
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(2, 2, 2, 2, 3, 3, 3, 3, 3) };
             var roll = new RollNode(RollType.Normal, _1d8, Six);
             var node = new GroupNode(Two, new List<DiceAST> { roll });
-            EvaluateNode(node, Data(conf), 7, "2{(1d8)d6} => (9) + (12) => 21");
+            EvaluateNode(node, Data(conf), 7, "2{3d6} => (9) + (12) => 21");
         }
 
         [TestMethod]

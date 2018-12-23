@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
         <PackageId>DiceRoller</PackageId>
-        <Version>3.2.0</Version>
+        <Version>4.0.0</Version>
         <Authors>Ryan Schmidt</Authors>
         <Company>Ryan Schmidt</Company>
         <Product>DiceRoller</Product>
@@ -17,6 +17,10 @@
         <PackageTags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</PackageTags>
         <PackageReleaseNotes>
             <![CDATA[
+            Backwards-incompatible changes:
+            - Nested rolls are fully resolved in RollResult.ToString(). For example, instead of ToString() reporting "(1d8)d6", it will now report the value rolled for the d8, e.g. "3d6"
+            - RollerConfig.ExecuteMacro was removed.
+
             New features:
             - DiceRoller is now packaged for both .NET Standard 2.0 as well as .NET Framework 4.5.2. .NET Standard 2.0 supports .NET Framework 4.6.1+ and .NET Core 2.0.
             - Success/failure rolls can now be decorated with critical/fumbles. A critical success (a roll that is both a critical and a success) is worth 2 successes, and a critical failure (a roll that is both a fumble and a failure) is worth -2 successes. This expands support into game systems which use success-based rolls but have varying degrees of success beyond just +1 or -1.
@@ -25,8 +29,12 @@
             - A new property RollerConfig.RollDie was added to allow customizing the result of a die roll in a more friendly way. This property is a callback which receives the minimum and maximum value it can roll for a die, and should return a number within that range. By default, it will call RollerConfig.GetRandomBytes repeatedly until it gets a result it can transform into the output range without introducing any bias.
             - New APIs Roller.Max(), Roller.Min(), and Roller.Average() evaluate the dice expression and return the maximum, minimum, or average result.
 
-            Updates:
-            - Updated ANTLR runtime version from 4.7.1 to 4.7.1.1
+            Dependency updates:
+            - Updated Antlr4.Runtime.Standard from 4.7.1 to 4.7.2
+            - Updated System.ValueTuple from 4.4.0 to 4.5.0
+
+            Other:
+            - The nuget package is now digitally signed with the certificate fingerprint a87d3b543d551ccd330c23b31b653835a86569bc. The same certificate is used to sign the .dll itself in addition to the package.
 
             See https://skizzerz.net/DiceRoller/Changelog for more changes.
             ]]>
@@ -39,5 +47,6 @@
     <ItemGroup>
       <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
       <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+      <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2" PrivateAssets="all" />
     </ItemGroup>
 </Project>

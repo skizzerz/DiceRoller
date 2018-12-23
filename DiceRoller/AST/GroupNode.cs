@@ -12,7 +12,7 @@ namespace Dice.AST
     /// </summary>
     public class GroupNode : DiceAST
     {
-        private List<DiceAST> _expressions;
+        private readonly List<DiceAST> _expressions;
         private List<DieResult> _values;
 
         /// <summary>
@@ -51,17 +51,10 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (NumTimes != null)
             {
-                if (NumTimes is LiteralNode || NumTimes is MacroNode)
-                {
-                    sb.Append(NumTimes.ToString());
-                }
-                else
-                {
-                    sb.AppendFormat("({0})", NumTimes.ToString());
-                }
+                sb.Append(NumTimes.Value.ToString());
             }
 
             sb.Append("{");

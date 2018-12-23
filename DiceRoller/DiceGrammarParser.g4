@@ -1,5 +1,5 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.7.1-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
+ * For example: java -jar C:\antlr\antlr-4.7.2-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
  */
 
 parser grammar DiceGrammarParser;
@@ -41,11 +41,6 @@ func_expr
 unary_expr
     : T_MINUS number_expr # UnaryExprMinus
     | number_expr # UnaryExprNone
-    ;
-
-unary_number
-    : T_MINUS number # UnaryNumberMinus
-    | number # UnaryNumberNone
     ;
 
 number_expr
@@ -97,10 +92,10 @@ basic_extras
     ;
 
 keep_expr
-    : T_KEEP_HIGH unary_number # KeepHigh
-    | T_KEEP_LOW unary_number # KeepLow
-    | T_DROP_HIGH unary_number # DropHigh
-    | T_DROP_LOW unary_number # DropLow
+    : T_KEEP_HIGH unary_expr # KeepHigh
+    | T_KEEP_LOW unary_expr # KeepLow
+    | T_DROP_HIGH unary_expr # DropHigh
+    | T_DROP_LOW unary_expr # DropLow
     | T_ADVANTAGE # Advantage
     | T_DISADVANTAGE # Disadvantage
     ;
@@ -121,17 +116,17 @@ success_expr
     ;
 
 compare_expr
-    : unary_number # CompImplicit
+    : unary_expr # CompImplicit
     | explicit_compare_expr # CompExplicit
     ;
 
 explicit_compare_expr
-    : T_EQUALS unary_number # CompEquals
-    | T_GREATER unary_number # CompGreater
-    | T_LESS unary_number # CompLess
-    | T_GREATER_EQUALS unary_number # CompGreaterEquals
-    | T_LESS_EQUALS unary_number # CompLessEquals
-    | T_NOT_EQUALS unary_number # CompNotEquals
+    : T_EQUALS unary_expr # CompEquals
+    | T_GREATER unary_expr # CompGreater
+    | T_LESS unary_expr # CompLess
+    | T_GREATER_EQUALS unary_expr # CompGreaterEquals
+    | T_LESS_EQUALS unary_expr # CompLessEquals
+    | T_NOT_EQUALS unary_expr # CompNotEquals
     ;
 
 sort_expr

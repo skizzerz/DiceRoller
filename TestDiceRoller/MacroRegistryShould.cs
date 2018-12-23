@@ -31,8 +31,8 @@ namespace TestDiceRoller
 
             var conf = new RollerConfig() { MacroRegistry = registry, GetRandomBytes = GetRNG(Roll9()) };
             EvaluateRoll("1d20 + [a]", conf, 1, "1d20 + [a] => 9 + 1 => 10");
-            EvaluateRoll("[b]d20", conf, 2, "[b]d20 => 9 + 9 => 18");
-            EvaluateRoll("[z]d20", conf, 2, "[z]d20 => 9 + 9 => 18");
+            EvaluateRoll("[b]d20", conf, 2, "2d20 => 9 + 9 => 18");
+            EvaluateRoll("[z]d20", conf, 2, "2d20 => 9 + 9 => 18");
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace TestDiceRoller
             var registry = new MacroRegistry();
             registry.RegisterMacro("c", MacroContainer.A);
             var conf = new RollerConfig() { MacroRegistry = registry, GetRandomBytes = GetRNG(Roll9()) };
-            EvaluateRoll("[c]d20", conf, 1, "[c]d20 => 9 => 9");
+            EvaluateRoll("[c]d20", conf, 1, "1d20 => 9 => 9");
         }
 
         [TestMethod]

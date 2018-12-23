@@ -57,21 +57,6 @@ namespace Dice
         public Action<byte[]> GetRandomBytes { get; set; }
 
         /// <summary>
-        /// If set, this is the function used to execute macros specified by the roll. If unset, attempting
-        /// to use a macro in the roll will result in a DiceException being thrown.
-        /// </summary>
-        /// <remarks>
-        /// The ExecuteMacro property is deprecated and will be removed in a future version. Use the
-        /// MacroRegistry property instead.
-        /// </remarks>
-        [Obsolete("The ExecuteMacro property is deprecated and will be removed in a future version. Use the MacroRegistry property instead.")]
-        public MacroCallback ExecuteMacro
-        {
-            get { return MacroRegistry.GlobalCallbacks; }
-            set { MacroRegistry.GlobalCallbacks = value; }
-        }
-
-        /// <summary>
         /// Contains the MacroRegistry that maps all known macros to their callbacks.
         /// </summary>
         public MacroRegistry MacroRegistry { get; set; } = new MacroRegistry();

@@ -17,7 +17,7 @@ namespace Dice.Grammar
         // which is accessible via the Root property after parsing is complete.
         private Stack<DiceAST> Stack;
         // holds the RollData that's directing this
-        private RollData Data;
+        private readonly RollData Data;
 
         /// <summary>
         /// Accesses the root of the parsed AST. This is only valid if parsing is complete. If this
@@ -81,12 +81,6 @@ namespace Dice.Grammar
         }
 
         public override void ExitUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context)
-        {
-            var param = Stack.Pop();
-            Stack.Push(new MathNode(MathOp.Negate, null, param));
-        }
-
-        public override void ExitUnaryNumberMinus([NotNull] DiceGrammarParser.UnaryNumberMinusContext context)
         {
             var param = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Negate, null, param));

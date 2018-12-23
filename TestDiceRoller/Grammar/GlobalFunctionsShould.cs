@@ -150,13 +150,13 @@ namespace TestDiceRoller.Grammar
         [TestMethod]
         public void Successfully_NestedFunction_WhenInRoll_NumDice()
         {
-            EvaluateRoll("(max(1, 2))d20", Roll9Conf, 2, "(max(1, 2))d20 => 9 + 9 => 18");
+            EvaluateRoll("(max(1, 2))d20", Roll9Conf, 2, "2d20 => 9 + 9 => 18");
         }
 
         [TestMethod]
         public void Successfully_NestedFunction_WhenInRoll_NumSides()
         {
-            EvaluateRoll("1d(max(5, 20))", Roll9Conf, 1, "1d(max(5, 20)) => 9 => 9");
+            EvaluateRoll("1d(max(5, 20))", Roll9Conf, 1, "1d20 => 9 => 9");
         }
 
         [TestMethod]

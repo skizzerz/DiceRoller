@@ -48,7 +48,20 @@ namespace TestDiceRoller.Grammar
         public void Successfully_RollVariableDice_Normal()
         {
             var conf = new RollerConfig() { GetRandomBytes = GetRNG(2, 4, 4, 4) };
-            EvaluateRoll("(1d8)d6", conf, 4, "(1d8)d6 => 5 + 5 + 5 => 15");
+            EvaluateRoll("(1d8)d6", conf, 4, "3d6 => 5 + 5 + 5 => 15");
+        }
+
+        [TestMethod]
+        public void Successfully_RollVariableSides_Normal()
+        {
+            EvaluateRoll("1d(1d10)", Roll9Conf, 2, "1d9 => 9! => 9");
+        }
+
+        [TestMethod]
+        public void Successfully_PerformVariableComparison_Normal()
+        {
+            var conf = new RollerConfig() { GetRandomBytes = GetRNG(0, 0, 1) };
+            EvaluateRoll("1d10rr(1d10)", conf, 3, "1d10.reroll(=1) => 1!* + 2 => 2");
         }
 
         [TestMethod]
@@ -67,15 +80,6 @@ namespace TestDiceRoller.Grammar
         public void Successfully_MathNestedUnary()
         {
             EvaluateRoll("-(-1)", Roll20Conf, 0, "-(-1) => -(-1) => 1");
-        }
-
-        [TestMethod]
-        public void Successfully_RollOneDie_MacroDeprecated()
-        {
-#pragma warning disable CS0618 // Type or member is obsolete -- we want to ensure that the deprecated version still works
-            var conf = new RollerConfig() { ExecuteMacro = ExecuteMacro, GetRandomBytes = GetRNG(Roll9()) };
-#pragma warning restore CS0618 // Type or member is obsolete
-            EvaluateRoll("[one]d[twenty]", conf, 1, "[one]d[twenty] => 9 => 9");
         }
 
         [TestMethod]
@@ -135,7 +139,7 @@ namespace TestDiceRoller.Grammar
         [TestMethod]
         public void Successfully_GroupNumTimesExpr()
         {
-            EvaluateRoll("(1d10){1d20}", Roll9Conf, 10, "(1d10){1d20} => (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) => 81");
+            EvaluateRoll("(1d10){1d20}", Roll9Conf, 10, "9{1d20} => (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) + (9) => 81");
         }
 
         [TestMethod]
