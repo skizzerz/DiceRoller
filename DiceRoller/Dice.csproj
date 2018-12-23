@@ -37,7 +37,7 @@
         <DebugType>Full</DebugType>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.1.1" />
-      <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+      <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     </ItemGroup>
 </Project>
