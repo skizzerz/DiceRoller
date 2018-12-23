@@ -60,7 +60,7 @@ namespace Dice
         {
             if (diceExpr == null)
             {
-                throw new ArgumentNullException("diceExpr");
+                throw new ArgumentNullException(nameof(diceExpr));
             }
 
             if (data == null)

@@ -61,6 +61,7 @@ namespace Dice
         /// but is exposed if deeper introspection into the roll is desired.
         /// This will be null if a RollResult is deserialized.
         /// </summary>
+        [SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "This property is never serialized (can't mark with [NonSerializable] because it's not a field)")]
         public DiceAST RollRoot { get; private set; }
 
         /// <summary>
@@ -118,11 +119,12 @@ namespace Dice
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
+        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Serialization ctor requires this exact signature")]
         protected RollResult(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             RollRoot = null;
@@ -263,7 +265,7 @@ namespace Dice
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             info.AddValue("_Version", 3);

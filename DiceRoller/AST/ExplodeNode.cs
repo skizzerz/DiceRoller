@@ -92,7 +92,7 @@ namespace Dice.AST
                 throw new DiceException(DiceErrorCode.MixedExplodeComp);
             }
 
-            Comparison.Add(comp ?? throw new ArgumentNullException("comp"));
+            Comparison.Add(comp ?? throw new ArgumentNullException(nameof(comp)));
         }
 
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)

@@ -159,7 +159,7 @@ namespace TestDiceRoller
                 context.Value = context.Expression.Value + 1;
             }
 
-            private int b;
+            private readonly int b;
 
             public FunctionContainer(int amt)
             {

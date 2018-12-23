@@ -37,11 +37,11 @@ namespace Dice.AST
         {
             Operation = operation;
             Left = left;
-            Right = right ?? throw new ArgumentNullException("right");
+            Right = right ?? throw new ArgumentNullException(nameof(right));
 
             if (!operation.IsUnary() && left == null)
             {
-                throw new ArgumentNullException("left");
+                throw new ArgumentNullException(nameof(left));
             }
 
             _values = new List<DieResult>();

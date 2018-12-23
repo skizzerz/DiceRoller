@@ -80,7 +80,7 @@ namespace Dice.PbP
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             // array is deserialized before contents, so cannot do .ToList() to save directly in _pristine and _stored
@@ -145,7 +145,7 @@ namespace Dice.PbP
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             // in v2, we roundtrip this as-is

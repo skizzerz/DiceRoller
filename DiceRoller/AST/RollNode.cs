@@ -42,12 +42,12 @@ namespace Dice.AST
         {
             RollType = rollType;
             _values = new List<DieResult>();
-            NumDice = numDice ?? throw new ArgumentNullException("numDice");
+            NumDice = numDice ?? throw new ArgumentNullException(nameof(numDice));
             NumSides = numSides;
 
             if (numSides == null && rollType != RollType.Fudge)
             {
-                throw new ArgumentNullException("numSides");
+                throw new ArgumentNullException(nameof(numSides));
             }
         }
 

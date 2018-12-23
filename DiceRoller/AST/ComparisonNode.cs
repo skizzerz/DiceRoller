@@ -38,7 +38,7 @@ namespace Dice.AST
         {
             if (expression == null)
             {
-                throw new ArgumentNullException("expression");
+                throw new ArgumentNullException(nameof(expression));
             }
 
             _comparisons = new List<Comparison>()

@@ -105,12 +105,12 @@ namespace Dice
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (name.Length == 0)
             {
-                throw new ArgumentException("Macro name cannot be empty", "name");
+                throw new ArgumentException("Macro name cannot be empty", nameof(name));
             }
 
             var lname = name.ToLower();
@@ -130,7 +130,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RegisterGlobalMacro(MacroCallback callback)
         {
-            GlobalCallbacks += callback ?? throw new ArgumentNullException("callback");
+            GlobalCallbacks += callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Dice
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             var lname = name.ToLower();
@@ -155,7 +155,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RemoveGlobal(MacroCallback callback)
         {
-            GlobalCallbacks -= callback ?? throw new ArgumentNullException("callback");
+            GlobalCallbacks -= callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
         internal (string name, MacroCallback callback) Get(string lname)

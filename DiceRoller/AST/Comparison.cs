@@ -10,7 +10,7 @@ namespace Dice.AST
     /// <summary>
     /// Holds information about a comparison, which checks a CompareOp against an expression.
     /// </summary>
-    public struct Comparison
+    public struct Comparison : IEquatable<Comparison>
     {
 
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields",
@@ -30,10 +30,15 @@ namespace Dice.AST
         {
             if (obj is Comparison c)
             {
-                return op == c.op && expr == c.expr;
+                return Equals(c);
             }
 
             return false;
+        }
+
+        public bool Equals(Comparison other)
+        {
+            return op == other.op && expr == other.expr;
         }
 
         public override int GetHashCode()

@@ -40,12 +40,12 @@ namespace Dice.AST
         internal GroupNode(DiceAST numTimes, List<DiceAST> exprs)
         {
             NumTimes = numTimes;
-            _expressions = exprs ?? throw new ArgumentNullException("exprs");
+            _expressions = exprs ?? throw new ArgumentNullException(nameof(exprs));
             _values = new List<DieResult>();
 
             if (exprs.Count == 0)
             {
-                throw new ArgumentException("A dice group must contain at least one expression", "exprs");
+                throw new ArgumentException("A dice group must contain at least one expression", nameof(exprs));
             }
         }
 

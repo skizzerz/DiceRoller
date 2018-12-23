@@ -56,7 +56,7 @@ namespace Dice.AST
             }
             else
             {
-                Amount = amount ?? throw new ArgumentNullException("amount");
+                Amount = amount ?? throw new ArgumentNullException(nameof(amount));
             }
         }
 

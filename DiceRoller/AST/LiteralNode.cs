@@ -11,7 +11,7 @@ namespace Dice.AST
     /// </summary>
     public class LiteralNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         public override IReadOnlyList<DieResult> Values
         {

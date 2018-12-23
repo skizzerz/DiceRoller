@@ -20,7 +20,7 @@ namespace Dice.AST
         public FunctionContext Context { get; private set; }
 
         internal FunctionTiming Timing;
-        private FunctionCallback Function;
+        private readonly FunctionCallback Function;
 
         public override IReadOnlyList<DieResult> Values
         {

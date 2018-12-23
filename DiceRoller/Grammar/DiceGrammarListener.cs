@@ -38,7 +38,7 @@ namespace Dice.Grammar
 
         public DiceGrammarListener(RollData data)
         {
-            Data = data ?? throw new ArgumentNullException("data");
+            Data = data ?? throw new ArgumentNullException(nameof(data));
         }
 
         public override void EnterInput([NotNull] DiceGrammarParser.InputContext context)

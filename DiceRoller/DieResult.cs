@@ -78,12 +78,13 @@ namespace Dice
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
+        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Serialization ctor requires this exact signature")]
         private DieResult(SerializationInfo info, StreamingContext context)
             : this()
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             DieType = (DieType)info.GetInt32("DieType");
@@ -224,7 +225,7 @@ namespace Dice
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
 
             info.AddValue("_Version", 2);

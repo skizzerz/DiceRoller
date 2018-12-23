@@ -20,7 +20,7 @@ namespace Dice
 
         public DiceMacroAttribute(string name)
         {
-            Name = name ?? throw new ArgumentNullException("name");
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
     }
 }

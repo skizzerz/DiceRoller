@@ -182,7 +182,7 @@ namespace TestDiceRoller
                 }
             }
 
-            private int b;
+            private readonly int b;
 
             public MacroContainer(int amt)
             {

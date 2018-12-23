@@ -22,7 +22,7 @@ namespace Dice
 
         public DiceFunctionAttribute(string name)
         {
-            Name = name ?? throw new ArgumentNullException("name");
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
     }
 }

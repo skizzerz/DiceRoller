@@ -28,7 +28,7 @@ namespace Dice.AST
         {
             if (String.IsNullOrWhiteSpace(param))
             {
-                throw new DiceException(DiceErrorCode.InvalidMacro, new ArgumentException("Macro param cannot consist of only whitespace", "param"));
+                throw new DiceException(DiceErrorCode.InvalidMacro, new ArgumentException("Macro param cannot consist of only whitespace", nameof(param)));
             }
 
             Context = new MacroContext(param.Trim(), data);

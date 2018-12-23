@@ -170,12 +170,12 @@ namespace Dice
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (name.Length == 0)
             {
-                throw new ArgumentException("Function name cannot be empty", "name");
+                throw new ArgumentException("Function name cannot be empty", nameof(name));
             }
 
             var lname = name.ToLower();
@@ -221,19 +221,19 @@ namespace Dice
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (scope == FunctionScope.All || scope == FunctionScope.Roll)
             {
-                throw new ArgumentException("Cannot remove with scope All or Roll, specify individual scopes.", "scope");
+                throw new ArgumentException("Cannot remove with scope All or Roll, specify individual scopes.", nameof(scope));
             }
 
             var lname = name.ToLower();
 
             if (BuiltinFunctions.ReservedNames.ContainsKey(lname))
             {
-                throw new ArgumentException("Cannot remove a reserved function name", "name");
+                throw new ArgumentException("Cannot remove a reserved function name", nameof(name));
             }
 
             Callbacks.Remove((lname, scope));
