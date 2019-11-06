@@ -11,9 +11,9 @@ namespace Dice.AST
     /// </summary>
     public class RollNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
         private static readonly long[] _normalSides = new long[] { 1, 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
-        private static RNGCryptoServiceProvider _rand = new RNGCryptoServiceProvider();
+        private static readonly RNGCryptoServiceProvider _rand = new RNGCryptoServiceProvider();
 
         /// <summary>
         /// What sort of roll is being made.
@@ -178,17 +178,12 @@ namespace Dice.AST
                 }
 
                 // convert rollValue into the 0-based number for serialization
-                switch (rollType)
+                rollValue = rollType switch
                 {
-                    case RollType.Normal:
-                        rollValue = (uint)(rollAmt - 1);
-                        break;
-                    case RollType.Fudge:
-                        rollValue = (uint)(rollAmt + numSides);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unknown RollType");
-                }
+                    RollType.Normal => (uint)(rollAmt - 1),
+                    RollType.Fudge => (uint)(rollAmt + numSides),
+                    _ => throw new InvalidOperationException("Unknown RollType"),
+                };
             }
             else
             {

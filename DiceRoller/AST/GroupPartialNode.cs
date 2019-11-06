@@ -12,14 +12,14 @@ namespace Dice.AST
     /// </summary>
     internal class GroupPartialNode : DiceAST
     {
-        public DiceAST NumTimes { get; internal set; }
+        public DiceAST? NumTimes { get; internal set; }
         public List<DiceAST> GroupExpressions { get; private set; }
         // a GroupNode can have at most SortNode attached to it,
         // however any number of KeepNodes and success/failure Comparisons can be applied.
         public List<KeepNode> Keep { get; private set; }
-        public SortNode Sort { get; private set; }
-        public SuccessNode Success { get; private set; }
-        public RerollNode RerollNode { get; private set; }
+        public SortNode? Sort { get; private set; }
+        public SuccessNode? Success { get; private set; }
+        public RerollNode? RerollNode { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
 
         private bool haveAdvantage = false;
@@ -83,7 +83,6 @@ namespace Dice.AST
             if (Success == null)
             {
                 Success = success;
-                return;
             }
             else
             {
@@ -142,7 +141,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
             if (Success != null)
             {
-                if (Success.Success.Comparisons.Count() == 0 && Success.Failure.Comparisons.Count() > 0)
+                if (Success.Success == null)
                 {
                     throw new DiceException(DiceErrorCode.InvalidSuccess);
                 }

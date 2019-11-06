@@ -27,8 +27,8 @@ mult_expr
 
 roll_expr
     : (unary_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
-    | unary_expr T_D number_expr (basic_extras)* (basic_function)* # RollBasic
-    | unary_expr T_D T_FUDGE (unary_expr)? (basic_extras)* (basic_function)* # RollFudge
+    | (unary_expr)? T_D number_expr (basic_extras)* (basic_function)* # RollBasic
+    | (unary_expr)? T_D T_FUDGE (unary_expr)? (basic_extras)* (basic_function)* # RollFudge
     | func_expr # RollNone
     ;
 
@@ -54,7 +54,7 @@ number
     ;
 
 global_function
-    : T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
+    : T_GLOBAL_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
     ;
 
 group_function

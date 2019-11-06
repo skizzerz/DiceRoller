@@ -44,7 +44,7 @@ namespace Dice
         /// <param name="diceExpr">Dice expression to roll.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Roll(string diceExpr, RollerConfig config)
+        public static RollResult Roll(string diceExpr, RollerConfig? config)
         {
             return Roll(diceExpr, config, null);
         }
@@ -57,13 +57,8 @@ namespace Dice
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Roll(string diceExpr, RollerConfig config, RollData data)
+        public static RollResult Roll(string diceExpr, RollerConfig? config, RollData? data)
         {
-            if (diceExpr == null)
-            {
-                throw new ArgumentNullException(nameof(diceExpr));
-            }
-
             if (data == null)
             {
                 data = new RollData();
@@ -117,7 +112,7 @@ namespace Dice
         /// <param name="diceExpr">Dice expression to evaluate</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Min(string diceExpr, RollerConfig config)
+        public static RollResult Min(string diceExpr, RollerConfig? config)
         {
             return Min(diceExpr, config, null);
         }
@@ -130,7 +125,7 @@ namespace Dice
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Min(string diceExpr, RollerConfig config, RollData data)
+        public static RollResult Min(string diceExpr, RollerConfig? config, RollData? data)
         {
             if (config == null)
             {
@@ -168,7 +163,7 @@ namespace Dice
         /// <param name="diceExpr">Dice expression to evaluate</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Max(string diceExpr, RollerConfig config)
+        public static RollResult Max(string diceExpr, RollerConfig? config)
         {
             return Max(diceExpr, config, null);
         }
@@ -181,7 +176,7 @@ namespace Dice
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Max(string diceExpr, RollerConfig config, RollData data)
+        public static RollResult Max(string diceExpr, RollerConfig? config, RollData? data)
         {
             if (config == null)
             {
@@ -219,7 +214,7 @@ namespace Dice
         /// <param name="diceExpr">Dice expression to evaluate</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Average(string diceExpr, RollerConfig config)
+        public static RollResult Average(string diceExpr, RollerConfig? config)
         {
             return Average(diceExpr, config, null);
         }
@@ -232,7 +227,7 @@ namespace Dice
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
-        public static RollResult Average(string diceExpr, RollerConfig config, RollData data)
+        public static RollResult Average(string diceExpr, RollerConfig? config, RollData? data)
         {
             if (config == null)
             {

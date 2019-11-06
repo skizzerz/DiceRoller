@@ -12,27 +12,21 @@ namespace Dice.AST
     /// </summary>
     public class ComparisonNode : DiceAST
     {
-        private List<Comparison> _comparisons;
+        private readonly List<Comparison> _comparisons;
 
         /// <summary>
         /// The list of comparisons to evaluate against; each comparison
         /// is evaluated independently. As long as one comparison succeeds,
         /// the entire node is considered a success.
         /// </summary>
-        public IEnumerable<Comparison> Comparisons
-        {
-            get { return _comparisons; }
-        }
+        public IEnumerable<Comparison> Comparisons => _comparisons;
 
         /// <summary>
         /// ComparisonNodes only occur in special places in the AST
         /// where it does not make sense to obtain their Value or Values.
         /// As such, neither of these return any data.
         /// </summary>
-        public override IReadOnlyList<DieResult> Values
-        {
-            get { return new List<DieResult>(); }
-        }
+        public override IReadOnlyList<DieResult> Values => new List<DieResult>();
 
         internal ComparisonNode(CompareOp operation, DiceAST expression)
         {
@@ -63,35 +57,20 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            List<string> comps = new List<string>();
+            var comps = new List<string>();
             foreach (var comp in _comparisons)
             {
-                string c;
 
-                switch (comp.op)
+                var c = comp.op switch
                 {
-                    case CompareOp.Equals:
-                        c = "=";
-                        break;
-                    case CompareOp.GreaterEquals:
-                        c = ">=";
-                        break;
-                    case CompareOp.GreaterThan:
-                        c = ">";
-                        break;
-                    case CompareOp.LessEquals:
-                        c = "<=";
-                        break;
-                    case CompareOp.LessThan:
-                        c = "<";
-                        break;
-                    case CompareOp.NotEquals:
-                        c = "!=";
-                        break;
-                    default:
-                        c = "<<INVALID COMPAREOP>>";
-                        break;
-                }
+                    CompareOp.Equals => "=",
+                    CompareOp.GreaterEquals => ">=",
+                    CompareOp.GreaterThan => ">",
+                    CompareOp.LessEquals => "<=",
+                    CompareOp.LessThan => "<",
+                    CompareOp.NotEquals => "!=",
+                    _ => "<<INVALID COMPAREOP>>",
+                };
 
                 c += comp.expr.Value.ToString();
                 comps.Add(c);
@@ -136,23 +115,16 @@ namespace Dice.AST
         {
             return Comparisons.Any(c =>
             {
-                switch (c.op)
+                return c.op switch
                 {
-                    case CompareOp.Equals:
-                        return theirValue == c.expr.Value;
-                    case CompareOp.GreaterEquals:
-                        return theirValue >= c.expr.Value;
-                    case CompareOp.GreaterThan:
-                        return theirValue > c.expr.Value;
-                    case CompareOp.LessEquals:
-                        return theirValue <= c.expr.Value;
-                    case CompareOp.LessThan:
-                        return theirValue < c.expr.Value;
-                    case CompareOp.NotEquals:
-                        return theirValue != c.expr.Value;
-                    default:
-                        throw new InvalidOperationException("Unknown Comparison Operation");
-                }
+                    CompareOp.Equals => theirValue == c.expr.Value,
+                    CompareOp.GreaterEquals => theirValue >= c.expr.Value,
+                    CompareOp.GreaterThan => theirValue > c.expr.Value,
+                    CompareOp.LessEquals => theirValue <= c.expr.Value,
+                    CompareOp.LessThan => theirValue < c.expr.Value,
+                    CompareOp.NotEquals => theirValue != c.expr.Value,
+                    _ => throw new InvalidOperationException("Unknown Comparison Operation"),
+                };
             });
         }
     }

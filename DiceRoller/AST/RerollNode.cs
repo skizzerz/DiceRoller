@@ -10,7 +10,7 @@ namespace Dice.AST
     /// </summary>
     public class RerollNode : DiceAST
     {
-        List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// The comparison to determine whether or not to reroll
@@ -23,7 +23,8 @@ namespace Dice.AST
         public DiceAST Expression { get; internal set; }
 
         /// <summary>
-        /// Maximum number of times to reroll, or 0 if unlimited rerolls are allowed
+        /// Maximum number of times to reroll, or 0 if unlimited rerolls are allowed.
+        /// If less than 0, MaxRerollsExpr is used instead (and expected to be non-null).
         /// </summary>
         public int MaxRerolls { get; private set; }
 
@@ -31,7 +32,7 @@ namespace Dice.AST
         /// If this node was generated via the rerollN() function, this contains the expression used for N.
         /// Otherwise, this is null.
         /// </summary>
-        public DiceAST MaxRerollsExpr { get; private set; }
+        public DiceAST? MaxRerollsExpr { get; private set; }
 
         public override IReadOnlyList<DieResult> Values
         {
@@ -40,10 +41,10 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
 
-        internal RerollNode(int maxRerolls, ComparisonNode comparison, DiceAST maxRerollsExpr = null)
+        internal RerollNode(int maxRerolls, ComparisonNode comparison, DiceAST? maxRerollsExpr = null)
         {
             Comparison = comparison;
-            Expression = null;
+            Expression = null!;
             MaxRerolls = maxRerolls;
             MaxRerollsExpr = maxRerollsExpr;
             _values = new List<DieResult>();
@@ -102,7 +103,7 @@ namespace Dice.AST
             int maxRerolls = MaxRerolls;
             if (MaxRerolls < 0)
             {
-                if (MaxRerollsExpr.Value < 0 || Math.Floor(MaxRerollsExpr.Value) != MaxRerollsExpr.Value || MaxRerollsExpr.Value > Int32.MaxValue)
+                if (MaxRerollsExpr!.Value < 0 || Math.Floor(MaxRerollsExpr.Value) != MaxRerollsExpr.Value || MaxRerollsExpr.Value > Int32.MaxValue)
                 {
                     throw new DiceException(DiceErrorCode.BadRerollCount);
                 }
@@ -137,19 +138,13 @@ namespace Dice.AST
                 else
                 {
                     rolls++;
-                    RollType rt = RollType.Normal;
-                    switch (die.DieType)
+                    var rt = RollType.Normal;
+                    rt = die.DieType switch
                     {
-                        case DieType.Normal:
-                            rt = RollType.Normal;
-                            break;
-                        case DieType.Fudge:
-                            rt = RollType.Fudge;
-                            break;
-                        default:
-                            throw new InvalidOperationException("Unsupported die type in reroll");
-                    }
-
+                        DieType.Normal => RollType.Normal,
+                        DieType.Fudge => RollType.Fudge,
+                        _ => throw new InvalidOperationException("Unsupported die type in reroll"),
+                    };
                     reroll = RollNode.DoRoll(data, rt, die.NumSides, DieFlags.Extra);
                 }
             }

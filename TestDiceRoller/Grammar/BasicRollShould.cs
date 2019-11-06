@@ -15,6 +15,12 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_RollOneDie_Normal_NumberOmitted()
+        {
+            EvaluateRoll("d20", Roll9Conf, 1, "1d20 => 9 => 9");
+        }
+
+        [TestMethod]
         public void Successfully_RollTwoDice_Normal()
         {
             EvaluateRoll("2d20", Roll9Conf, 2, "2d20 => 9 + 9 => 18");
@@ -24,6 +30,12 @@ namespace TestDiceRoller.Grammar
         public void Successfully_RollOneDie_StandardFudge()
         {
             EvaluateRoll("1dF", Roll1Conf, 1, "1dF => -1! => -1");
+        }
+
+        [TestMethod]
+        public void Successfully_RollOneDie_StandardFudge_NumberOmitted()
+        {
+            EvaluateRoll("dF", Roll1Conf, 1, "1dF => -1! => -1");
         }
 
         [TestMethod]

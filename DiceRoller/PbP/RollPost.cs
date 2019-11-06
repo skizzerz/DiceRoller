@@ -20,7 +20,6 @@ namespace Dice.PbP
         private List<RollResult> _pristine = new List<RollResult>();
         private List<RollResult> _stored = new List<RollResult>();
         private List<RollResult> _current = new List<RollResult>();
-        private int _diverged = 0;
 
         /// <summary>
         /// Contains the "pristine" version of the post. This is used in cheat detection, as it should be a prefix of Current.
@@ -56,9 +55,9 @@ namespace Dice.PbP
         protected IList<RollResult> CurrentList { get; private set; }
 
         /// <summary>
-        /// For unit testing, to ensure serialization roundtrips correctly.
+        /// Getter is marked internal for unit testing, to ensure serialization roundtrips correctly.
         /// </summary>
-        internal int Diverged => _diverged;
+        internal int Diverged { get; private set; } = 0;
 
         /// <summary>
         /// Constructs a new, empty RollPost. This represents a new post being made. If editing an existing post,
@@ -94,7 +93,7 @@ namespace Dice.PbP
             {
                 // when deserializing persisted data, current/diverged should have default values
                 CurrentList = (RollResult[])info.GetValue("Current", typeof(RollResult[]));
-                _diverged = info.GetInt32("Diverged");
+                Diverged = info.GetInt32("Diverged");
             }
         }
 
@@ -153,7 +152,7 @@ namespace Dice.PbP
             info.AddValue("Pristine", _pristine.ToArray(), typeof(RollResult[]));
             info.AddValue("Stored", _stored.ToArray(), typeof(RollResult[]));
             info.AddValue("Current", _current.ToArray(), typeof(RollResult[]));
-            info.AddValue("Diverged", _diverged);
+            info.AddValue("Diverged", Diverged);
         }
 
         /// <summary>
@@ -170,7 +169,7 @@ namespace Dice.PbP
         /// </summary>
         /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
         /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
-        public void AddRoll(string diceExpr, RollerConfig config)
+        public void AddRoll(string diceExpr, RollerConfig? config)
         {
             AddRoll(diceExpr, config, null);
         }
@@ -181,7 +180,7 @@ namespace Dice.PbP
         /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
         /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
-        public void AddRoll(string diceExpr, RollerConfig config, RollData data)
+        public void AddRoll(string diceExpr, RollerConfig? config, RollData? data)
         {
             if (config == null)
             {
@@ -197,8 +196,8 @@ namespace Dice.PbP
             data.MacroRegistry.RegisterMacro("roll", RollMacro);
 
             int nextIdx = Current.Count;
-            AST.DiceAST ast = null;
-            string normalizedExpr = null;
+            AST.DiceAST ast;
+            string normalizedExpr;
             var pristineVersion = _pristine.ElementAtOrDefault(nextIdx);
             var storedVersion = _stored.ElementAtOrDefault(nextIdx);
 
@@ -212,35 +211,35 @@ namespace Dice.PbP
                 // As such, when we detect a divergence (pristine->stored->new roll), we ensure that we don't go back to
                 // a previous state (so no stored->pristine or new roll->stored).
 
-                if (_diverged == 0 && normalizedExpr == pristineVersion?.Expression)
+                if (Diverged == 0 && normalizedExpr == pristineVersion?.Expression)
                 {
                     // use the pristine result for this roll
                     _current.Add(pristineVersion);
                 }
-                else if (_diverged == 0 && pristineVersion?.Expression == RollResult.InvalidRoll.Expression)
+                else if (Diverged == 0 && pristineVersion?.Expression == RollResult.InvalidRoll.Expression)
                 {
                     // pristine was previously invalid and we now have a valid roll, so roll what we have and adjust pristine
                     var roll = Roller.Roll(ast, data);
                     _current.Add(roll);
                     _pristine[nextIdx] = roll;
                 }
-                else if (_diverged <= 1 && normalizedExpr == storedVersion?.Expression)
+                else if (Diverged <= 1 && normalizedExpr == storedVersion?.Expression)
                 {
                     _current.Add(storedVersion);
-                    _diverged = 1;
+                    Diverged = 1;
                 }
-                else if (_diverged <= 1 && storedVersion?.Expression == RollResult.InvalidRoll.Expression)
+                else if (Diverged <= 1 && storedVersion?.Expression == RollResult.InvalidRoll.Expression)
                 {
                     var roll = Roller.Roll(ast, data);
                     _current.Add(roll);
                     _stored[nextIdx] = roll;
-                    _diverged = 1;
+                    Diverged = 1;
                 }
                 else
                 {
                     // none of the versions for the current index matched, so reroll it
                     _current.Add(Roller.Roll(ast, data));
-                    _diverged = 2;
+                    Diverged = 2;
                 }
             }
             catch (DiceException)
@@ -250,21 +249,21 @@ namespace Dice.PbP
                 // edits their post to make a roll invalid, we want to catch that and react accordingly.
                 normalizedExpr = RollResult.InvalidRoll.Expression;
 
-                if (_diverged == 0 && normalizedExpr == pristineVersion?.Expression)
+                if (Diverged == 0 && normalizedExpr == pristineVersion?.Expression)
                 {
                     // pristine was invalid as well, so this expression was never fixed
                     _current.Add(pristineVersion);
                 }
-                else if (_diverged <= 1 && normalizedExpr == storedVersion?.Expression)
+                else if (Diverged <= 1 && normalizedExpr == storedVersion?.Expression)
                 {
                     _current.Add(storedVersion);
-                    _diverged = 1;
+                    Diverged = 1;
                 }
                 else
                 {
                     // brand new invalid roll, or modified a previously-good roll to be invalid
                     _current.Add(RollResult.InvalidRoll);
-                    _diverged = 2;
+                    Diverged = 2;
                 }
 
                 // re-throw our error so it can be shownt to the user

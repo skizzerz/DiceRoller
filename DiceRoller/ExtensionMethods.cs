@@ -47,13 +47,11 @@ namespace Dice
 
         internal static bool IsUnary(this MathOp op)
         {
-            switch (op)
+            return op switch
             {
-                case MathOp.Negate:
-                    return true;
-                default:
-                    return false;
-            }
+                MathOp.Negate => true,
+                _ => false,
+            };
         }
     }
 }

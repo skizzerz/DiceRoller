@@ -11,7 +11,7 @@ namespace Dice.AST
     /// </summary>
     public class MathNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// The math operation to be performed
@@ -19,9 +19,10 @@ namespace Dice.AST
         public MathOp Operation { get; private set; }
 
         /// <summary>
-        /// Left hand side of the math expression
+        /// Left hand side of the math expression,
+        /// will be null for unary expressions
         /// </summary>
-        public DiceAST Left { get; private set; }
+        public DiceAST? Left { get; private set; }
 
         /// <summary>
         /// Right hand side of the math expression
@@ -33,11 +34,11 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal MathNode(MathOp operation, DiceAST left, DiceAST right)
+        internal MathNode(MathOp operation, DiceAST? left, DiceAST right)
         {
             Operation = operation;
             Left = left;
-            Right = right ?? throw new ArgumentNullException(nameof(right));
+            Right = right;
 
             if (!operation.IsUnary() && left == null)
             {
@@ -52,7 +53,7 @@ namespace Dice.AST
             // This logic is necessarily different from DoMath below since we cannot inspect Values.
             // Furthermore, children already have their own grouping, so parens are only necessary if we're trying
             // to break order of operations with nested math nodes
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             if (Left is MathNode ml
                 && (Operation == MathOp.Multiply || Operation == MathOp.Divide)
@@ -129,15 +130,15 @@ namespace Dice.AST
             switch (Operation)
             {
                 case MathOp.Add:
-                    Value = Left.Value + Right.Value;
+                    Value = Left!.Value + Right.Value;
                     sd = SpecialDie.Add;
                     break;
                 case MathOp.Subtract:
-                    Value = Left.Value - Right.Value;
+                    Value = Left!.Value - Right.Value;
                     sd = SpecialDie.Subtract;
                     break;
                 case MathOp.Multiply:
-                    Value = Left.Value * Right.Value;
+                    Value = Left!.Value * Right.Value;
                     sd = SpecialDie.Multiply;
                     break;
                 case MathOp.Divide:
@@ -147,7 +148,7 @@ namespace Dice.AST
                         // except we want all exceptions that can arise from user input to derive from DiceException
                         throw new DiceException(DiceErrorCode.DivideByZero);
                     }
-                    Value = Left.Value / Right.Value;
+                    Value = Left!.Value / Right.Value;
                     sd = SpecialDie.Divide;
                     break;
                 case MathOp.Negate:

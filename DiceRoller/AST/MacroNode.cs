@@ -12,7 +12,7 @@ namespace Dice.AST
     /// </summary>
     public class MacroNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// Macro context passed to the executor function. The executor fills this out.

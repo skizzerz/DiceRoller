@@ -330,16 +330,15 @@ namespace Dice
             }
 
             var test = context.Arguments[0];
-            var compare = context.Arguments[1] as ComparisonNode;
             var then = context.Arguments[2];
             var otherwise = context.Arguments.ElementAtOrDefault(3);
 
-            if (test is ComparisonNode || compare == null || then is ComparisonNode || otherwise is ComparisonNode)
+            if (test is ComparisonNode || !(context.Arguments[1] is ComparisonNode compare) || then is ComparisonNode || otherwise is ComparisonNode)
             {
                 throw new DiceException(DiceErrorCode.IncorrectArgType, "if");
             }
 
-            List<DieResult> values = new List<DieResult>()
+            var values = new List<DieResult>()
             {
                 new DieResult(SpecialDie.OpenParen)
             };

@@ -12,7 +12,7 @@ namespace Dice.AST
     /// </summary>
     public class ExplodeNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// What type of exploding dice we have
@@ -29,7 +29,7 @@ namespace Dice.AST
         /// The expression to compare against to determine whether or not to explode.
         /// If null, dice explode when they roll their maximum result.
         /// </summary>
-        public ComparisonNode Comparison { get; private set; }
+        public ComparisonNode? Comparison { get; private set; }
 
         /// <summary>
         /// The dice being rolled.
@@ -43,18 +43,18 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
 
-        internal ExplodeNode(ExplodeType explodeType, bool compound, ComparisonNode comparison)
+        internal ExplodeNode(ExplodeType explodeType, bool compound, ComparisonNode? comparison)
         {
             ExplodeType = explodeType;
             Compound = compound;
             Comparison = comparison;
-            Expression = null;
+            Expression = null!;
             _values = new List<DieResult>();
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
+            var sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             switch (ExplodeType)
             {
@@ -85,14 +85,24 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        internal void AddComparison(ComparisonNode comp)
+        internal void AddComparison(ComparisonNode? comp)
         {
-            if (Comparison == null)
+            if ((Comparison == null && comp != null) || (Comparison != null && comp == null))
             {
                 throw new DiceException(DiceErrorCode.MixedExplodeComp);
             }
 
-            Comparison.Add(comp ?? throw new ArgumentNullException(nameof(comp)));
+            if (comp == null)
+            {
+                return;
+            }
+
+            // Comparison is guaranteed non-null by this point, but the compiler isn't smart enough to realize that:
+            // C=null c=null => returns above
+            // C=null c=non  => throws above
+            // C=non  c=null => throws above
+            // C=non  c=non  => gets here
+            Comparison!.Add(comp);
         }
 
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)

@@ -14,13 +14,9 @@ namespace Dice
         /// <summary>
         /// Callbacks which should be executed on every macro run.
         /// </summary>
-        /// <remarks>
-        /// Currently internal due to ExecuteMacro wiring up to this.
-        /// When ExecuteMacro is removed, this will become private.
-        /// </remarks>
-        internal MacroCallback GlobalCallbacks;
+        internal MacroCallback? GlobalCallbacks;
 
-        private Dictionary<string, (string name, MacroCallback callback)> Callbacks = new Dictionary<string, (string, MacroCallback)>();
+        private readonly Dictionary<string, (string name, MacroCallback callback)> Callbacks = new Dictionary<string, (string, MacroCallback)>();
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
@@ -63,6 +59,11 @@ namespace Dice
         /// <param name="obj">Object to use when invoking instance methods.</param>
         public void RegisterType<T>(T obj)
         {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
             foreach (var m in obj.GetType().GetMethods().Where(m => m.IsPublic))
             {
                 var attrs = m.GetCustomAttributes(typeof(DiceMacroAttribute), false).Cast<DiceMacroAttribute>();
@@ -130,7 +131,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RegisterGlobalMacro(MacroCallback callback)
         {
-            GlobalCallbacks += callback ?? throw new ArgumentNullException(nameof(callback));
+            GlobalCallbacks += callback;
         }
 
         /// <summary>
@@ -155,7 +156,7 @@ namespace Dice
         /// <param name="callback"></param>
         public void RemoveGlobal(MacroCallback callback)
         {
-            GlobalCallbacks -= callback ?? throw new ArgumentNullException(nameof(callback));
+            GlobalCallbacks -= callback;
         }
 
         internal (string name, MacroCallback callback) Get(string lname)

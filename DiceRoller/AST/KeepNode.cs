@@ -22,7 +22,7 @@ namespace Dice.AST
         /// Number of dice to keep/drop, this will be null
         /// if KeepType is Advantage or Disadvantage
         /// </summary>
-        public DiceAST Amount { get; private set; }
+        public DiceAST? Amount { get; private set; }
 
         /// <summary>
         /// Underlying roll expression
@@ -39,10 +39,10 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
 
-        internal KeepNode(KeepType keepType, DiceAST amount)
+        internal KeepNode(KeepType keepType, DiceAST? amount)
         {
             KeepType = keepType;
-            Expression = null;
+            Expression = null!;
             _values = new List<DieResult>();
 
             if (keepType == KeepType.Advantage || keepType == KeepType.Disadvantage)
@@ -62,7 +62,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
+            var sb = new StringBuilder(Expression.ToString());
 
             switch (KeepType)
             {
@@ -121,30 +121,21 @@ namespace Dice.AST
             var sortedValues = Expression.Values
                 .Where(d => d.IsLiveDie())
                 .OrderBy(d => d.Value).ToList();
-            var amount = (int)Amount.Value;
+            var amount = (int)Amount!.Value;
 
             if (amount < 0)
             {
                 throw new DiceException(DiceErrorCode.NegativeDice);
             }
 
-            switch (KeepType)
+            sortedValues = KeepType switch
             {
-                case KeepType.DropHigh:
-                    sortedValues = sortedValues.Take(sortedValues.Count - amount).ToList();
-                    break;
-                case KeepType.KeepLow:
-                    sortedValues = sortedValues.Take(amount).ToList();
-                    break;
-                case KeepType.DropLow:
-                    sortedValues = sortedValues.Skip(amount).ToList();
-                    break;
-                case KeepType.KeepHigh:
-                    sortedValues = sortedValues.Skip(sortedValues.Count - amount).ToList();
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown keep type");
-            }
+                KeepType.DropHigh => sortedValues.Take(sortedValues.Count - amount).ToList(),
+                KeepType.KeepLow => sortedValues.Take(amount).ToList(),
+                KeepType.DropLow => sortedValues.Skip(amount).ToList(),
+                KeepType.KeepHigh => sortedValues.Skip(sortedValues.Count - amount).ToList(),
+                _ => throw new InvalidOperationException("Unknown keep type"),
+            };
 
             if (Expression.ValueType == ResultType.Total)
             {

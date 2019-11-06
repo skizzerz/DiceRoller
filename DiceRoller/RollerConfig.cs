@@ -53,7 +53,7 @@ namespace Dice
         /// If unset, the default algorithm gets random numbers repeatedly until it gets a result within
         /// a desired range.
         /// </summary>
-        public Func<int, int, int> RollDie { get; set; }
+        public Func<int, int, int>? RollDie { get; set; }
 
         /// <summary>
         /// If set, this function will be called whenever a random number is needed. The function
@@ -63,7 +63,7 @@ namespace Dice
         /// If unset, a cryptographically strong random number generator is used to generate die rolls.
         /// Leaving this unset is preferred, unless repeatable results are needed (such as in unit tests).
         /// </summary>
-        public Action<byte[]> GetRandomBytes { get; set; }
+        public Action<byte[]>? GetRandomBytes { get; set; }
 
         /// <summary>
         /// Contains the MacroRegistry that maps all known macros to their callbacks.

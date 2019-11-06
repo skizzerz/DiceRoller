@@ -15,7 +15,7 @@ namespace Dice.Grammar
     {
         // holds the state of the current parse tree, the bottom of the stack is the root of the AST,
         // which is accessible via the Root property after parsing is complete.
-        private Stack<DiceAST> Stack;
+        private readonly Stack<DiceAST> Stack;
         // holds the RollData that's directing this
         private readonly RollData Data;
 
@@ -38,12 +38,8 @@ namespace Dice.Grammar
 
         public DiceGrammarListener(RollData data)
         {
-            Data = data ?? throw new ArgumentNullException(nameof(data));
-        }
-
-        public override void EnterInput([NotNull] DiceGrammarParser.InputContext context)
-        {
             Stack = new Stack<DiceAST>();
+            Data = data;
         }
 
         public override void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context)
@@ -364,7 +360,8 @@ namespace Dice.Grammar
 
         public override void ExitRollBasic([NotNull] DiceGrammarParser.RollBasicContext context)
         {
-            // we'll have 2 + # of extras nodes on the stack, bottom-most 2 nodes are the number of dice and sides
+            // we'll have 1 or 2 + # of extras nodes on the stack, bottom-most 2 nodes are the number of dice and sides
+            // number of dice is optional and defaults to 1 if not specified
             List<DiceAST> extras = new List<DiceAST>();
             DiceAST numSides, numDice;
 
@@ -375,7 +372,16 @@ namespace Dice.Grammar
 
             extras.Reverse();
             numSides = Stack.Pop();
-            numDice = Stack.Pop();
+
+            if (context.unary_expr() == null)
+            {
+                numDice = new LiteralNode(1);
+            }
+            else
+            {
+                numDice = Stack.Pop();
+            }
+
             var partial = new RollPartialNode(new RollNode(RollType.Normal, numDice, numSides));
 
             foreach (var node in extras)
@@ -416,8 +422,9 @@ namespace Dice.Grammar
         public override void ExitRollFudge([NotNull] DiceGrammarParser.RollFudgeContext context)
         {
             // we'll have 1 or 2 + # of extras nodes on the stack, bottom-most 2 nodes are the number of dice and sides
-            List<DiceAST> extras = new List<DiceAST>();
-            DiceAST numSides = null, numDice;
+            var extras = new List<DiceAST>();
+            DiceAST? numSides = null;
+            DiceAST numDice;
 
             for (int i = 0; i < context.basic_extras().Length + context.basic_function().Length; i++)
             {
@@ -431,7 +438,7 @@ namespace Dice.Grammar
             }
 
             numDice = Stack.Pop();
-            var partial = new RollPartialNode(new RollNode(RollType.Fudge, numDice, numSides));
+            var partial = new RollPartialNode(new RollNode(RollType.Fudge, numDice, numSides ?? new LiteralNode(1)));
 
             foreach (var node in extras)
             {
@@ -757,7 +764,7 @@ namespace Dice.Grammar
             }
 
             args.Reverse();
-            var fname = context.T_IDENTIFIER().GetText().ToLower();
+            var fname = context.T_GLOBAL_IDENTIFIER().GetText().ToLower();
             Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
         }
 
@@ -809,7 +816,7 @@ namespace Dice.Grammar
 
         public override void ExitExplode([NotNull] DiceGrammarParser.ExplodeContext context)
         {
-            ComparisonNode top = null;
+            ComparisonNode? top = null;
             if (context.compare_expr() != null)
             {
                 top = (ComparisonNode)Stack.Pop();
@@ -820,7 +827,7 @@ namespace Dice.Grammar
 
         public override void ExitCompound([NotNull] DiceGrammarParser.CompoundContext context)
         {
-            ComparisonNode top = null;
+            ComparisonNode? top = null;
             if (context.compare_expr() != null)
             {
                 top = (ComparisonNode)Stack.Pop();
@@ -831,7 +838,7 @@ namespace Dice.Grammar
 
         public override void ExitPenetrate([NotNull] DiceGrammarParser.PenetrateContext context)
         {
-            ComparisonNode top = null;
+            ComparisonNode? top = null;
             if (context.compare_expr() != null)
             {
                 top = (ComparisonNode)Stack.Pop();
@@ -842,13 +849,13 @@ namespace Dice.Grammar
 
         public override void ExitSuccessFail([NotNull] DiceGrammarParser.SuccessFailContext context)
         {
-            ComparisonNode fail = null;
+            ComparisonNode? fail = null;
             if (context.compare_expr() != null)
             {
                 fail = (ComparisonNode)Stack.Pop();
             }
 
-            ComparisonNode success = (ComparisonNode)Stack.Pop();
+            var success = (ComparisonNode)Stack.Pop();
             Stack.Push(new SuccessNode(success, fail));
         }
 
@@ -906,7 +913,7 @@ namespace Dice.Grammar
 
         public override void ExitCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context)
         {
-            ComparisonNode fumb = null;
+            ComparisonNode? fumb = null;
             if (context.compare_expr().Length > 1)
             {
                 fumb = (ComparisonNode)Stack.Pop();

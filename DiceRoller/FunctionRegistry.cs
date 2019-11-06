@@ -13,8 +13,8 @@ namespace Dice
     /// </summary>
     public class FunctionRegistry
     {
-        private Dictionary<(string lname, FunctionScope scope), (string name, FunctionTiming timing, FunctionCallback callback)> Callbacks
-            = new Dictionary<(string lname, FunctionScope scope), (string name, FunctionTiming timing, FunctionCallback callback)>();
+        private readonly Dictionary<(string lname, FunctionScope scope), (string name, FunctionTiming timing, FunctionCallback callback)> Callbacks
+            = new Dictionary<(string, FunctionScope), (string, FunctionTiming, FunctionCallback)>();
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
@@ -81,6 +81,11 @@ namespace Dice
         /// <param name="obj">Object to use when invoking instance methods.</param>
         public void RegisterType<T>(T obj)
         {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
             foreach (var m in obj.GetType().GetMethods().Where(m => m.IsPublic))
             {
                 var attr = m.GetCustomAttributes(typeof(DiceFunctionAttribute), false).Cast<DiceFunctionAttribute>().SingleOrDefault();

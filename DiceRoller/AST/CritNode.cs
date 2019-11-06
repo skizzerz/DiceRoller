@@ -13,19 +13,19 @@ namespace Dice.AST
     /// </summary>
     public class CritNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// What gets marked as a crit. It is possible for a roll to be marked as both a crit
         /// as well as a fumble. Can be null.
         /// </summary>
-        public ComparisonNode Critical { get; private set; }
+        public ComparisonNode? Critical { get; private set; }
 
         /// <summary>
         /// What gets marked as a fumble. It is possible for a roll to be marked as both a crit
         /// as well as a fumble. Can be null.
         /// </summary>
-        public ComparisonNode Fumble { get; private set; }
+        public ComparisonNode? Fumble { get; private set; }
 
         /// <summary>
         /// The underlying dice expression to mark crits and fumbles on.
@@ -37,9 +37,9 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal CritNode(ComparisonNode crit, ComparisonNode fumble)
+        internal CritNode(ComparisonNode? crit, ComparisonNode? fumble)
         {
-            Expression = null;
+            Expression = null!;
             Critical = crit;
             Fumble = fumble;
             _values = new List<DieResult>();
@@ -52,7 +52,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
+            var sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
 
             if (Critical != null)
             {
@@ -67,7 +67,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        internal void AddCritical(ComparisonNode comp)
+        internal void AddCritical(ComparisonNode? comp)
         {
             if (comp == null)
             {
@@ -84,7 +84,7 @@ namespace Dice.AST
             }
         }
 
-        internal void AddFumble(ComparisonNode comp)
+        internal void AddFumble(ComparisonNode? comp)
         {
             if (comp == null)
             {

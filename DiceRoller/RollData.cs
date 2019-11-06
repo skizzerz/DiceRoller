@@ -28,12 +28,12 @@ namespace Dice
         /// The object should be able to roundtrip when serialized/deserialized. Implement ISerializable if needed.
         /// Default null.
         /// </summary>
-        public object Metadata { get; set; }
+        public object? Metadata { get; set; }
 
         /// <summary>
         /// The config that was rolled along this roll.
         /// </summary>
-        internal RollerConfig Config { get; set; }
+        internal RollerConfig Config { get; set; } = Roller.DefaultConfig;
 
         /// <summary>
         /// Opaque contextual information used when evaluating dice expressions

@@ -13,13 +13,13 @@ namespace Dice.AST
     public class GroupNode : DiceAST
     {
         private readonly List<DiceAST> _expressions;
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// The number of times to evaluate the group. Any decimal part in
-        /// NumTimes.Value is truncated.
+        /// NumTimes.Value is truncated. May be null, in which case the group is evaluated once.
         /// </summary>
-        public DiceAST NumTimes { get; private set; }
+        public DiceAST? NumTimes { get; private set; }
 
         /// <summary>
         /// The list of expressions which make up the grouped roll
@@ -37,10 +37,10 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal GroupNode(DiceAST numTimes, List<DiceAST> exprs)
+        internal GroupNode(DiceAST? numTimes, List<DiceAST> exprs)
         {
             NumTimes = numTimes;
-            _expressions = exprs ?? throw new ArgumentNullException(nameof(exprs));
+            _expressions = exprs;
             _values = new List<DieResult>();
 
             if (exprs.Count == 0)

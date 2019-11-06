@@ -14,11 +14,11 @@ namespace Dice.AST
     {
         public RollNode Roll { get; internal set; }
         public List<KeepNode> Keep { get; private set; }
-        public SortNode Sort { get; private set; }
-        public RerollNode RerollNode { get; private set; }
-        public ExplodeNode Explode { get; private set; }
-        public CritNode Critical { get; private set; }
-        public SuccessNode Success { get; private set; }
+        public SortNode? Sort { get; private set; }
+        public RerollNode? RerollNode { get; private set; }
+        public ExplodeNode? Explode { get; private set; }
+        public CritNode? Critical { get; private set; }
+        public SuccessNode? Success { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
 
         private bool haveAdvantage = false;
@@ -40,7 +40,7 @@ namespace Dice.AST
         // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("RPARTIAL<<");
+            var sb = new StringBuilder("RPARTIAL<<");
             sb.Append(Roll.ToString());
 
             if (RerollNode != null)
@@ -158,7 +158,6 @@ namespace Dice.AST
             if (Critical == null)
             {
                 Critical = crit;
-                return;
             }
             else
             {
@@ -172,7 +171,6 @@ namespace Dice.AST
             if (Success == null)
             {
                 Success = success;
-                return;
             }
             else
             {
@@ -193,32 +191,40 @@ namespace Dice.AST
         internal DiceAST CreateRollNode()
         {
             DiceAST roll = Roll;
+
             AddFunctionNodes(FunctionTiming.First, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeExplode, ref roll);
+            
             if (Explode != null)
             {
                 Explode.Expression = roll;
                 roll = Explode;
             }
+            
             AddFunctionNodes(FunctionTiming.AfterExplode, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeReroll, ref roll);
+            
             if (RerollNode != null)
             {
                 RerollNode.Expression = roll;
                 roll = RerollNode;
             }
+            
             AddFunctionNodes(FunctionTiming.AfterReroll, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeKeep, ref roll);
+            
             foreach (var k in Keep)
             {
                 k.Expression = roll;
                 roll = k;
             }
+            
             AddFunctionNodes(FunctionTiming.AfterKeep, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref roll);
+
             if (Success != null)
             {
-                if (Success.Success.Comparisons.Count() == 0 && Success.Failure.Comparisons.Count() > 0)
+                if (Success.Success == null)
                 {
                     throw new DiceException(DiceErrorCode.InvalidSuccess);
                 }
@@ -226,20 +232,25 @@ namespace Dice.AST
                 Success.Expression = roll;
                 roll = Success;
             }
+
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref roll);
+
             if (Critical != null)
             {
                 Critical.Expression = roll;
                 roll = Critical;
             }
+
             AddFunctionNodes(FunctionTiming.AfterCrit, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSort, ref roll);
+
             if (Sort != null)
             {
                 Sort.Expression = roll;
                 roll = Sort;
             }
+
             AddFunctionNodes(FunctionTiming.AfterSort, ref roll);
             AddFunctionNodes(FunctionTiming.Last, ref roll);
 

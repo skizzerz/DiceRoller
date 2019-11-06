@@ -27,7 +27,7 @@ namespace Dice
         /// If the macro does not roll dice, this need not be touched. If null or empty,
         /// a Literal DieResult will be inserted with its value set to Value.
         /// </summary>
-        public IEnumerable<DieResult> Values { get; set; }
+        public IEnumerable<DieResult>? Values { get; set; }
 
         /// <summary>
         /// The parameter passed to the macro. The function is responsible for

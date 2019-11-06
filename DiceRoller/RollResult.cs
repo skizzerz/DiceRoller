@@ -23,19 +23,7 @@ namespace Dice
         /// <summary>
         /// This RollResult is used as a placeholder whenever an invalid roll is added to a RollPost.
         /// </summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "RollResult is immutable")]
-        public static readonly RollResult InvalidRoll = new RollResult()
-        {
-            Value = 0,
-            Values = new DieResult[0],
-            ResultType = ResultType.Total,
-            RollRoot = null,
-            Expression = "#INVALID",
-            NumRolls = 0,
-            Metadata = null,
-            AllRolls = new uint[0],
-            AllMacros = new decimal[0]
-        };
+        public static readonly RollResult InvalidRoll = new RollResult();
 
         /// <summary>
         /// The result of the roll. This will either be the total or the number of successes.
@@ -61,8 +49,7 @@ namespace Dice
         /// but is exposed if deeper introspection into the roll is desired.
         /// This will be null if a RollResult is deserialized.
         /// </summary>
-        [SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "This property is never serialized (can't mark with [NonSerializable] because it's not a field)")]
-        public DiceAST RollRoot { get; private set; }
+        public DiceAST? RollRoot { get; private set; }
 
         /// <summary>
         /// The normalized dice expression for the roll, equivalent to RollRoot.ToString(),
@@ -78,7 +65,7 @@ namespace Dice
         /// <summary>
         /// An optional object which contains metadata about the roll.
         /// </summary>
-        public object Metadata { get; private set; }
+        public object? Metadata { get; private set; }
 
         /// <summary>
         /// The rolled value for every die, from left-to-right according to the normalized Expression.
@@ -86,7 +73,7 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
-        private IReadOnlyList<uint> AllRolls;
+        private readonly IReadOnlyList<uint> AllRolls;
 
         /// <summary>
         /// The value for every macro, from left-to-right according to the normalized Expression.
@@ -94,9 +81,23 @@ namespace Dice
         /// DiceAST and arrive at exactly the same result. In the event access to RollRoot is needed
         /// after a RollResult is deserialized, this is how RollRoot is created.
         /// </summary>
-        private IReadOnlyList<decimal> AllMacros;
+        private readonly IReadOnlyList<decimal> AllMacros;
 
-        private RollResult() { }
+        /// <summary>
+        /// Creates a new invalid roll result
+        /// </summary>
+        private RollResult()
+        {
+            Value = 0;
+            Values = new DieResult[0];
+            ResultType = ResultType.Total;
+            RollRoot = null;
+            Expression = "#INVALID";
+            NumRolls = 0;
+            Metadata = null;
+            AllRolls = new uint[0];
+            AllMacros = new decimal[0];
+        }
 
         internal RollResult(RollData data, DiceAST rollRoot, int numRolls)
         {
@@ -150,7 +151,7 @@ namespace Dice
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression);
+            var sb = new StringBuilder(Expression);
 
             sb.Append(" => ");
             foreach (var die in Values)

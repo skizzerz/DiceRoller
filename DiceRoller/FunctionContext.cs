@@ -52,16 +52,16 @@ namespace Dice
 
         /// <summary>
         /// If dice rolls need to be exposed, set Values to them.
-        /// If empty, the underlying dice rolls of Expression (if any) are used.
+        /// If null, the underlying dice rolls of Expression (if any) are used.
         /// </summary>
-        public IEnumerable<DieResult> Values { get; set; }
+        public IEnumerable<DieResult>? Values { get; set; }
         
         internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
             Scope = scope;
             Name = name;
             Arguments = arguments;
-            Expression = null;
+            Expression = null!;
             Value = Decimal.MinValue;
             ValueType = ResultType.Total;
             Values = null;

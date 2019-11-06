@@ -12,7 +12,7 @@ namespace Dice.AST
     /// </summary>
     public class FunctionNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// The context for this function call

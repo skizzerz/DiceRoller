@@ -13,19 +13,19 @@ namespace Dice.AST
     /// </summary>
     public class SuccessNode : DiceAST
     {
-        private List<DieResult> _values;
+        private readonly List<DieResult> _values;
 
         /// <summary>
         /// What should be viewed as a success.
         /// </summary>
-        public ComparisonNode Success { get; private set; }
+        public ComparisonNode? Success { get; private set; }
 
         /// <summary>
         /// What should be viewed as a failure, may be null.
         /// Failures deduct 1 success, so that negative successes may be possible.
         /// If null, failures are not possible.
         /// </summary>
-        public ComparisonNode Failure { get; private set; }
+        public ComparisonNode? Failure { get; private set; }
 
         /// <summary>
         /// Underlying roll expression.
@@ -49,22 +49,28 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
 
-        internal SuccessNode(ComparisonNode success, ComparisonNode failure)
+        internal SuccessNode(ComparisonNode? success, ComparisonNode? failure)
         {
-            Expression = null;
+            Expression = null!;
             Success = success;
             Failure = failure;
+
             if (success == null && failure == null)
             {
                 throw new ArgumentException("success and failure cannot both be null");
             }
+
             _values = new List<DieResult>();
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
-            sb.AppendFormat(".success({0})", Success.ToString());
+            var sb = new StringBuilder(Expression.ToString());
+
+            if (Success != null)
+            {
+                sb.AppendFormat(".success({0})", Success.ToString());
+            }
 
             if (Failure != null)
             {
@@ -74,7 +80,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
-        internal void AddSuccess(ComparisonNode comp)
+        internal void AddSuccess(ComparisonNode? comp)
         {
             if (comp == null)
             {
@@ -91,7 +97,7 @@ namespace Dice.AST
             }
         }
 
-        internal void AddFailure(ComparisonNode comp)
+        internal void AddFailure(ComparisonNode? comp)
         {
             if (comp == null)
             {
@@ -165,7 +171,7 @@ namespace Dice.AST
                     continue;
                 }
 
-                if (Success.Compare(die.Value))
+                if (Success!.Compare(die.Value))
                 {
                     Successes++;
                     _values.Add(die.Success());

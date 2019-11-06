@@ -33,13 +33,13 @@ namespace Dice.AST
         internal SortNode(SortDirection direction)
         {
             Direction = direction;
-            Expression = null;
+            Expression = null!;
             _values = new List<DieResult>();
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Expression?.ToString() ?? String.Empty);
+            var sb = new StringBuilder(Expression.ToString());
 
             switch (Direction)
             {
@@ -75,8 +75,8 @@ namespace Dice.AST
 
         private void DoSort()
         {
-            List<DieResult> temp = new List<DieResult>();
-            List<int> positions = new List<int>();
+            var temp = new List<DieResult>();
+            var positions = new List<int>();
             SpecialDie? chainType = null;
 
             _values = Expression.Values.ToList();
@@ -90,19 +90,12 @@ namespace Dice.AST
                     return;
                 }
 
-                IOrderedEnumerable<DieResult> sorted;
-
-                switch (Direction)
+                var sorted = Direction switch
                 {
-                    case SortDirection.Ascending:
-                        sorted = temp.OrderBy(d => d.Value);
-                        break;
-                    case SortDirection.Descending:
-                        sorted = temp.OrderByDescending(d => d.Value);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unknown sort direction");
-                }
+                    SortDirection.Ascending => temp.OrderBy(d => d.Value),
+                    SortDirection.Descending => temp.OrderByDescending(d => d.Value),
+                    _ => throw new InvalidOperationException("Unknown sort direction"),
+                };
 
                 var enumerator = sorted.GetEnumerator();
                 foreach (var pos in positions)

@@ -32,6 +32,7 @@ namespace TestDiceRoller
             EvaluateRoll("1d20.a()", conf, 1, "1d20.a() => 9 => 10");
             EvaluateRoll("1d20.b()", conf, 1, "1d20.b() => 9 => 11");
             EvaluateRoll("b()", conf, 0, "b() => 2 => 2");
+            EvaluateRoll("d20(7)", conf, 0, "d20(7) => 7 => 7");
         }
 
         [TestMethod]
@@ -181,6 +182,11 @@ namespace TestDiceRoller
 
             [DiceFunction("e", Scope = FunctionScope.Basic)]
             public void E(FunctionContext context) { }
+
+            [DiceFunction("d20", Scope = FunctionScope.Global)]
+            public static void D20(FunctionContext context) {
+                context.Value = context.Arguments[0].Value;
+            }
         }
 
         private class Invalid1

@@ -6,6 +6,7 @@ lexer grammar DiceGrammarLexer;
 options { language=CSharp; }
 
 T_IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
+T_GLOBAL_IDENTIFIER : ( [^d][a-zA-Z0-9]* | 'd' [a-zA-Z0-9]+ ) ;
 T_NUMBER : [0-9]+ ('.' [0-9]+)? -> pushMode(AFTER_NUMBER) ;
 T_MACRO : '[' .+? ']' -> pushMode(AFTER_NUMBER) ;
 
