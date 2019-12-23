@@ -38,6 +38,6 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
     <ItemGroup>
       <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
       <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-      <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" PrivateAssets="all" />
     </ItemGroup>
 </Project>
