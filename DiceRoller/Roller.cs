@@ -59,6 +59,11 @@ namespace Dice
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Roll(string diceExpr, RollerConfig? config, RollData? data)
         {
+            if (diceExpr == null)
+            {
+                throw new ArgumentNullException(nameof(diceExpr));
+            }
+
             if (data == null)
             {
                 data = new RollData();

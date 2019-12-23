@@ -39,14 +39,18 @@ namespace Dice.AST
 
         internal GroupNode(DiceAST? numTimes, List<DiceAST> exprs)
         {
-            NumTimes = numTimes;
-            _expressions = exprs;
-            _values = new List<DieResult>();
-
-            if (exprs.Count == 0)
+            if (exprs == null)
+            {
+                throw new ArgumentNullException(nameof(exprs));
+            }
+            else if (exprs.Count == 0)
             {
                 throw new ArgumentException("A dice group must contain at least one expression", nameof(exprs));
             }
+
+            NumTimes = numTimes;
+            _expressions = exprs;
+            _values = new List<DieResult>();
         }
 
         public override string ToString()

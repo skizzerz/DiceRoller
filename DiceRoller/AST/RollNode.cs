@@ -29,7 +29,7 @@ namespace Dice.AST
         /// Invalid numbers (according to roller config) throw a BadSidesException.
         /// May be null in the case of standard fudge dice.
         /// </summary>
-        public DiceAST NumSides { get; private set; }
+        public DiceAST? NumSides { get; private set; }
         /// <summary>
         /// The results of each individual die rolled
         /// </summary>
@@ -38,7 +38,7 @@ namespace Dice.AST
             get { return _values; }
         }
 
-        internal RollNode(RollType rollType, DiceAST numDice, DiceAST numSides)
+        internal RollNode(RollType rollType, DiceAST numDice, DiceAST? numSides)
         {
             RollType = rollType;
             _values = new List<DieResult>();

@@ -294,6 +294,18 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGlobalFunction([NotNull] DiceGrammarParser.GlobalFunctionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GlobalFunctionDPrefix</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.global_function"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterGlobalFunctionDPrefix([NotNull] DiceGrammarParser.GlobalFunctionDPrefixContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GlobalFunctionDPrefix</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.global_function"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitGlobalFunctionDPrefix([NotNull] DiceGrammarParser.GlobalFunctionDPrefixContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>GroupFunction</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.group_function"/>.
 	/// </summary>

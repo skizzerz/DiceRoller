@@ -55,14 +55,15 @@ number
 
 global_function
     : T_GLOBAL_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
+    | T_D AB_FUNCTION (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunctionDPrefix
     ;
 
 group_function
-    : T_DOT T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
+    : T_DOT_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
     ;
 
 basic_function
-    : T_DOT T_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
+    : T_DOT_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
     ;
 
 function_arg

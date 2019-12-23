@@ -44,6 +44,10 @@ namespace Dice.AST
             {
                 throw new ArgumentNullException(nameof(left));
             }
+            else if (right == null)
+            {
+                throw new ArgumentNullException(nameof(right));
+            }
 
             _values = new List<DieResult>();
         }

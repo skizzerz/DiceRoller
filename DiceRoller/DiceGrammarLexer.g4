@@ -5,8 +5,8 @@
 lexer grammar DiceGrammarLexer;
 options { language=CSharp; }
 
-T_IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
-T_GLOBAL_IDENTIFIER : ( [^d][a-zA-Z0-9]* | 'd' [a-zA-Z0-9]+ ) ;
+T_DOT_IDENTIFIER : '.' [a-zA-Z][a-zA-Z0-9]* ;
+T_GLOBAL_IDENTIFIER : [a-ce-zA-Z] [a-zA-Z0-9]* ;
 T_NUMBER : [0-9]+ ('.' [0-9]+)? -> pushMode(AFTER_NUMBER) ;
 T_MACRO : '[' .+? ']' -> pushMode(AFTER_NUMBER) ;
 
@@ -23,23 +23,24 @@ T_LBRACE : '{' ;
 T_RBRACE : '}' -> pushMode(AFTER_NUMBER) ;
 
 T_COMMA : ',' ;
-T_DOT : '.' ;
 
 T_PLUS : '+' ;
 T_MINUS : '-' ;
 T_MULTIPLY : '*' ;
 T_DIVIDE : '/' ;
 
+T_D : 'd' -> pushMode(AFTER_BARE_D) ;
+
 WS : [ \r\n\t] -> skip ;
 
-/* AFTER_NUMBER doesn't allow identifiers */
+/* AFTER_NUMBER doesn't allow global identifiers */
 mode AFTER_NUMBER;
 
 AN_NUMBER : [0-9]+ ('.' [0-9]+)? -> type(T_NUMBER) ;
 AN_MACRO : '[' .+? ']' -> type(T_MACRO) ;
 
 T_FUDGE : 'F' ;
-T_D : 'd' ;
+AN_D : 'd' -> type(T_D) ;
 
 T_KEEP_HIGH : 'kh' ;
 T_KEEP_LOW : 'kl' ;
@@ -76,7 +77,7 @@ AN_NOT_EQUALS : ( '!=' | '<>' ) -> type(T_NOT_EQUALS) ;
 AN_LBRACE : '{' -> popMode, type(T_LBRACE) ;
 AN_RBRACE : '}' -> type(T_RBRACE) ;
 AN_COMMA : ',' -> popMode, type(T_COMMA) ;
-AN_DOT : '.' -> popMode, type(T_DOT) ;
+AN_DOT_IDENTIFIER : '.' [a-zA-Z][a-zA-Z0-9]* -> popMode, type(T_DOT_IDENTIFIER) ;
 
 AN_LPAREN : '(' -> popMode, type(T_LPAREN) ;
 AN_RPAREN : ')' -> type(T_RPAREN) ;
@@ -86,3 +87,12 @@ AN_MULTIPLY : '*' -> popMode, type(T_MULTIPLY) ;
 AN_DIVIDE : '/' -> popMode, type(T_DIVIDE) ;
 
 AN_WS : [ \r\n\t] -> skip ;
+
+/* Disambiguate between rolls and global functions starting with d */
+mode AFTER_BARE_D;
+
+AB_FUNCTION : [a-zA-Z0-9]+ '(' -> popMode ;
+AB_NUMBER : [0-9]+ ('.' [0-9]+)? -> mode(AFTER_NUMBER), type(T_NUMBER) ;
+AB_MACRO : '[' .+? ']' -> mode(AFTER_NUMBER), type(T_MACRO) ;
+AB_F : 'F' -> mode(AFTER_NUMBER), type(T_FUDGE) ;
+AB_LPAREN : '(' -> popMode, type(T_LPAREN) ;
