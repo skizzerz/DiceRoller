@@ -33,6 +33,7 @@ namespace TestDiceRoller
             EvaluateRoll("1d20.b()", conf, 1, "1d20.b() => 9 => 11");
             EvaluateRoll("b()", conf, 0, "b() => 2 => 2");
             EvaluateRoll("d20(7)", conf, 0, "d20(7) => 7 => 7");
+            EvaluateRoll("d(1d10)", conf, 1, "d(1d10) => 10 => 10");
         }
 
         [TestMethod]
@@ -177,8 +178,12 @@ namespace TestDiceRoller
             [DiceFunction("c", Scope = FunctionScope.Global)]
             private void C(FunctionContext context) { }
 
-            [DiceFunction("d", Scope = FunctionScope.All)]
-            public static void D(FunctionContext context) { }
+            [DiceFunction("d", Scope = FunctionScope.Global)]
+            public static void D(FunctionContext context)
+            {
+                // adds 1 to the result of the roll
+                context.Value = context.Arguments[0].Value + 1;
+            }
 
             [DiceFunction("e", Scope = FunctionScope.Basic)]
             public void E(FunctionContext context) { }

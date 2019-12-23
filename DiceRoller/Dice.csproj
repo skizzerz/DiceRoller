@@ -20,6 +20,7 @@
 
 New features:
 - The leading number denoting number of dice (before the "d") is optional and will default to 1 if not specified.
+- Nullability annotations have been added to public APIs, to assist developers in migrating their own applications using this library.
 
 Bugfixes:
 - None

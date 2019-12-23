@@ -21,6 +21,12 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_RollVariableSides_NumberOmitted()
+        {
+            EvaluateRoll("d(1d10)", Roll9Conf, 2, "1d9 => 9! => 9");
+        }
+
+        [TestMethod]
         public void Successfully_RollTwoDice_Normal()
         {
             EvaluateRoll("2d20", Roll9Conf, 2, "2d20 => 9 + 9 => 18");
