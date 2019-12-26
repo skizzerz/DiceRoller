@@ -11,7 +11,7 @@
         <Copyright>Copyright ©2015-2019 Ryan Schmidt</Copyright>
         <PackageLicenseUrl></PackageLicenseUrl>
         <PackageProjectUrl>https://skizzerz.net/DiceRoller</PackageProjectUrl>
-        <PackageIconUrl>https://skizzerz.net/DiceRoller/images/thumb/5/56/DiceRoller_Logo.svg/256px-DiceRoller_Logo.svg.png</PackageIconUrl>
+        <PackageIcon>Icon.png</PackageIcon>
         <RepositoryUrl>https://github.com/skizzerz/DiceRoller</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</PackageTags>
@@ -34,10 +34,17 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <LangVersion>8.0</LangVersion>
         <Nullable>enable</Nullable>
+        <PackageIconUrl />
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
       <PackageReference Include="System.ValueTuple" Version="4.5.0" />
       <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" PrivateAssets="all" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="Icon.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 </Project>
