@@ -39,7 +39,7 @@ namespace Dice
         /// <summary>
         /// Additional data about the roll. Used with SpecialDie.Text to display arbitrary text
         /// </summary>
-        public string Data { get; set; }
+        public string? Data { get; set; }
 
         /// <summary>
         /// What type of special die this is. Calling this is an error if DieType != DieType.SpecialDie
@@ -78,7 +78,6 @@ namespace Dice
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Serialization ctor requires this exact signature")]
         private DieResult(SerializationInfo info, StreamingContext context)
             : this()
         {

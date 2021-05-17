@@ -120,7 +120,6 @@ namespace Dice
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        [SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Serialization ctor requires this exact signature")]
         protected RollResult(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -173,13 +172,13 @@ namespace Dice
                             sb.Append(" / ");
                             break;
                         case SpecialDie.OpenParen:
-                            sb.Append("(");
+                            sb.Append('(');
                             break;
                         case SpecialDie.CloseParen:
-                            sb.Append(")");
+                            sb.Append(')');
                             break;
                         case SpecialDie.Negate:
-                            sb.Append("-");
+                            sb.Append('-');
                             break;
                         case SpecialDie.Comma:
                             sb.Append(", ");
@@ -196,23 +195,23 @@ namespace Dice
                 {
                     if (die.Flags.HasFlag(DieFlags.Success))
                     {
-                        sb.Append("$");
+                        sb.Append('$');
                     }
                     else if (die.Flags.HasFlag(DieFlags.Failure))
                     {
-                        sb.Append("#");
+                        sb.Append('#');
                     }
 
                     sb.Append(die.Value);
 
                     if (die.Flags.HasFlag(DieFlags.Critical) || die.Flags.HasFlag(DieFlags.Fumble))
                     {
-                        sb.Append("!");
+                        sb.Append('!');
                     }
 
                     if (die.Flags.HasFlag(DieFlags.Dropped))
                     {
-                        sb.Append("*");
+                        sb.Append('*');
                     }
                 }
             }

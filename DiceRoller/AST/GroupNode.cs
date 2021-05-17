@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.AST
 {
@@ -58,12 +57,12 @@ namespace Dice.AST
             var sb = new StringBuilder();
             if (NumTimes != null)
             {
-                sb.Append(NumTimes.Value.ToString());
+                sb.Append(NumTimes.Value);
             }
 
-            sb.Append("{");
+            sb.Append('{');
             sb.Append(String.Join(", ", Expressions.Select(o => o.ToString())));
-            sb.Append("}");
+            sb.Append('}');
 
             return sb.ToString();
         }

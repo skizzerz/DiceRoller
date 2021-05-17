@@ -3,12 +3,12 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
         <PackageId>DiceRoller</PackageId>
-        <Version>4.1.0</Version>
+        <Version>4.2.0</Version>
         <Authors>Ryan Schmidt</Authors>
         <Company>Ryan Schmidt</Company>
         <Product>DiceRoller</Product>
         <Description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</Description>
-        <Copyright>Copyright ©2015-2019 Ryan Schmidt</Copyright>
+        <Copyright>Copyright ©2015-2021 Ryan Schmidt</Copyright>
         <PackageLicenseUrl></PackageLicenseUrl>
         <PackageProjectUrl>https://skizzerz.net/DiceRoller</PackageProjectUrl>
         <PackageIcon>Icon.png</PackageIcon>
@@ -23,7 +23,7 @@ New features:
 - Nullability annotations have been added to public APIs, to assist developers in migrating their own applications using this library.
 
 Bugfixes:
-- None
+- Fixed nullability annotation for DieResult.Data; this string can be nullable and has always defaulted to null
 
 See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseNotes>
         <SignAssembly>true</SignAssembly>
@@ -34,12 +34,15 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <LangVersion>8.0</LangVersion>
         <Nullable>enable</Nullable>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <PackageIconUrl />
     </PropertyGroup>
-    <ItemGroup>
-      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
       <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-      <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" PrivateAssets="all" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
     </ItemGroup>
     <ItemGroup>
       <None Include="Icon.png">

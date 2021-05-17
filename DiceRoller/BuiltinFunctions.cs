@@ -392,6 +392,11 @@ namespace Dice
                     continue;
                 }
 
+                if (value.Data == null)
+                {
+                    throw new InvalidOperationException("Grouped die roll is missing group key");
+                }
+
                 var groupValues = context.Data.InternalContext.GetGroupValues(value.Data);
                 bool markDropped = value.Flags.HasFlag(DieFlags.Dropped);
                 bool needParens = groupNode.Expressions.Count > 1;

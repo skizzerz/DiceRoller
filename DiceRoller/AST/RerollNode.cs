@@ -73,7 +73,7 @@ namespace Dice.AST
             }
 
             sb.Append(Comparison.ToString());
-            sb.Append(")");
+            sb.Append(')');
 
             return sb.ToString();
         }
@@ -119,6 +119,11 @@ namespace Dice.AST
 
                 if (die.DieType == DieType.Group)
                 {
+                    if (die.Data == null)
+                    {
+                        throw new InvalidOperationException("Grouped die roll is missing group key");
+                    }
+
                     var group = data.InternalContext.GetGroupExpression(die.Data);
                     rolls += group.Reroll(data, root, depth + 1);
 
