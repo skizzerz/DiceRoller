@@ -19,11 +19,17 @@
 - None
 
 New features:
-- The leading number denoting number of dice (before the "d") is optional and will default to 1 if not specified.
-- Nullability annotations have been added to public APIs, to assist developers in migrating their own applications using this library.
+- Builtin functions can be overridden by custom functions by registering a function with the same name
+- Builtin functions can be removed
+- Custom functions can be registered with the same timing as builtin functions
 
 Bugfixes:
 - Fixed nullability annotation for DieResult.Data; this string can be nullable and has always defaulted to null
+
+Deprecations:
+- Dice.BuiltinFunctions and Dice.BuiltinMacros are deprecated; please use their counterparts in the Dice.Builtins
+  namespace if you would like to directly call any of them from within your custom functions/macros.
+  These two classes will be removed in the next major release.
 
 See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseNotes>
         <SignAssembly>true</SignAssembly>

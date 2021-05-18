@@ -115,5 +115,10 @@ namespace Dice
         /// </summary>
         [Description("Cannot specify advantage or disadvantage more than once.")]
         AdvantageOnlyOnce = 19,
+        /// <summary>
+        /// No extra named {0} is registered.
+        /// </summary>
+        [Description("No extra named {0} is registered.")]
+        NoSuchExtra = 20,
     }
 }

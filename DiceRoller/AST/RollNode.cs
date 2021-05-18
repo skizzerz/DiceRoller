@@ -54,18 +54,18 @@ namespace Dice.AST
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(NumDice.Value.ToString());
+            sb.Append(NumDice.Value);
 
-            sb.Append("d");
+            sb.Append('d');
 
             if (RollType == RollType.Fudge)
             {
-                sb.Append("F");
+                sb.Append('F');
             }
 
             if (NumSides != null)
             {
-                sb.Append(NumSides.Value.ToString());
+                sb.Append(NumSides.Value);
             }
 
             return sb.ToString();
@@ -141,6 +141,13 @@ namespace Dice.AST
             if (data.Config.NormalSidesOnly && !_normalSides.Contains(numSides))
             {
                 throw new DiceException(DiceErrorCode.WrongSides);
+            }
+
+            // use >= as the comparison because we will be adding 1 roll later on,
+            // so if we're already at the limit that later roll won't be legal
+            if (data.InternalContext.AllRolls.Count >= data.Config.MaxDice)
+            {
+                throw new DiceException(DiceErrorCode.TooManyDice, data.Config.MaxDice);
             }
 
             byte[] roll = new byte[4];

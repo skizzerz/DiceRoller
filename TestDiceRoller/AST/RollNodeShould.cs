@@ -168,42 +168,5 @@ namespace TestDiceRoller.AST
         {
             EvaluateNode(_1dF20, Data(NormalOnlyConf), 1, "1dF20 => -20! => -20");
         }
-
-        [TestMethod]
-        public async Task BeSufficientlyRandom_WhenUsingDefaultRNG()
-        {
-            await Task.Run(() =>
-            {
-                Dictionary<int, int> rollCounts = new Dictionary<int, int>();
-                for (int i = 1; i <= 20; i++)
-                {
-                    rollCounts[i] = 0;
-                }
-
-                DieResult die;
-                RollData data = new RollData()
-                {
-                    Config = new RollerConfig()
-                };
-                var numTrials = 10000000;
-                var perRoll = numTrials / 20;
-                var tolerance = perRoll * 0.005;
-
-                for (int i = 0; i < numTrials; i++)
-                {
-                    die = RollNode.DoRoll(data, RollType.Normal, 20);
-                    rollCounts[(int)die.Value]++;
-                }
-
-                for (int i = 1; i <= 20; i++)
-                {
-                    int off = Math.Abs(rollCounts[i] - perRoll);
-                    if (off > tolerance)
-                    {
-                        Assert.Inconclusive("Default RNG fell outside of allowed tolerance of 0.5% ({0}/{1})", off, tolerance);
-                    }
-                }
-            });
-        }
     }
 }

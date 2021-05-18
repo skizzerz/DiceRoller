@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Dice.Builtins;
+
 namespace Dice
 {
     /// <summary>
@@ -77,7 +79,10 @@ namespace Dice
 
         public RollerConfig()
         {
-            FunctionRegistry.RegisterType(typeof(BuiltinFunctions));
+            FunctionRegistry.RegisterType(typeof(ConditionalFunctions));
+            FunctionRegistry.RegisterType(typeof(ExplodeFunctions));
+            FunctionRegistry.RegisterType(typeof(MathFunctions));
+            FunctionRegistry.RegisterType(typeof(OutputFunctions));
             MacroRegistry.RegisterType(typeof(BuiltinMacros));
         }
     }

@@ -55,6 +55,11 @@ namespace Dice
         /// If null, the underlying dice rolls of Expression (if any) are used.
         /// </summary>
         public IEnumerable<DieResult>? Values { get; set; }
+
+        /// <summary>
+        /// Number of extra rolls performed during function execution
+        /// </summary>
+        internal long NumRolls { get; set; }
         
         internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
@@ -66,6 +71,19 @@ namespace Dice
             ValueType = ResultType.Total;
             Values = null;
             Data = data;
+            NumRolls = 0;
+        }
+
+        /// <summary>
+        /// Roll an extra die as part of the function execution.
+        /// </summary>
+        /// <param name="rollType">Type of roll to perform</param>
+        /// <param name="numSides">Number of sides to roll</param>
+        /// <returns></returns>
+        public DieResult RollExtra(RollType rollType, int numSides)
+        {
+            NumRolls++;
+            return RollNode.DoRoll(Data, rollType, numSides, DieFlags.Extra);
         }
     }
 }

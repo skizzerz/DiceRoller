@@ -1,5 +1,5 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.7.2-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
+ * For example: java -jar C:\antlr\antlr-4.9.2-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
  */
 
 parser grammar DiceGrammarParser;
@@ -72,48 +72,16 @@ function_arg
     ;
 
 grouped_roll_inner
-    : grouped_roll_inner T_COMMA math_expr # GroupExtra
+    : grouped_roll_inner T_COMMA math_expr # GroupAdditional
     | math_expr # GroupInit
     ;
 
 grouped_extras
-    : keep_expr # GroupKeep
-    | success_expr # GroupSuccess
-    | sort_expr # GroupSort
-    | reroll_expr # GroupReroll
+    : T_EXTRA_IDENTIFIER (compare_expr)? # GroupExtra
     ;
 
 basic_extras
-    : reroll_expr # BasicReroll
-    | explode_expr # BasicExplode
-    | keep_expr # BasicKeep
-    | success_expr # BasicSuccess
-    | sort_expr # BasicSort
-    | crit_expr # BasicCrit
-    ;
-
-keep_expr
-    : T_KEEP_HIGH unary_expr # KeepHigh
-    | T_KEEP_LOW unary_expr # KeepLow
-    | T_DROP_HIGH unary_expr # DropHigh
-    | T_DROP_LOW unary_expr # DropLow
-    | T_ADVANTAGE # Advantage
-    | T_DISADVANTAGE # Disadvantage
-    ;
-    
-reroll_expr
-    : T_REROLL compare_expr # RerollReroll
-    | T_REROLL_ONCE compare_expr # RerollOnce
-    ;
-
-explode_expr
-    : T_EXPLODE (compare_expr)? # Explode
-    | T_COMPOUND (compare_expr)? # Compound
-    | T_PENETRATE (compare_expr)? # Penetrate
-    ;
-
-success_expr
-    : explicit_compare_expr (T_FAIL compare_expr)? # SuccessFail
+    : T_EXTRA_IDENTIFIER (compare_expr)? # BasicExtra
     ;
 
 compare_expr
@@ -128,14 +96,4 @@ explicit_compare_expr
     | T_GREATER_EQUALS unary_expr # CompGreaterEquals
     | T_LESS_EQUALS unary_expr # CompLessEquals
     | T_NOT_EQUALS unary_expr # CompNotEquals
-    ;
-
-sort_expr
-    : T_SORT_ASC # SortAsc
-    | T_SORT_DESC # SortDesc
-    ;
-
-crit_expr
-    : T_CRIT compare_expr (T_FAIL compare_expr)? # CritFumble
-    | T_CRITFAIL compare_expr # FumbleOnly
     ;

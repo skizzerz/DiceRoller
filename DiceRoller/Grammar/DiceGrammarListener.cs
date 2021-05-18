@@ -166,7 +166,7 @@ namespace Dice.Grammar
             }
         }
 
-        public override void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context)
+        public override void ExitGroupAdditional([NotNull] DiceGrammarParser.GroupAdditionalContext context)
         {
             var top = Stack.Pop();
             var partial = (GroupPartialNode)Stack.Pop();
@@ -174,7 +174,6 @@ namespace Dice.Grammar
             Stack.Push(partial);
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Just a big switch, not complex")]
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -400,10 +399,6 @@ namespace Dice.Grammar
                 {
                     partial.AddReroll((RerollNode)node);
                 }
-                else if (node is ExplodeNode)
-                {
-                    partial.AddExplode((ExplodeNode)node);
-                }
                 else if (node is KeepNode)
                 {
                     partial.AddKeep((KeepNode)node);
@@ -472,10 +467,6 @@ namespace Dice.Grammar
                 {
                     partial.AddReroll((RerollNode)node);
                 }
-                else if (node is ExplodeNode)
-                {
-                    partial.AddExplode((ExplodeNode)node);
-                }
                 else if (node is KeepNode)
                 {
                     partial.AddKeep((KeepNode)node);
@@ -501,16 +492,67 @@ namespace Dice.Grammar
             Stack.Push(partial.CreateRollNode());
         }
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Just a big switch, not complex")]
+        public override void ExitBasicExtra([NotNull] DiceGrammarParser.BasicExtraContext context)
+        {
+            // we might have a comparison on the stack
+            List<DiceAST> args = new List<DiceAST>();
+            if (context.compare_expr() != null)
+            {
+                args.Add(Stack.Pop());
+            }
+
+            // get the extra's name. This may in fact be multiple extras smooshed together without arguments,
+            // so check for that as well. If that is the case, arg above is only the argument for the final extra.
+            var fname = context.T_EXTRA_IDENTIFIER().GetText();
+            var extras = new List<string>(Data.FunctionRegistry.Extras.Keys);
+            extras.AddRange(Data.Config.FunctionRegistry.Extras.Keys);
+            extras = extras.Distinct().OrderByDescending(e => e.Length).ToList();
+
+            do
+            {
+                var startLength = fname.Length;
+                var lname = fname.ToLowerInvariant();
+                foreach (var extra in extras)
+                {
+                    if (lname.StartsWith(extra))
+                    {
+                        fname = fname.Substring(extra.Length);
+                        string resolvedName;
+                        if (Data.FunctionRegistry.Extras.ContainsKey(extra))
+                        {
+                            resolvedName = Data.FunctionRegistry.Extras[extra];
+                        }
+                        else
+                        {
+                            resolvedName = Data.Config.FunctionRegistry.Extras[extra];
+                        }
+
+                        if (fname.Length == 0)
+                        {
+                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolvedName, args, Data));
+                        }
+                        else
+                        {
+                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolvedName, new List<DiceAST>(), Data));
+                        }
+
+                        break;
+                    }
+                }
+
+                if (fname.Length == startLength)
+                {
+                    // no extra found
+                    throw new DiceException(DiceErrorCode.NoSuchExtra, lname);
+                }
+            } while (fname.Length > 0);
+        }
+
         public override void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
             // note that arguments are popped in reverse order, so we'll need to reverse them into normal order
-            // before passing them along to our FunctionNode. Certain functions are hardcoded into aliases for
-            // other node types, and those are handled here as well
-            // (reroll, rerolln, rerollonce, explode, compound, penetrate, compoundpenetrate,
-            // keephighest, keeplowest, drophighest, droplowest, advantage, disadvantage,
-            // success, failure, sortasc, sortdesc, critical, and fumble)
+            // before passing them along to our FunctionNode.
             List<DiceAST> args = new List<DiceAST>();
 
             for (int i = 0; i < context.function_arg().Length; i++)
@@ -522,12 +564,7 @@ namespace Dice.Grammar
 
             // check for a built-in function
             var fname = context.T_DOT_IDENTIFIER().GetText().TrimStart('.');
-            var lname = fname.ToLower();
-
-            if (BuiltinFunctions.ReservedNames.ContainsKey(lname))
-            {
-                fname = BuiltinFunctions.ReservedNames[lname];
-            }
+            var lname = fname.ToLowerInvariant();
 
             switch (lname)
             {
@@ -574,66 +611,6 @@ namespace Dice.Grammar
                     }
 
                     Stack.Push(new RerollNode(1, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
-                case "explode":
-                    if (args.Count == 0)
-                    {
-                        Stack.Push(new ExplodeNode(ExplodeType.Explode, false, null));
-                    }
-                    else
-                    {
-                        if (args.OfType<ComparisonNode>().Count() < args.Count)
-                        {
-                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                        }
-
-                        Stack.Push(new ExplodeNode(ExplodeType.Explode, false, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    }
-                    break;
-                case "compound":
-                    if (args.Count == 0)
-                    {
-                        Stack.Push(new ExplodeNode(ExplodeType.Explode, true, null));
-                    }
-                    else
-                    {
-                        if (args.OfType<ComparisonNode>().Count() < args.Count)
-                        {
-                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                        }
-
-                        Stack.Push(new ExplodeNode(ExplodeType.Explode, true, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    }
-                    break;
-                case "penetrate":
-                    if (args.Count == 0)
-                    {
-                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, null));
-                    }
-                    else
-                    {
-                        if (args.OfType<ComparisonNode>().Count() < args.Count)
-                        {
-                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                        }
-
-                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    }
-                    break;
-                case "compoundpenetrate":
-                    if (args.Count == 0)
-                    {
-                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, true, null));
-                    }
-                    else
-                    {
-                        if (args.OfType<ComparisonNode>().Count() < args.Count)
-                        {
-                            throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                        }
-
-                        Stack.Push(new ExplodeNode(ExplodeType.Penetrate, true, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    }
                     break;
                 case "keephighest":
                     if (args.Count != 1)
@@ -809,97 +786,6 @@ namespace Dice.Grammar
             Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
         }
 
-        public override void ExitKeepHigh([NotNull] DiceGrammarParser.KeepHighContext context)
-        {
-            var top = Stack.Pop();
-            Stack.Push(new KeepNode(KeepType.KeepHigh, top));
-        }
-
-        public override void ExitKeepLow([NotNull] DiceGrammarParser.KeepLowContext context)
-        {
-            var top = Stack.Pop();
-            Stack.Push(new KeepNode(KeepType.KeepLow, top));
-        }
-
-        public override void ExitDropHigh([NotNull] DiceGrammarParser.DropHighContext context)
-        {
-            var top = Stack.Pop();
-            Stack.Push(new KeepNode(KeepType.DropHigh, top));
-        }
-
-        public override void ExitDropLow([NotNull] DiceGrammarParser.DropLowContext context)
-        {
-            var top = Stack.Pop();
-            Stack.Push(new KeepNode(KeepType.DropLow, top));
-        }
-
-        public override void ExitAdvantage([NotNull] DiceGrammarParser.AdvantageContext context)
-        {
-            Stack.Push(new KeepNode(KeepType.Advantage, null));
-        }
-
-        public override void ExitDisadvantage([NotNull] DiceGrammarParser.DisadvantageContext context)
-        {
-            Stack.Push(new KeepNode(KeepType.Disadvantage, null));
-        }
-
-        public override void ExitRerollReroll([NotNull] DiceGrammarParser.RerollRerollContext context)
-        {
-            var top = (ComparisonNode)Stack.Pop();
-            Stack.Push(new RerollNode(0, top));
-        }
-
-        public override void ExitRerollOnce([NotNull] DiceGrammarParser.RerollOnceContext context)
-        {
-            var top = (ComparisonNode)Stack.Pop();
-            Stack.Push(new RerollNode(1, top));
-        }
-
-        public override void ExitExplode([NotNull] DiceGrammarParser.ExplodeContext context)
-        {
-            ComparisonNode? top = null;
-            if (context.compare_expr() != null)
-            {
-                top = (ComparisonNode)Stack.Pop();
-            }
-
-            Stack.Push(new ExplodeNode(ExplodeType.Explode, false, top));
-        }
-
-        public override void ExitCompound([NotNull] DiceGrammarParser.CompoundContext context)
-        {
-            ComparisonNode? top = null;
-            if (context.compare_expr() != null)
-            {
-                top = (ComparisonNode)Stack.Pop();
-            }
-
-            Stack.Push(new ExplodeNode(ExplodeType.Explode, true, top));
-        }
-
-        public override void ExitPenetrate([NotNull] DiceGrammarParser.PenetrateContext context)
-        {
-            ComparisonNode? top = null;
-            if (context.compare_expr() != null)
-            {
-                top = (ComparisonNode)Stack.Pop();
-            }
-
-            Stack.Push(new ExplodeNode(ExplodeType.Penetrate, false, top));
-        }
-
-        public override void ExitSuccessFail([NotNull] DiceGrammarParser.SuccessFailContext context)
-        {
-            ComparisonNode? fail = null;
-            if (context.compare_expr() != null)
-            {
-                fail = (ComparisonNode)Stack.Pop();
-            }
-
-            var success = (ComparisonNode)Stack.Pop();
-            Stack.Push(new SuccessNode(success, fail));
-        }
-
         public override void ExitCompImplicit([NotNull] DiceGrammarParser.CompImplicitContext context)
         {
             var top = Stack.Pop();
@@ -940,34 +826,6 @@ namespace Dice.Grammar
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.NotEquals, top));
-        }
-
-        public override void ExitSortAsc([NotNull] DiceGrammarParser.SortAscContext context)
-        {
-            Stack.Push(new SortNode(SortDirection.Ascending));
-        }
-
-        public override void ExitSortDesc([NotNull] DiceGrammarParser.SortDescContext context)
-        {
-            Stack.Push(new SortNode(SortDirection.Descending));
-        }
-
-        public override void ExitCritFumble([NotNull] DiceGrammarParser.CritFumbleContext context)
-        {
-            ComparisonNode? fumb = null;
-            if (context.compare_expr().Length > 1)
-            {
-                fumb = (ComparisonNode)Stack.Pop();
-            }
-
-            ComparisonNode crit = (ComparisonNode)Stack.Pop();
-            Stack.Push(new CritNode(crit, fumb));
-        }
-
-        public override void ExitFumbleOnly([NotNull] DiceGrammarParser.FumbleOnlyContext context)
-        {
-            var top = (ComparisonNode)Stack.Pop();
-            Stack.Push(new CritNode(null, top));
         }
     }
 }

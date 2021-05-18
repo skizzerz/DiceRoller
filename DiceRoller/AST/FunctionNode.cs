@@ -33,7 +33,7 @@ namespace Dice.AST
         {
             try
             {
-                if (data.FunctionRegistry.Contains(name, scope, includeReserved: false))
+                if (data.FunctionRegistry.Contains(name, scope))
                 {
                     (name, Timing, Function) = data.FunctionRegistry.Get(name, scope);
                 }
@@ -61,13 +61,13 @@ namespace Dice.AST
             StringBuilder sb = new StringBuilder(Context.Expression?.ToString() ?? String.Empty);
             if (!IsGlobalFunction())
             {
-                sb.Append(".");
+                sb.Append('.');
             }
 
             sb.Append(Context.Name);
-            sb.Append("(");
+            sb.Append('(');
             sb.Append(String.Join(", ", Context.Arguments.Select(o => o.ToString())));
-            sb.Append(")");
+            sb.Append(')');
 
             return sb.ToString();
         }
@@ -81,7 +81,7 @@ namespace Dice.AST
                 rolls += arg.Evaluate(data, root, depth + 1);
             }
 
-            CallFunction();
+            rolls += CallFunction();
 
             return rolls;
         }
@@ -95,13 +95,14 @@ namespace Dice.AST
                 rolls += arg.Reroll(data, root, depth + 1);
             }
 
-            CallFunction();
+            rolls += CallFunction();
 
             return rolls;
         }
 
-        private void CallFunction()
+        private long CallFunction()
         {
+            Context.NumRolls = 0;
             Function(Context);
             Value = Context.Value;
             ValueType = Context.ValueType;
@@ -130,6 +131,8 @@ namespace Dice.AST
             {
                 throw new InvalidOperationException("Function callback did not modify context.Value");
             }
+
+            return Context.NumRolls;
         }
     }
 }

@@ -11,7 +11,13 @@ namespace Dice
     /// If multiple functions are registered with the same timing, they are
     /// executed in the order they are specified in the dice expression.
     /// </summary>
-    // Note: the ordering below is the order in which these are actually executed
+    /// <remarks>
+    /// The following changes to this enum are not considered breaking:
+    /// - Adding new items, including in the middle of the enum
+    /// The following changes to this enum are considered breaking:
+    /// - Removing items
+    /// - Rearranging items
+    /// </remarks>
     public enum FunctionTiming
     {
         /// <summary>
@@ -19,16 +25,22 @@ namespace Dice
         /// </summary>
         First,
         BeforeExplode,
+        Explode,
         AfterExplode,
         BeforeReroll,
+        Reroll,
         AfterReroll,
         BeforeKeep,
+        Keep,
         AfterKeep,
         BeforeSuccess,
+        Success,
         AfterSuccess,
         BeforeCrit,
+        Crit,
         AfterCrit,
         BeforeSort,
+        Sort,
         AfterSort,
         /// <summary>
         /// The function should be executed after all other expressions

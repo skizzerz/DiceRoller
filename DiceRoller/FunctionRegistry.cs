@@ -15,6 +15,7 @@ namespace Dice
     {
         private readonly Dictionary<(string lname, FunctionScope scope), (string name, FunctionTiming timing, FunctionCallback callback)> Callbacks
             = new Dictionary<(string, FunctionScope), (string, FunctionTiming, FunctionCallback)>();
+        internal readonly Dictionary<string, string> Extras = new Dictionary<string, string>();
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
@@ -36,7 +37,7 @@ namespace Dice
                     }
 
                     var callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback));
-                    var lname = attr.Name.ToLower();
+                    var lname = attr.Name.ToLowerInvariant();
 
                     switch (attr.Scope)
                     {
@@ -67,6 +68,16 @@ namespace Dice
 
                             Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
                             break;
+                    }
+
+                    if (attr.Extra != null)
+                    {
+                        if (Extras.ContainsKey(attr.Extra.ToLowerInvariant()))
+                        {
+                            throw new InvalidOperationException("An extra with the same name has already been registered");
+                        }
+
+                        Extras[attr.Extra.ToLowerInvariant()] = lname;
                     }
                 }
             }
@@ -107,7 +118,7 @@ namespace Dice
                         callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback), obj);
                     }
 
-                    var lname = attr.Name.ToLower();
+                    var lname = attr.Name.ToLowerInvariant();
 
                     switch (attr.Scope)
                     {
@@ -138,6 +149,16 @@ namespace Dice
 
                             Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
                             break;
+                    }
+
+                    if (attr.Extra != null)
+                    {
+                        if (Extras.ContainsKey(attr.Extra.ToLowerInvariant()))
+                        {
+                            throw new InvalidOperationException("An extra with the same name has already been registered");
+                        }
+
+                        Extras[attr.Extra.ToLowerInvariant()] = lname;
                     }
                 }
             }
@@ -183,7 +204,7 @@ namespace Dice
                 throw new ArgumentException("Function name cannot be empty", nameof(name));
             }
 
-            var lname = name.ToLower();
+            var lname = name.ToLowerInvariant();
 
             switch (scope)
             {
@@ -234,29 +255,19 @@ namespace Dice
                 throw new ArgumentException("Cannot remove with scope All or Roll, specify individual scopes.", nameof(scope));
             }
 
-            var lname = name.ToLower();
-
-            if (BuiltinFunctions.ReservedNames.ContainsKey(lname))
-            {
-                throw new ArgumentException("Cannot remove a reserved function name", nameof(name));
-            }
+            var lname = name.ToLowerInvariant();
 
             Callbacks.Remove((lname, scope));
         }
 
         internal (string name, FunctionTiming timing, FunctionCallback callback) Get(string lname, FunctionScope scope)
         {
-            return Callbacks[(lname.ToLower(), scope)];
+            return Callbacks[(lname.ToLowerInvariant(), scope)];
         }
 
-        internal bool Contains(string name, FunctionScope scope, bool includeReserved = true)
+        internal bool Contains(string name, FunctionScope scope)
         {
-            if (includeReserved && BuiltinFunctions.ReservedNames.ContainsKey(name.ToLower()))
-            {
-                return true;
-            }
-
-            return Callbacks.ContainsKey((name.ToLower(), scope));
+            return Callbacks.ContainsKey((name.ToLowerInvariant(), scope));
         }
     }
 }

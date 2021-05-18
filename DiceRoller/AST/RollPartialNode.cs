@@ -16,7 +16,6 @@ namespace Dice.AST
         public List<KeepNode> Keep { get; private set; }
         public SortNode? Sort { get; private set; }
         public RerollNode? RerollNode { get; private set; }
-        public ExplodeNode? Explode { get; private set; }
         public CritNode? Critical { get; private set; }
         public SuccessNode? Success { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
@@ -31,7 +30,6 @@ namespace Dice.AST
             Keep = new List<KeepNode>();
             Sort = null;
             RerollNode = null;
-            Explode = null;
             Critical = null;
             Success = null;
             Functions = new List<FunctionNode>();
@@ -46,11 +44,6 @@ namespace Dice.AST
             if (RerollNode != null)
             {
                 sb.Append(RerollNode.ToString());
-            }
-
-            if (Explode != null)
-            {
-                sb.Append(Explode.ToString());
             }
 
             if (Success != null)
@@ -136,23 +129,6 @@ namespace Dice.AST
             }
         }
 
-        internal void AddExplode(ExplodeNode explode)
-        {
-            if (Explode != null && (Explode.ExplodeType != explode.ExplodeType || Explode.Compound != explode.Compound))
-            {
-                throw new DiceException(DiceErrorCode.MixedExplodeType);
-            }
-
-            if (Explode == null)
-            {
-                Explode = explode;
-            }
-            else
-            {
-                Explode.AddComparison(explode.Comparison);
-            }
-        }
-
         internal void AddCritical(CritNode crit)
         {
             if (Critical == null)
@@ -194,13 +170,7 @@ namespace Dice.AST
 
             AddFunctionNodes(FunctionTiming.First, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeExplode, ref roll);
-            
-            if (Explode != null)
-            {
-                Explode.Expression = roll;
-                roll = Explode;
-            }
-            
+            AddFunctionNodes(FunctionTiming.Explode, ref roll);
             AddFunctionNodes(FunctionTiming.AfterExplode, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeReroll, ref roll);
             
