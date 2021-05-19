@@ -13,9 +13,113 @@ namespace Dice
     /// </summary>
     public class FunctionRegistry
     {
-        private readonly Dictionary<(string lname, FunctionScope scope), (string name, FunctionTiming timing, FunctionCallback callback)> Callbacks
-            = new Dictionary<(string, FunctionScope), (string, FunctionTiming, FunctionCallback)>();
-        internal readonly Dictionary<string, string> Extras = new Dictionary<string, string>();
+        protected readonly Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks = new Dictionary<(string, FunctionScope), FunctionSlot>();
+        protected readonly Dictionary<string, string> Extras = new Dictionary<string, string>();
+
+        public event EventHandler<ValidateEventArgs>? Validate;
+
+        public static bool FunctionExists(RollData data, string name, FunctionScope scope)
+        {
+            return data.FunctionRegistry.Contains(name, scope)
+                || data.Config.FunctionRegistry.Contains(name, scope)
+                || data.Config.BuiltinFunctionRegistry.Contains(name, scope);
+        }
+
+        public static bool ExtraExists(RollData data, string name, FunctionScope scope)
+        {
+            if (scope == FunctionScope.All || scope == FunctionScope.Global)
+            {
+                throw new ArgumentException("Scope cannot be All or Global", nameof(scope));
+            }
+
+            return data.FunctionRegistry.ContainsExtra(name, scope)
+                || data.Config.FunctionRegistry.ContainsExtra(name, scope)
+                || data.Config.BuiltinFunctionRegistry.ContainsExtra(name, scope);
+        }
+
+        public static FunctionSlot GetFunction(RollData data, string name, FunctionScope scope)
+        {
+            if (scope == FunctionScope.All || scope == FunctionScope.Roll)
+            {
+                throw new ArgumentException("Scope cannot be All or Roll", nameof(scope));
+            }
+
+            var lname = name.ToLowerInvariant();
+
+            if (data.FunctionRegistry.Contains(lname, scope))
+            {
+                return data.FunctionRegistry.Callbacks[(lname, scope)];
+            }
+
+            if (data.Config.FunctionRegistry.Contains(lname, scope))
+            {
+                return data.Config.FunctionRegistry.Callbacks[(lname, scope)];
+            }
+
+            if (data.Config.BuiltinFunctionRegistry.Contains(lname, scope))
+            {
+                return data.Config.BuiltinFunctionRegistry.Callbacks[(lname, scope)];
+            }
+
+            throw new KeyNotFoundException($"No registered function matches the name and scope ({name}, FunctionScope.{scope})");
+        }
+
+        public static FunctionSlot GetExtra(RollData data, string name, FunctionScope scope)
+        {
+            if (scope == FunctionScope.All || scope == FunctionScope.Roll || scope == FunctionScope.Global)
+            {
+                throw new ArgumentException("Scope cannot be All, Roll, or Global", nameof(scope));
+            }
+
+            var lname = name.ToLowerInvariant();
+
+            if (data.FunctionRegistry.ContainsExtra(lname, scope))
+            {
+                return data.FunctionRegistry.Callbacks[(data.FunctionRegistry.Extras[lname], scope)];
+            }
+
+            if (data.Config.FunctionRegistry.ContainsExtra(name, scope))
+            {
+                return data.Config.FunctionRegistry.Callbacks[(data.Config.FunctionRegistry.Extras[lname], scope)];
+            }
+
+            if (data.Config.BuiltinFunctionRegistry.ContainsExtra(name, scope))
+            {
+                return data.Config.BuiltinFunctionRegistry.Callbacks[(data.Config.BuiltinFunctionRegistry.Extras[lname], scope)];
+            }
+
+            throw new KeyNotFoundException($"No registered extra matches the name and scope ({name}, FunctionScope.{scope})");
+        }
+
+        /// <summary>
+        /// Retrieve all extras registered for the given scope in descending order by string length
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        internal static List<string> GetAllExtras(RollData data, FunctionScope scope)
+        {
+            var extras = new List<string>();
+
+            extras.AddRange(data.FunctionRegistry.Extras.Where(e => data.FunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
+            extras.AddRange(data.Config.FunctionRegistry.Extras.Where(e => data.Config.FunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
+            extras.AddRange(data.Config.BuiltinFunctionRegistry.Extras.Where(e => data.Config.BuiltinFunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
+
+            return extras.Distinct().OrderByDescending(e => e.Length).ToList();
+        }
+
+        /// <summary>
+        /// Fire the Validate event on all registries associated with this roll.
+        /// An event handler may throw an exception on validation failure to indicate an invalid set of function calls.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="eventArgs"></param>
+        internal static void FireValidateEvent(RollData data, ValidateEventArgs eventArgs)
+        {
+            data.FunctionRegistry.Validate?.Invoke(data.FunctionRegistry, eventArgs);
+            data.Config.FunctionRegistry.Validate?.Invoke(data.Config.FunctionRegistry, eventArgs);
+            data.Config.BuiltinFunctionRegistry.Validate?.Invoke(data.Config.BuiltinFunctionRegistry, eventArgs);
+        }
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
@@ -37,48 +141,7 @@ namespace Dice
                     }
 
                     var callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback));
-                    var lname = attr.Name.ToLowerInvariant();
-
-                    switch (attr.Scope)
-                    {
-                        case FunctionScope.All:
-                            if (Contains(lname, FunctionScope.Global) || Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, FunctionScope.Global), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
-                            break;
-                        case FunctionScope.Roll:
-                            if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
-                            break;
-                        default:
-                            if (Contains(lname, attr.Scope))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
-                            break;
-                    }
-
-                    if (attr.Extra != null)
-                    {
-                        if (Extras.ContainsKey(attr.Extra.ToLowerInvariant()))
-                        {
-                            throw new InvalidOperationException("An extra with the same name has already been registered");
-                        }
-
-                        Extras[attr.Extra.ToLowerInvariant()] = lname;
-                    }
+                    RegisterFunction(attr.Name, attr.Extra, callback, attr.Scope, attr.Timing, attr.Behavior);
                 }
             }
         }
@@ -118,48 +181,7 @@ namespace Dice
                         callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback), obj);
                     }
 
-                    var lname = attr.Name.ToLowerInvariant();
-
-                    switch (attr.Scope)
-                    {
-                        case FunctionScope.All:
-                            if (Contains(lname, FunctionScope.Global) || Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, FunctionScope.Global), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
-                            break;
-                        case FunctionScope.Roll:
-                            if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, FunctionScope.Basic), (attr.Name, attr.Timing, callback));
-                            Callbacks.Add((lname, FunctionScope.Group), (attr.Name, attr.Timing, callback));
-                            break;
-                        default:
-                            if (Contains(lname, attr.Scope))
-                            {
-                                throw new InvalidOperationException("A function with the same name and scope has already been registered");
-                            }
-
-                            Callbacks.Add((lname, attr.Scope), (attr.Name, attr.Timing, callback));
-                            break;
-                    }
-
-                    if (attr.Extra != null)
-                    {
-                        if (Extras.ContainsKey(attr.Extra.ToLowerInvariant()))
-                        {
-                            throw new InvalidOperationException("An extra with the same name has already been registered");
-                        }
-
-                        Extras[attr.Extra.ToLowerInvariant()] = lname;
-                    }
+                    RegisterFunction(attr.Name, attr.Extra, callback, attr.Scope, attr.Timing, attr.Behavior);
                 }
             }
         }
@@ -171,7 +193,7 @@ namespace Dice
         /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
         public void RegisterFunction(string name, FunctionCallback callback)
         {
-            RegisterFunction(name, callback, FunctionScope.Global, FunctionTiming.Last);
+            RegisterFunction(name, null, callback, FunctionScope.Global, FunctionTiming.Last, FunctionBehavior.ExecuteSequentially);
         }
 
         /// <summary>
@@ -182,7 +204,7 @@ namespace Dice
         /// <param name="scope">The scope of the function.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope)
         {
-            RegisterFunction(name, callback, scope, FunctionTiming.Last);
+            RegisterFunction(name, null, callback, scope, FunctionTiming.Last, FunctionBehavior.ExecuteSequentially);
         }
 
         /// <summary>
@@ -193,6 +215,21 @@ namespace Dice
         /// <param name="scope">The scope of the function.</param>
         /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope, FunctionTiming timing)
+        {
+            RegisterFunction(name, null, callback, scope, timing, FunctionBehavior.ExecuteSequentially);
+        }
+
+        /// <summary>
+        /// Registers the specified callback to the given name, scope, and timing.
+        /// </summary>
+        /// <param name="name">Function name to register. Function names are case-insensitive.</param>
+        /// <param name="extra">Extra name to register for the function. Extra names are case-insensitive. Ignored when registering a function on global scope.</param>
+        /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
+        /// <param name="scope">The scope of the function.</param>
+        /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
+        /// <param name="behavior">How the function behaves when multiples of it are specified on the same roll. Ignored for global functions.</param>
+        /// <remarks>When overriding in a subclass, you will need to call the parent method for registration to fully succeed.</remarks>
+        public virtual void RegisterFunction(string name, string? extra, FunctionCallback callback, FunctionScope scope, FunctionTiming timing, FunctionBehavior behavior)
         {
             if (name == null)
             {
@@ -205,6 +242,13 @@ namespace Dice
             }
 
             var lname = name.ToLowerInvariant();
+            var slot = new FunctionSlot()
+            {
+                Name = name,
+                Timing = timing,
+                Behavior = behavior,
+                Callback = callback
+            };
 
             switch (scope)
             {
@@ -214,9 +258,9 @@ namespace Dice
                         throw new InvalidOperationException("A function with the same name and scope has already been registered");
                     }
 
-                    Callbacks.Add((lname, FunctionScope.Global), (name, timing, callback));
-                    Callbacks.Add((lname, FunctionScope.Basic), (name, timing, callback));
-                    Callbacks.Add((lname, FunctionScope.Group), (name, timing, callback));
+                    Callbacks.Add((lname, FunctionScope.Global), slot);
+                    Callbacks.Add((lname, FunctionScope.Basic), slot);
+                    Callbacks.Add((lname, FunctionScope.Group), slot);
                     break;
                 case FunctionScope.Roll:
                     if (Contains(lname, FunctionScope.Basic) || Contains(lname, FunctionScope.Group))
@@ -224,8 +268,8 @@ namespace Dice
                         throw new InvalidOperationException("A function with the same name and scope has already been registered");
                     }
 
-                    Callbacks.Add((lname, FunctionScope.Basic), (name, timing, callback));
-                    Callbacks.Add((lname, FunctionScope.Group), (name, timing, callback));
+                    Callbacks.Add((lname, FunctionScope.Basic), slot);
+                    Callbacks.Add((lname, FunctionScope.Group), slot);
                     break;
                 default:
                     if (Contains(lname, scope))
@@ -233,8 +277,19 @@ namespace Dice
                         throw new InvalidOperationException("A function with the same name and scope has already been registered");
                     }
 
-                    Callbacks.Add((lname, scope), (name, timing, callback));
+                    Callbacks.Add((lname, scope), slot);
                     break;
+            }
+
+            if (extra != null && scope != FunctionScope.Global)
+            {
+                var lextra = extra.ToLowerInvariant();
+                if (Extras.ContainsKey(lextra) && Extras[lextra] != lname)
+                {
+                    throw new InvalidOperationException("An extra with the same name has already been registered");
+                }
+
+                Extras[lextra] = lname;
             }
         }
 
@@ -243,6 +298,7 @@ namespace Dice
         /// </summary>
         /// <param name="name"></param>
         /// <param name="scope"></param>
+        /// <remarks>When overriding in a subclass, you will need to call the parent method for removal to fully succeed.</remarks>
         public void Remove(string name, FunctionScope scope)
         {
             if (name == null)
@@ -250,24 +306,67 @@ namespace Dice
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (scope == FunctionScope.All || scope == FunctionScope.Roll)
+            if (scope == FunctionScope.All)
             {
-                throw new ArgumentException("Cannot remove with scope All or Roll, specify individual scopes.", nameof(scope));
+                Remove(name, FunctionScope.Global);
+                Remove(name, FunctionScope.Basic);
+                Remove(name, FunctionScope.Group);
+                return;
+            }
+            else if (scope == FunctionScope.Roll)
+            {
+                Remove(name, FunctionScope.Basic);
+                Remove(name, FunctionScope.Group);
+                return;
             }
 
             var lname = name.ToLowerInvariant();
 
             Callbacks.Remove((lname, scope));
+
+            // if the last roll callback for this name was removed, also remove any extra for it
+            if (scope != FunctionScope.Group && !Contains(name, FunctionScope.Roll))
+            {
+                var toRemove = Extras.Where(kv => kv.Value == lname).Select(kv => kv.Key).ToList();
+                foreach (var extra in toRemove)
+                {
+                    Extras.Remove(extra);
+                }
+            }
         }
 
-        internal (string name, FunctionTiming timing, FunctionCallback callback) Get(string lname, FunctionScope scope)
+        /// <summary>
+        /// Controls whether or not this particular registry contains a callback with the given name and scope
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="scope">Scope to check; if All or Roll this function will return true if a callback is defined for any of their encompassing scopes</param>
+        /// <returns></returns>
+        protected internal bool Contains(string name, FunctionScope scope)
         {
-            return Callbacks[(lname.ToLowerInvariant(), scope)];
+            return scope switch
+            {
+                FunctionScope.All => Contains(name, FunctionScope.Global) || Contains(name, FunctionScope.Basic) || Contains(name, FunctionScope.Group),
+                FunctionScope.Roll => Contains(name, FunctionScope.Basic) || Contains(name, FunctionScope.Group),
+                _ => Callbacks.ContainsKey((name.ToLowerInvariant(), scope))
+            };
         }
 
-        internal bool Contains(string name, FunctionScope scope)
+        /// <summary>
+        /// Controls whether or not this particular registry contains an extra with the given name and scope.
+        /// This always returns false when given a scope of All or Global
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="scope">Scope to check; if Roll this function will return true if an extra is defined for either Basic or Group</param>
+        /// <returns></returns>
+        protected internal bool ContainsExtra(string name, FunctionScope scope)
         {
-            return Callbacks.ContainsKey((name.ToLowerInvariant(), scope));
+            return scope switch
+            {
+                FunctionScope.All => false,
+                FunctionScope.Global => false,
+                FunctionScope.Roll => ContainsExtra(name, FunctionScope.Basic) || ContainsExtra(name, FunctionScope.Group),
+                _ => Extras.ContainsKey(name.ToLowerInvariant()) && Contains(Extras[name.ToLowerInvariant()], scope)
+            };
         }
     }
 }

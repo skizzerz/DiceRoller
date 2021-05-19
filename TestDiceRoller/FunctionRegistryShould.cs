@@ -78,14 +78,6 @@ namespace TestDiceRoller
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ThrowArgumentException_WhenRemovingBuiltinFunction()
-        {
-            var registry = new FunctionRegistry();
-            registry.Remove("reroll", FunctionScope.Basic);
-        }
-
-        [TestMethod]
         public void Successfully_RemoveFunction()
         {
             var registry = new FunctionRegistry();
@@ -103,21 +95,28 @@ namespace TestDiceRoller
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ThrowArgumentException_WhenRemoveAll()
+        public void Successfully_RemoveAll()
         {
             var registry = new FunctionRegistry();
             registry.RegisterFunction("a", Invalid2.A, FunctionScope.All);
             registry.Remove("a", FunctionScope.All);
+
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Basic));
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Group));
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Global));
+
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ThrowArgumentException_WhenRemoveRoll()
+        public void Successfully_RemoveRoll()
         {
             var registry = new FunctionRegistry();
             registry.RegisterFunction("a", Invalid2.A, FunctionScope.All);
             registry.Remove("a", FunctionScope.Roll);
+
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Basic));
+            Assert.IsFalse(registry.Contains("a", FunctionScope.Group));
+            Assert.IsTrue(registry.Contains("a", FunctionScope.Global));
         }
 
         [TestMethod]

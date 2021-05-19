@@ -9,21 +9,25 @@ namespace Dice.Builtins
 {
     public static class ExplodeFunctions
     {
-        [DiceFunctionPrecondition(FunctionTiming.Explode)]
-        public static void ValidateExplode(IReadOnlyList<FunctionContext> contexts)
+        public static void ValidateExplode(object sender, ValidateEventArgs e)
         {
-            if (contexts.Select(c => c.Name).Distinct().Count() > 1)
+            if (e.Timing != FunctionTiming.Explode)
+            {
+                return;
+            }
+
+            if (e.Contexts.Select(c => c.Name).Distinct().Count() > 1)
             {
                 throw new DiceException(DiceErrorCode.MixedExplodeType);
             }
 
-            if (contexts.Any(c => c.Arguments.Count == 0) && contexts.Any(c => c.Arguments.Count > 0))
+            if (e.Contexts.Any(c => c.Arguments.Count == 0) && e.Contexts.Any(c => c.Arguments.Count > 0))
             {
                 throw new DiceException(DiceErrorCode.MixedExplodeComp);
             }
         }
 
-        [DiceFunction("explode", "!e", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("explode", "!e", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
         public static void Explode(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -36,7 +40,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: false);
         }
 
-        [DiceFunction("compound", "!c", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("compound", "!c", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
         public static void Compound(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -49,7 +53,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: true, penetrate: false);
         }
 
-        [DiceFunction("penetrate", "!p", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("penetrate", "!p", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
         public static void Penetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -62,7 +66,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: true);
         }
 
-        [DiceFunction("compoundPenetrate", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("compoundPenetrate", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
         public static void CompoundPenetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();

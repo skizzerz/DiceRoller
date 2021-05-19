@@ -40,6 +40,12 @@ namespace Dice
         public FunctionTiming Timing { get; set; } = FunctionTiming.Last;
 
         /// <summary>
+        /// When multiple of the same function is specified for a roll function,
+        /// this controls how we execute the function.
+        /// </summary>
+        public FunctionBehavior Behavior { get; set; } = FunctionBehavior.ExecuteSequentially;
+
+        /// <summary>
         /// Declare this method as a dice function
         /// </summary>
         /// <param name="name">Function name</param>

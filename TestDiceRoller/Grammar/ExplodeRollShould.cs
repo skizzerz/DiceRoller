@@ -118,5 +118,65 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("1d20.compoundPenetrate(=20)", Explode20Conf, 3, "1d20.compoundPenetrate(=20) => 44! => 44");
         }
+
+        [TestMethod]
+        public void ThrowMixedExplodeType_WhenMixingExplodeTypes_ExtraExtra()
+        {
+            EvaluateRoll("1d20!e!p", Explode20Conf, DiceErrorCode.MixedExplodeType);
+        }
+
+        [TestMethod]
+        public void ThrowMixedExplodeType_WhenMixingExplodeTypes_ExtraFunction()
+        {
+            EvaluateRoll("1d20!c.compoundPenetrate()", Explode20Conf, DiceErrorCode.MixedExplodeType);
+        }
+
+        [TestMethod]
+        public void ThrowMixedExplodeType_WhenMixingExplodeTypes_FunctionFunction()
+        {
+            EvaluateRoll("1d20.explode().compound()", Explode20Conf, DiceErrorCode.MixedExplodeType);
+        }
+
+        [TestMethod]
+        public void ThrowMixedExplodeComp_WhenMixingExplodeComparisons_ExtraExtra()
+        {
+            EvaluateRoll("1d20!e!e=20", Explode20Conf, DiceErrorCode.MixedExplodeComp);
+        }
+
+        [TestMethod]
+        public void ThrowMixedExplodeComp_WhenMixingExplodeComparisons_ExtraFunction()
+        {
+            EvaluateRoll("1d20!e.explode(=20)", Explode20Conf, DiceErrorCode.MixedExplodeComp);
+        }
+
+        [TestMethod]
+        public void ThrowMixedExplodeComp_WhenMixingExplodeComparisons_FunctionFunction()
+        {
+            EvaluateRoll("1d20.explode().explode(=20)", Explode20Conf, DiceErrorCode.MixedExplodeComp);
+        }
+
+        [TestMethod]
+        public void Successfully_CombineConditions_Function()
+        {
+            EvaluateRoll("1d20.explode(=6, =20)", Explode20Conf, 4, "1d20.explode(=6, =20) => 20! + 20! + 6 + 1! => 47");
+        }
+
+        [TestMethod]
+        public void Successfully_CombineConditions_ExtraExtra()
+        {
+            EvaluateRoll("1d20!e6!e20", Explode20Conf, 4, "1d20.explode(=6, =20) => 20! + 20! + 6 + 1! => 47");
+        }
+
+        [TestMethod]
+        public void Successfully_CombineConditions_ExtraFunction()
+        {
+            EvaluateRoll("1d20!e6.explode(=20)", Explode20Conf, 4, "1d20.explode(=6, =20) => 20! + 20! + 6 + 1! => 47");
+        }
+
+        [TestMethod]
+        public void Successfully_CombineConditions_FunctionFunction()
+        {
+            EvaluateRoll("1d20.explode(=6).explode(=20)", Explode20Conf, 4, "1d20.explode(=6, =20) => 20! + 20! + 6 + 1! => 47");
+        }
     }
 }

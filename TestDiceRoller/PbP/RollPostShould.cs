@@ -76,6 +76,23 @@ namespace TestDiceRoller.PbP
         }
 
         [TestMethod]
+        public void AdvantageCriticalBug()
+        {
+            // Ref: https://www.dndbeyond.com/forums/d-d-beyond-general/play-by-post/2985-rolling-dice?page=81#c1948
+            // 2nd set of rolls in that post, crit was rolled on advantage but crit damage was not rolled
+            var post = new RollPost();
+            var config = new RollerConfig() { GetRandomBytes = GetRNG(18, 5, 5, 7, 9, 19, 3, 3, 0, 0) };
+            post.AddRoll("1d20.critical(>=19)", config);
+            post.AddRoll("if([roll:-1:critical], =0, 1d8ro<=2, 2{1d8ro<=2}.expand())", config);
+            post.AddRoll("1d20.advantage().critical(>=19)", config);
+            post.AddRoll("if([roll:-1:critical], =0, 1d8ro<=2, 2{1d8ro<=2}.expand())", config);
+            post.Validate();
+
+            Assert.AreEqual("1d20.advantage().critical(>=19) => 10* + 20! => 20", post.Current[2].ToString());
+            Assert.AreEqual("if([roll:-1:critical], =0, 1d8.rerollOnce(<=2), 2{1d8.rerollOnce(<=2)}.expand()) => ((4) + (1!* + 1!)) => 5", post.Current[3].ToString());
+        }
+
+        [TestMethod]
         public void Successfully_Validate_WhenNewPost()
         {
             var post = new RollPost();

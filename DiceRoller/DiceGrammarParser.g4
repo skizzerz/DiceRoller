@@ -1,5 +1,5 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.9.2-complete.jar -package Dice.Grammar -o Grammar DiceGrammarLexer.g4 DiceGrammarParser.g4
+ * For example: java -jar C:\antlr\antlr-4.9.2-complete.jar -package Dice.Grammar -o Grammar/Generated DiceGrammarLexer.g4 DiceGrammarParser.g4
  */
 
 parser grammar DiceGrammarParser;
@@ -27,8 +27,8 @@ mult_expr
 
 roll_expr
     : (unary_expr)? T_LBRACE grouped_roll_inner T_RBRACE (grouped_extras)* (group_function)* # RollGroup
-    | (unary_expr)? T_D number_expr (basic_extras)* (basic_function)* # RollBasic
-    | (unary_expr)? T_D T_FUDGE (unary_expr)? (basic_extras)* (basic_function)* # RollFudge
+    | (unary_expr)? T_DIE_BASIC number_expr (basic_extras)* (basic_function)* # RollBasic
+    | (unary_expr)? T_DIE_FUDGE (number_expr)? (basic_extras)* (basic_function)* # RollFudge
     | func_expr # RollNone
     ;
 
@@ -54,16 +54,15 @@ number
     ;
 
 global_function
-    : T_GLOBAL_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
-    | T_D AB_FUNCTION (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunctionDPrefix
+    : T_FUNCTION T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GlobalFunction
     ;
 
 group_function
-    : T_DOT_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
+    : T_DOT T_FUNCTION T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # GroupFunction
     ;
 
 basic_function
-    : T_DOT_IDENTIFIER T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
+    : T_DOT T_FUNCTION T_LPAREN (function_arg (T_COMMA function_arg)*)? T_RPAREN # BasicFunction
     ;
 
 function_arg
@@ -77,11 +76,11 @@ grouped_roll_inner
     ;
 
 grouped_extras
-    : T_EXTRA_IDENTIFIER (compare_expr)? # GroupExtra
+    : T_EXTRAS (compare_expr)? # GroupExtra
     ;
 
 basic_extras
-    : T_EXTRA_IDENTIFIER (compare_expr)? # BasicExtra
+    : T_EXTRAS (compare_expr)? # BasicExtra
     ;
 
 compare_expr

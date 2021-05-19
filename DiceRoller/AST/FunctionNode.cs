@@ -19,8 +19,7 @@ namespace Dice.AST
         /// </summary>
         public FunctionContext Context { get; private set; }
 
-        internal FunctionTiming Timing;
-        private readonly FunctionCallback Function;
+        internal readonly FunctionSlot Slot;
 
         public override IReadOnlyList<DieResult> Values
         {
@@ -33,16 +32,8 @@ namespace Dice.AST
         {
             try
             {
-                if (data.FunctionRegistry.Contains(name, scope))
-                {
-                    (name, Timing, Function) = data.FunctionRegistry.Get(name, scope);
-                }
-                else
-                {
-                    (name, Timing, Function) = data.Config.FunctionRegistry.Get(name, scope);
-                }
-
-                Context = new FunctionContext(scope, name, arguments, data);
+                Slot = FunctionRegistry.GetFunction(data, name, scope);
+                Context = new FunctionContext(scope, Slot.Name, arguments, data);
                 _values = new List<DieResult>();
             }
             catch (KeyNotFoundException)
@@ -103,7 +94,7 @@ namespace Dice.AST
         private long CallFunction()
         {
             Context.NumRolls = 0;
-            Function(Context);
+            Slot.Callback(Context);
             Value = Context.Value;
             ValueType = Context.ValueType;
             _values.Clear();

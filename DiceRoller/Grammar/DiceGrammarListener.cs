@@ -191,7 +191,7 @@ namespace Dice.Grammar
             args.Reverse();
 
             // check for a built-in function
-            var fname = context.T_DOT_IDENTIFIER().GetText().TrimStart('.');
+            var fname = context.T_FUNCTION().GetText();
             var lname = fname.ToLower();
             switch (lname)
             {
@@ -362,14 +362,21 @@ namespace Dice.Grammar
         {
             List<DiceAST> extras = new List<DiceAST>();
             DiceAST numSides, numDice;
-            // if the roll looks like d(...) *and* a global function named "d" with arity 1 is defined,
-            // we'll call that function instead of performing a bare roll. Otherwise we assume that
-            // a roll beginning with a bare "d" is just defaulting to rolling 1 die.
-            bool maybeFunctionCall = false;
 
-            for (int i = 0; i < context.basic_extras().Length + context.basic_function().Length; i++)
+            for (int i = 0; i < context.basic_function().Length; i++)
             {
                 extras.Add(Stack.Pop());
+            }
+
+            for (int i = 0; i < context.basic_extras().Length; i++)
+            {
+                do
+                {
+                    extras.Add(Stack.Pop());
+                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "BasicExtra");
+
+                // pop the SentinelNode
+                Stack.Pop();
             }
 
             extras.Reverse();
@@ -378,17 +385,10 @@ namespace Dice.Grammar
             if (context.unary_expr() == null)
             {
                 numDice = new LiteralNode(1);
-                maybeFunctionCall = true;
             }
             else
             {
                 numDice = Stack.Pop();
-            }
-
-            if (extras.Count > 0)
-            {
-                // if the roll has extras, then it definitely cannot be a call to a global function
-                maybeFunctionCall = false;
             }
 
             var partial = new RollPartialNode(new RollNode(RollType.Normal, numDice, numSides));
@@ -421,15 +421,7 @@ namespace Dice.Grammar
                 }
             }
 
-            if (maybeFunctionCall && Data.Config.FunctionRegistry.Contains("d", FunctionScope.Global))
-            {
-                // we have a global function named d, so wire that up instead of a basic roll
-                Stack.Push(new FunctionNode(FunctionScope.Global, "d", new List<DiceAST> { numSides }, Data));
-            }
-            else
-            {
-                Stack.Push(partial.CreateRollNode());
-            }
+            Stack.Push(partial.CreateRollNode());
         }
 
         public override void ExitRollFudge([NotNull] DiceGrammarParser.RollFudgeContext context)
@@ -439,18 +431,29 @@ namespace Dice.Grammar
             DiceAST? numSides = null;
             DiceAST numDice;
 
-            for (int i = 0; i < context.basic_extras().Length + context.basic_function().Length; i++)
+            for (int i = 0; i < context.basic_function().Length; i++)
             {
                 extras.Add(Stack.Pop());
             }
 
+            for (int i = 0; i < context.basic_extras().Length; i++)
+            {
+                do
+                {
+                    extras.Add(Stack.Pop());
+                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "BasicExtra");
+
+                // pop the SentinelNode
+                Stack.Pop();
+            }
+
             extras.Reverse();
-            if (context.unary_expr(1) != null)
+            if (context.number_expr() != null)
             {
                 numSides = Stack.Pop();
             }
 
-            if (context.unary_expr(0) == null)
+            if (context.unary_expr() == null)
             {
                 numDice = new LiteralNode(1);
             }
@@ -503,10 +506,9 @@ namespace Dice.Grammar
 
             // get the extra's name. This may in fact be multiple extras smooshed together without arguments,
             // so check for that as well. If that is the case, arg above is only the argument for the final extra.
-            var fname = context.T_EXTRA_IDENTIFIER().GetText();
-            var extras = new List<string>(Data.FunctionRegistry.Extras.Keys);
-            extras.AddRange(Data.Config.FunctionRegistry.Extras.Keys);
-            extras = extras.Distinct().OrderByDescending(e => e.Length).ToList();
+            var fname = context.T_EXTRAS().GetText();
+            var extras = FunctionRegistry.GetAllExtras(Data, FunctionScope.Basic);
+            Stack.Push(new SentinelNode("BasicExtra"));
 
             do
             {
@@ -517,23 +519,15 @@ namespace Dice.Grammar
                     if (lname.StartsWith(extra))
                     {
                         fname = fname.Substring(extra.Length);
-                        string resolvedName;
-                        if (Data.FunctionRegistry.Extras.ContainsKey(extra))
-                        {
-                            resolvedName = Data.FunctionRegistry.Extras[extra];
-                        }
-                        else
-                        {
-                            resolvedName = Data.Config.FunctionRegistry.Extras[extra];
-                        }
+                        var resolved = FunctionRegistry.GetExtra(Data, extra, FunctionScope.Basic);
 
                         if (fname.Length == 0)
                         {
-                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolvedName, args, Data));
+                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolved.Name, args, Data));
                         }
                         else
                         {
-                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolvedName, new List<DiceAST>(), Data));
+                            Stack.Push(new FunctionNode(FunctionScope.Basic, resolved.Name, new List<DiceAST>(), Data));
                         }
 
                         break;
@@ -563,7 +557,7 @@ namespace Dice.Grammar
             args.Reverse();
 
             // check for a built-in function
-            var fname = context.T_DOT_IDENTIFIER().GetText().TrimStart('.');
+            var fname = context.T_FUNCTION().GetText();
             var lname = fname.ToLowerInvariant();
 
             switch (lname)
@@ -767,22 +761,7 @@ namespace Dice.Grammar
             }
 
             args.Reverse();
-            var fname = context.T_GLOBAL_IDENTIFIER().GetText();
-            Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
-        }
-
-        public override void ExitGlobalFunctionDPrefix([NotNull] DiceGrammarParser.GlobalFunctionDPrefixContext context)
-        {
-            // same as ExitGlobalFunction, except that we need to do a bit more work to get at the function name
-            List<DiceAST> args = new List<DiceAST>();
-
-            for (int i = 0; i < context.function_arg().Length; i++)
-            {
-                args.Add(Stack.Pop());
-            }
-
-            args.Reverse();
-            var fname = "d" + context.AB_FUNCTION().GetText().TrimEnd('(');
+            var fname = context.T_FUNCTION().GetText();
             Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
         }
 

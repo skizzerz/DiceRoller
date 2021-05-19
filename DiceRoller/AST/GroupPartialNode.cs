@@ -166,10 +166,49 @@ namespace Dice.AST
 
         private void AddFunctionNodes(FunctionTiming timing, ref DiceAST node)
         {
-            foreach (var fn in Functions.Where(f => f.Timing == timing))
+            if (Functions.Count == 0)
             {
-                fn.Context.Expression = node;
-                node = fn;
+                return;
+            }
+
+            // RollData instance is the same for every function, so just grab an arbitrary one
+            var data = Functions.First().Context.Data;
+            var needsCombining = new HashSet<string>(
+                Functions.Where(f => f.Slot.Timing == timing && f.Slot.Behavior == FunctionBehavior.CombineArguments)
+                    .Select(f => f.Slot.Name));
+            var combined = new Dictionary<string, FunctionNode>();
+            var finishedCombining = new HashSet<string>();
+
+            foreach (var fn in needsCombining)
+            {
+                var combinedArgs = new List<DiceAST>();
+                foreach (var toCombine in Functions.Where(f => f.Slot.Timing == timing && f.Slot.Name == fn))
+                {
+                    combinedArgs.AddRange(toCombine.Context.Arguments);
+                }
+
+                combined[fn] = new FunctionNode(FunctionScope.Group, fn, combinedArgs, data);
+            }
+
+            foreach (var fn in Functions.Where(f => f.Slot.Timing == timing))
+            {
+                if (needsCombining.Contains(fn.Slot.Name))
+                {
+                    // check if we've already added the combined function
+                    if (finishedCombining.Contains(fn.Slot.Name))
+                    {
+                        continue;
+                    }
+
+                    combined[fn.Slot.Name].Context.Expression = node;
+                    node = combined[fn.Slot.Name];
+                    finishedCombining.Add(fn.Slot.Name);
+                }
+                else
+                {
+                    fn.Context.Expression = node;
+                    node = fn;
+                }
             }
         }
 

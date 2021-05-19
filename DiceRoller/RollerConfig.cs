@@ -73,16 +73,19 @@ namespace Dice
         public MacroRegistry MacroRegistry { get; set; } = new MacroRegistry();
 
         /// <summary>
-        /// Contains the FunctionRegistry that maps all known functions to their callbacks.
+        /// Contains the FunctionRegistry that maps all known user-defined functions to their callbacks.
+        /// Callbacks added to this registry will overwrite/shadow builtin functions.
         /// </summary>
         public FunctionRegistry FunctionRegistry { get; set; } = new FunctionRegistry();
 
+        /// <summary>
+        /// Contains the FunctionRegistry that maps all builtin functions to their callbacks.
+        /// Callbacks cannot be added to this registry, but they can be removed to unmap them.
+        /// </summary>
+        public BuiltinFunctionRegistry BuiltinFunctionRegistry { get; } = new BuiltinFunctionRegistry();
+
         public RollerConfig()
         {
-            FunctionRegistry.RegisterType(typeof(ConditionalFunctions));
-            FunctionRegistry.RegisterType(typeof(ExplodeFunctions));
-            FunctionRegistry.RegisterType(typeof(MathFunctions));
-            FunctionRegistry.RegisterType(typeof(OutputFunctions));
             MacroRegistry.RegisterType(typeof(BuiltinMacros));
         }
     }

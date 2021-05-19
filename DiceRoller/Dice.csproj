@@ -56,4 +56,7 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <PackagePath></PackagePath>
       </None>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Grammar\Generated\" />
+    </ItemGroup>
 </Project>

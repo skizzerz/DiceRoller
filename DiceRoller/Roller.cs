@@ -281,7 +281,7 @@ namespace Dice
         {
             // parse diceExpr
             var inputStream = new AntlrInputStream(diceExpr);
-            var lexer = new DiceGrammarLexer(inputStream);
+            var lexer = new DiceGrammarLexer(inputStream) { RollData = data };
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new DiceGrammarParser(tokenStream);
             var walker = new ParseTreeWalker();
