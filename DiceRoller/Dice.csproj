@@ -3,9 +3,9 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
         <PackageId>DiceRoller</PackageId>
-        <Version>4.2.0</Version>
+        <Version>4.2.0-alpha</Version>
         <Authors>Ryan Schmidt</Authors>
-        <Company>Ryan Schmidt</Company>
+        <Company>SkizNet</Company>
         <Product>DiceRoller</Product>
         <Description>Extensible and well-documented dice roller with a robust set of features. Excellent for play-by-post forums, virtual tabletops, or for integrating into character sheets or encounter managers.</Description>
         <Copyright>Copyright ©2015-2021 Ryan Schmidt</Copyright>
