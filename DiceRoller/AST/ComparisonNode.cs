@@ -55,6 +55,16 @@ namespace Dice.AST
             }
         }
 
+        internal ComparisonNode(IEnumerable<Comparison> comparisons)
+        {
+            _comparisons = new List<Comparison>(comparisons);
+
+            if (_comparisons.Count == 0)
+            {
+                throw new ArgumentException("Must have at least one comparison when aggregating ComparisonNodes");
+            }
+        }
+
         public override string ToString()
         {
             var comps = new List<string>();

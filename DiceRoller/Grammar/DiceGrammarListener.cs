@@ -116,11 +116,7 @@ namespace Dice.Grammar
 
             foreach (var node in groupNodes)
             {
-                if (node is RerollNode)
-                {
-                    partial.AddReroll((RerollNode)node);
-                }
-                else if (node is KeepNode)
+                if (node is KeepNode)
                 {
                     partial.AddKeep((KeepNode)node);
                 }
@@ -195,50 +191,6 @@ namespace Dice.Grammar
             var lname = fname.ToLower();
             switch (lname)
             {
-                case "reroll":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(0, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
-                case "rerolln":
-                    if (args.Count < 2)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (!(args[0] is LiteralNode || args[0] is MacroNode))
-                    {
-                        throw new DiceException(DiceErrorCode.BadRerollCount, fname);
-                    }
-
-                    if (args.Skip(1).OfType<ComparisonNode>().Count() < args.Count - 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(-1, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
-                    break;
-                case "rerollonce":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(1, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
                 case "keephighest":
                     if (args.Count != 1)
                     {
@@ -395,11 +347,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is RerollNode)
-                {
-                    partial.AddReroll((RerollNode)node);
-                }
-                else if (node is KeepNode)
+                if (node is KeepNode)
                 {
                     partial.AddKeep((KeepNode)node);
                 }
@@ -466,11 +414,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is RerollNode)
-                {
-                    partial.AddReroll((RerollNode)node);
-                }
-                else if (node is KeepNode)
+                if (node is KeepNode)
                 {
                     partial.AddKeep((KeepNode)node);
                 }
@@ -562,50 +506,6 @@ namespace Dice.Grammar
 
             switch (lname)
             {
-                case "reroll":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(0, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
-                case "rerolln":
-                    if (args.Count < 2)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (!(args[0] is LiteralNode || args[0] is MacroNode))
-                    {
-                        throw new DiceException(DiceErrorCode.BadRerollCount, fname);
-                    }
-
-                    if (args.Skip(1).OfType<ComparisonNode>().Count() < args.Count - 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(-1, new ComparisonNode(args.Skip(1).Cast<ComparisonNode>()), args[0]));
-                    break;
-                case "rerollonce":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new RerollNode(1, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
                 case "keephighest":
                     if (args.Count != 1)
                     {

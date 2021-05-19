@@ -15,7 +15,6 @@ namespace Dice.AST
         public RollNode Roll { get; internal set; }
         public List<KeepNode> Keep { get; private set; }
         public SortNode? Sort { get; private set; }
-        public RerollNode? RerollNode { get; private set; }
         public CritNode? Critical { get; private set; }
         public SuccessNode? Success { get; private set; }
         public List<FunctionNode> Functions { get; private set; }
@@ -29,7 +28,6 @@ namespace Dice.AST
             Roll = roll;
             Keep = new List<KeepNode>();
             Sort = null;
-            RerollNode = null;
             Critical = null;
             Success = null;
             Functions = new List<FunctionNode>();
@@ -40,11 +38,6 @@ namespace Dice.AST
         {
             var sb = new StringBuilder("RPARTIAL<<");
             sb.Append(Roll.ToString());
-
-            if (RerollNode != null)
-            {
-                sb.Append(RerollNode.ToString());
-            }
 
             if (Success != null)
             {
@@ -112,23 +105,6 @@ namespace Dice.AST
             Sort = sort;
         }
 
-        internal void AddReroll(RerollNode reroll)
-        {
-            if (RerollNode != null && RerollNode.MaxRerolls != reroll.MaxRerolls)
-            {
-                throw new DiceException(DiceErrorCode.MixedReroll);
-            }
-
-            if (RerollNode == null)
-            {
-                RerollNode = reroll;
-            }
-            else
-            {
-                RerollNode.Comparison.Add(reroll.Comparison);
-            }
-        }
-
         internal void AddCritical(CritNode crit)
         {
             if (Critical == null)
@@ -173,13 +149,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.Explode, ref roll);
             AddFunctionNodes(FunctionTiming.AfterExplode, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeReroll, ref roll);
-            
-            if (RerollNode != null)
-            {
-                RerollNode.Expression = roll;
-                roll = RerollNode;
-            }
-            
+            AddFunctionNodes(FunctionTiming.Reroll, ref roll);
             AddFunctionNodes(FunctionTiming.AfterReroll, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeKeep, ref roll);
             

@@ -38,7 +38,7 @@ namespace Dice
         /// The dice expression this function is attached to, or null
         /// if this is a global function call.
         /// </summary>
-        public DiceAST Expression { get; internal set; }
+        public DiceAST? Expression { get; internal set; }
 
         /// <summary>
         /// The result of this function call.
@@ -60,6 +60,16 @@ namespace Dice
         /// Number of extra rolls performed during function execution
         /// </summary>
         internal long NumRolls { get; set; }
+
+        /// <summary>
+        /// When evaluating, the root node of the AST
+        /// </summary>
+        internal DiceAST? Root { get; set; }
+
+        /// <summary>
+        /// When evaluating, the current evaluation depth as of the time of this function call
+        /// </summary>
+        internal int? Depth { get; set; }
         
         internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {

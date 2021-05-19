@@ -20,9 +20,6 @@ namespace Dice
         internal static readonly Dictionary<string, string> ReservedNames = new Dictionary<string, string>
         {
             // key = lowercased name, value = properly-cased name
-            { "reroll", "reroll" },
-            { "rerolln", "rerollN" },
-            { "rerollonce", "rerollOnce" },
             { "keephighest", "keepHighest" },
             { "keeplowest", "keepLowest" },
             { "drophighest", "dropHighest" },

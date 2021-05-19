@@ -20,9 +20,11 @@ namespace Dice.Builtins
 
             // roll functions
             RegisterType(typeof(ExplodeFunctions));
+            RegisterType(typeof(RerollFunctions));
 
             // validation handlers
             Validate += ExplodeFunctions.ValidateExplode;
+            Validate += RerollFunctions.ValidateReroll;
 
             // mark class as finished; users can remove functions but cannot add any
             _finalized = true;
@@ -39,7 +41,8 @@ namespace Dice.Builtins
         }
 
         /// <summary>
-        /// Removes all builtin functions matching the given scope
+        /// Removes all builtin functions matching the given scope.
+        /// This does not clear validation handlers
         /// </summary>
         /// <param name="scope"></param>
         public void Clear(FunctionScope scope)

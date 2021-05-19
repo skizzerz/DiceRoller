@@ -18,7 +18,7 @@ namespace Dice.Builtins
             }
 
             List<DieResult> values = new List<DieResult>();
-            context.Value = context.Expression.Value;
+            context.Value = context.Expression!.Value;
             context.ValueType = context.Expression.ValueType;
             var groupNode = (GroupNode)context.Expression.UnderlyingRollNode;
 

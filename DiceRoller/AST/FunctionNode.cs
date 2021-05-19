@@ -72,7 +72,7 @@ namespace Dice.AST
                 rolls += arg.Evaluate(data, root, depth + 1);
             }
 
-            rolls += CallFunction();
+            rolls += CallFunction(root, depth);
 
             return rolls;
         }
@@ -86,15 +86,19 @@ namespace Dice.AST
                 rolls += arg.Reroll(data, root, depth + 1);
             }
 
-            rolls += CallFunction();
+            rolls += CallFunction(root, depth);
 
             return rolls;
         }
 
-        private long CallFunction()
+        private long CallFunction(DiceAST root, int depth)
         {
             Context.NumRolls = 0;
+            Context.Root = root;
+            Context.Depth = depth;
             Slot.Callback(Context);
+            Context.Root = null;
+            Context.Depth = null;
             Value = Context.Value;
             ValueType = Context.ValueType;
             _values.Clear();

@@ -27,7 +27,7 @@ namespace Dice.Builtins
             }
         }
 
-        [DiceFunction("explode", "!e", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
+        [DiceFunction("explode", "!e", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
         public static void Explode(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -40,7 +40,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: false);
         }
 
-        [DiceFunction("compound", "!c", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
+        [DiceFunction("compound", "!c", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
         public static void Compound(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -53,7 +53,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: true, penetrate: false);
         }
 
-        [DiceFunction("penetrate", "!p", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
+        [DiceFunction("penetrate", "!p", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
         public static void Penetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -66,7 +66,7 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: true);
         }
 
-        [DiceFunction("compoundPenetrate", Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode, Behavior = FunctionBehavior.CombineArguments)]
+        [DiceFunction("compoundPenetrate", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
         public static void CompoundPenetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
@@ -100,7 +100,7 @@ namespace Dice.Builtins
             }
 
 
-            foreach (var die in context.Expression.Values)
+            foreach (var die in context.Expression!.Values)
             {
                 var accum = die;
 
