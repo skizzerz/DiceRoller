@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Dice;
@@ -42,9 +43,11 @@ namespace TestDiceRoller.AST
         [TestMethod]
         public void Successfully_IgnoreDroppedDice()
         {
-            var drop = new KeepNode(KeepType.DropLow, One) { Expression = _4d6 };
+            var data = Data(SuccessConf);
+            var drop = new FunctionNode(FunctionScope.Basic, "dropLowest", new List<DiceAST>() { One }, data);
+            drop.Context.Expression = _4d6;
             var node = new SuccessNode(greaterEqual5, equal1) { Expression = drop };
-            EvaluateNode(node, Data(SuccessConf), 4, "4d6.dropLowest(1).success(>=5).failure(=1) => 4 + $5 + 1* + $6 => 2 successes");
+            EvaluateNode(node, data, 4, "4d6.dropLowest(1).success(>=5).failure(=1) => 4 + $5 + 1* + $6 => 2 successes");
         }
     }
 }

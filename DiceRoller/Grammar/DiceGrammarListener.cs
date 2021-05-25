@@ -104,11 +104,23 @@ namespace Dice.Grammar
 
         public override void ExitRollGroup([NotNull] DiceGrammarParser.RollGroupContext context)
         {
-            // our stack looks like a GroupPartialNode followed by all group_extras and group_functions
             List<DiceAST> groupNodes = new List<DiceAST>();
-            for (int i = 0; i < context.grouped_extras().Length + context.group_function().Length; i++)
+
+            // our stack looks like a GroupPartialNode followed by all group_extras and group_functions
+            for (int i = 0; i < context.group_function().Length; i++)
             {
                 groupNodes.Add(Stack.Pop());
+            }
+
+            for (int i = 0; i < context.grouped_extras().Length; i++)
+            {
+                do
+                {
+                    groupNodes.Add(Stack.Pop());
+                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "GroupExtra");
+
+                // pop the SentinelNode
+                Stack.Pop();
             }
 
             groupNodes.Reverse();
@@ -116,11 +128,7 @@ namespace Dice.Grammar
 
             foreach (var node in groupNodes)
             {
-                if (node is KeepNode)
-                {
-                    partial.AddKeep((KeepNode)node);
-                }
-                else if (node is SuccessNode)
+                if (node is SuccessNode)
                 {
                     partial.AddSuccess((SuccessNode)node);
                 }
@@ -170,6 +178,67 @@ namespace Dice.Grammar
             Stack.Push(partial);
         }
 
+        public override void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context)
+        {
+            // we might have a comparison on the stack
+            List<DiceAST> args = new List<DiceAST>();
+            if (context.compare_expr() != null)
+            {
+                args.Add(Stack.Pop());
+            }
+
+            // get the extra's name. This may in fact be multiple extras smooshed together without arguments,
+            // so check for that as well. If that is the case, arg above is only the argument for the final extra.
+            var fname = context.T_EXTRAS().GetText();
+            var extras = FunctionRegistry.GetAllExtras(Data, FunctionScope.Group);
+            Stack.Push(new SentinelNode("GroupExtra"));
+
+            do
+            {
+                var startLength = fname.Length;
+                var lname = fname.ToLowerInvariant();
+                foreach (var extra in extras)
+                {
+                    if (lname.StartsWith(extra))
+                    {
+                        fname = fname.Substring(extra.Length);
+                        var resolved = FunctionRegistry.GetExtra(Data, extra, FunctionScope.Group);
+
+                        if (fname.Length == 0)
+                        {
+                            Stack.Push(new FunctionNode(FunctionScope.Group, resolved.Name, args, Data));
+                        }
+                        else
+                        {
+                            Stack.Push(new FunctionNode(FunctionScope.Group, resolved.Name, new List<DiceAST>(), Data));
+                        }
+
+                        break;
+                    }
+                }
+
+                if (fname.Length == startLength)
+                {
+                    // no extra found
+                    throw new DiceException(DiceErrorCode.NoSuchExtra, lname);
+                }
+            } while (fname.Length > 0);
+        }
+
+        public override void ExitGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context)
+        {
+            if (!FunctionRegistry.ExtraExists(Data, String.Empty, FunctionScope.Group))
+            {
+                throw new DiceException(DiceErrorCode.NoSuchExtra, String.Empty);
+            }
+
+            var resolved = FunctionRegistry.GetExtra(Data, String.Empty, FunctionScope.Group);
+            var args = new List<DiceAST>() { Stack.Pop() };
+
+            Stack.Push(new SentinelNode("GroupExtra"));
+            Stack.Push(new FunctionNode(FunctionScope.Group, resolved.Name, args, Data));
+        }
+
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -191,74 +260,6 @@ namespace Dice.Grammar
             var lname = fname.ToLower();
             switch (lname)
             {
-                case "keephighest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.KeepHigh, args[0]));
-                    break;
-                case "keeplowest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.KeepLow, args[0]));
-                    break;
-                case "drophighest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.DropHigh, args[0]));
-                    break;
-                case "droplowest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.DropLow, args[0]));
-                    break;
-                case "advantage":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.Advantage, null));
-                    break;
-                case "disadvantage":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.Disadvantage, null));
-                    break;
                 case "success":
                     if (args.Count == 0 || args.Count > 2)
                     {
@@ -347,11 +348,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is KeepNode)
-                {
-                    partial.AddKeep((KeepNode)node);
-                }
-                else if (node is SuccessNode)
+                if (node is SuccessNode)
                 {
                     partial.AddSuccess((SuccessNode)node);
                 }
@@ -414,11 +411,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is KeepNode)
-                {
-                    partial.AddKeep((KeepNode)node);
-                }
-                else if (node is SuccessNode)
+                if (node is SuccessNode)
                 {
                     partial.AddSuccess((SuccessNode)node);
                 }
@@ -486,6 +479,20 @@ namespace Dice.Grammar
             } while (fname.Length > 0);
         }
 
+        public override void ExitBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context)
+        {
+            if (!FunctionRegistry.ExtraExists(Data, String.Empty, FunctionScope.Basic))
+            {
+                throw new DiceException(DiceErrorCode.NoSuchExtra, String.Empty);
+            }
+
+            var resolved = FunctionRegistry.GetExtra(Data, String.Empty, FunctionScope.Basic);
+            var args = new List<DiceAST>() { Stack.Pop() };
+
+            Stack.Push(new SentinelNode("BasicExtra"));
+            Stack.Push(new FunctionNode(FunctionScope.Basic, resolved.Name, args, Data));
+        }
+
         public override void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -506,74 +513,6 @@ namespace Dice.Grammar
 
             switch (lname)
             {
-                case "keephighest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.KeepHigh, args[0]));
-                    break;
-                case "keeplowest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.KeepLow, args[0]));
-                    break;
-                case "drophighest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.DropHigh, args[0]));
-                    break;
-                case "droplowest":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.DropLow, args[0]));
-                    break;
-                case "advantage":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.Advantage, null));
-                    break;
-                case "disadvantage":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new KeepNode(KeepType.Disadvantage, null));
-                    break;
                 case "success":
                     if (args.Count == 0)
                     {
@@ -668,7 +607,7 @@ namespace Dice.Grammar
         public override void ExitCompImplicit([NotNull] DiceGrammarParser.CompImplicitContext context)
         {
             var top = Stack.Pop();
-            Stack.Push(new ComparisonNode(CompareOp.Equals, top));
+            Stack.Push(new ImplicitComparisonNode(top));
         }
 
         public override void ExitCompEquals([NotNull] DiceGrammarParser.CompEqualsContext context)

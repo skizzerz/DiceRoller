@@ -378,6 +378,18 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicExtra</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
 	/// </summary>
@@ -389,6 +401,18 @@ public interface IDiceGrammarParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitBasicExtra([NotNull] DiceGrammarParser.BasicExtraContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>CompImplicit</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.compare_expr"/>.

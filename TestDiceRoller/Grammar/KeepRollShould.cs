@@ -314,27 +314,27 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteKeepHighestExtra()
+        public void ThrowIncorrectArity_WhenIncompleteKeepHighestExtra()
         {
-            EvaluateRoll("3d6kh", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6kh", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteKeepLowestExtra()
+        public void ThrowIncorrectArity_WhenIncompleteKeepLowestExtra()
         {
-            EvaluateRoll("3d6kl", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6kl", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteDropHighestExtra()
+        public void ThrowIncorrectArity_WhenIncompleteDropHighestExtra()
         {
-            EvaluateRoll("3d6dh", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6dh", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteDropLowestExtra()
+        public void ThrowIncorrectArity_WhenIncompleteDropLowestExtra()
         {
-            EvaluateRoll("3d6dl", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6dl", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]

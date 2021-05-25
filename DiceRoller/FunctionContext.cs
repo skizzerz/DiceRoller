@@ -95,5 +95,58 @@ namespace Dice
             NumRolls++;
             return RollNode.DoRoll(Data, rollType, numSides, DieFlags.Extra);
         }
+
+        /// <summary>
+        /// Rerolls the given die
+        /// </summary>
+        /// <param name="die">A DieResult representing a basic roll or group roll</param>
+        /// <returns></returns>
+        public DieResult Reroll(DieResult die)
+        {
+            if (Expression == null)
+            {
+                throw new InvalidOperationException("Cannot reroll from a global function call");
+            }
+
+            if (Root == null || Depth == null)
+            {
+                throw new InvalidOperationException("Cannot reroll when not evaluating a roll");
+            }
+
+            if (die.DieType == DieType.Group)
+            {
+                if (die.Data == null)
+                {
+                    throw new InvalidOperationException("Grouped die roll is missing group key");
+                }
+
+                var group = Data.InternalContext.GetGroupExpression(die.Data);
+                NumRolls += group.Reroll(Data, Root, Depth.Value + 1);
+
+                return new DieResult()
+                {
+                    DieType = DieType.Group,
+                    NumSides = 0,
+                    Value = group.Value,
+                    // maintain any crit/fumble flags from the underlying dice, combining them together
+                    Flags = group.Values
+                            .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
+                            .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
+                            .Aggregate((d1, d2) => d1 | d2) | DieFlags.Extra,
+                    Data = die.Data
+                };
+            }
+            else
+            {
+                var rt = die.DieType switch
+                {
+                    DieType.Normal => RollType.Normal,
+                    DieType.Fudge => RollType.Fudge,
+                    _ => throw new InvalidOperationException("Unsupported die type in reroll"),
+                };
+
+                return RollExtra(rt, die.NumSides);
+            }
+        }
     }
 }

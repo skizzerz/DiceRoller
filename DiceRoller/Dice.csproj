@@ -18,10 +18,18 @@
         <PackageReleaseNotes>Backwards-incompatible changes:
 - None
 
-New features:
+New user features:
+- The rerollN() function now accepts any numerical expression for the first argument (max # of rerolls)
+  e.g. 1d20.rerollN(2+3, =1) or 1d20.rerollN(1d6, =1)
+- The rerollN() function can now be specified multiple times for fine-grained reroll control
+  e.g. 1d20.rerollN(2, =1).rerollN(1, =2, =3) rerolls either a "2" or "3" once but rerolls a "1" twice
+- More informative error messages if you omit something when specifying an extra on a roll
+
+New developer features:
 - Builtin functions can be overridden by custom functions by registering a function with the same name
 - Builtin functions can be removed
 - Custom functions can be registered with the same timing as builtin functions
+- Custom extras can be registered along with custom functions
 
 Bugfixes:
 - Fixed nullability annotation for DieResult.Data; this string can be nullable and has always defaulted to null

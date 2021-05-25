@@ -159,21 +159,21 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void ThrowBadRerollCount_WhenNonNumberRerollCount()
+        public void Successfully_RerollWhenNonNumberRerollCount()
         {
-            EvaluateRoll("1d20.rerollN(1d6, >=1)", Roll9Conf, DiceErrorCode.BadRerollCount);
+            EvaluateRoll("1d20.rerollN(1d6, >=1)", Roll9Conf, 5, "1d20.rerollN(1d6, >=1) => 9* + 9* + 9* + 9 => 9");
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteRerollExtra()
+        public void ThrowIncorrectArity_WhenIncompleteRerollExtra()
         {
-            EvaluateRoll("3d6rr", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6rr", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteRerollOnceExtra()
+        public void ThrowIncorrectArity_WhenIncompleteRerollOnceExtra()
         {
-            EvaluateRoll("3d6ro", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6ro", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]

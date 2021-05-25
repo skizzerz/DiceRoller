@@ -105,11 +105,6 @@ namespace Dice.Builtins
                     max = (int)arg.Value;
                     comparisonList = new List<ComparisonNode>();
                 }
-
-                if ((arg is ComparisonNode && comparisonList == null) || (!(arg is ComparisonNode) && comparisonList?.Count == 0))
-                {
-                    throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-                }
             }
 
             // ended with a non-comparison?
@@ -125,69 +120,20 @@ namespace Dice.Builtins
         /// <summary>
         /// Rerolls the expression attached to the given context.
         /// This will overwrite context.Expression.Value, context.Expression.Values, context.Value, and context.Values.
-        /// Save a copy of anything you care about before calling this.
         /// </summary>
         /// <param name="context">Function context containing expression to reroll</param>
         /// <param name="data"></param>
-        public static void DoReroll(FunctionContext context, IEnumerable<RerollData> rerollData)
+        private static void DoReroll(FunctionContext context, IEnumerable<RerollData> rerollData)
         {
-            if (context.Expression == null)
-            {
-                throw new InvalidOperationException("Cannot reroll from a global function call");
-            }
-
-            if (context.Root == null || context.Depth == null)
-            {
-                throw new InvalidOperationException("Cannot reroll when not evaluating a roll");
-            }
-
             var values = new List<DieResult>();
             long rerolls = 0;
             var maxRerolls = context.Data.Config.MaxRerolls;
 
-            void DoRerollInternal(DieResult die, out DieResult reroll)
-            {
-                if (die.DieType == DieType.Group)
-                {
-                    if (die.Data == null)
-                    {
-                        throw new InvalidOperationException("Grouped die roll is missing group key");
-                    }
-
-                    var group = context.Data.InternalContext.GetGroupExpression(die.Data);
-                    context.NumRolls += group.Reroll(context.Data, context.Root!, context.Depth!.Value + 1);
-
-                    reroll = new DieResult()
-                    {
-                        DieType = DieType.Group,
-                        NumSides = 0,
-                        Value = group.Value,
-                        // maintain any crit/fumble flags from the underlying dice, combining them together
-                        Flags = group.Values
-                                .Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped))
-                                .Select(d => d.Flags & (DieFlags.Critical | DieFlags.Fumble))
-                                .Aggregate((d1, d2) => d1 | d2) | DieFlags.Extra,
-                        Data = die.Data
-                    };
-                }
-                else
-                {
-                    var rt = die.DieType switch
-                    {
-                        DieType.Normal => RollType.Normal,
-                        DieType.Fudge => RollType.Fudge,
-                        _ => throw new InvalidOperationException("Unsupported die type in reroll"),
-                    };
-
-                    reroll = context.RollExtra(rt, die.NumSides);
-                }
-            }
-
-            foreach (var die in context.Expression.Values)
+            foreach (var die in context.Expression!.Values)
             {
                 bool rerolled = false;
 
-                if (die.DieType == DieType.Special || die.Flags.HasFlag(DieFlags.Dropped))
+                if (!die.IsLiveDie())
                 {
                     values.Add(die);
                     continue;
@@ -213,7 +159,7 @@ namespace Dice.Builtins
                         }
 
                         values.Add(rr.Drop());
-                        DoRerollInternal(die, out rr);
+                        rr = context.Reroll(die);
                     } while (rerolls < maxRerolls && data.Current < data.Max && data.Comparison.Compare(rr.Value));
                     
                     values.Add(new DieResult(SpecialDie.Add));
@@ -226,7 +172,7 @@ namespace Dice.Builtins
                 }
             }
 
-            var dice = values.Where(d => d.DieType != DieType.Special && !d.Flags.HasFlag(DieFlags.Dropped));
+            var dice = values.Where(d => d.IsLiveDie());
 
             context.Values = values;
             if (context.Expression.ValueType == ResultType.Total)

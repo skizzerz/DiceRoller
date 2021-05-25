@@ -10,25 +10,18 @@ namespace Dice.AST
     /// An ephemeral node used in construction of the AST. Once the AST
     /// is fully constructed, no nodes of this type should exist in it.
     /// </summary>
-    internal class GroupPartialNode : DiceAST
+    internal class GroupPartialNode : PartialNode
     {
         public DiceAST? NumTimes { get; internal set; }
         public List<DiceAST> GroupExpressions { get; private set; }
-        // a GroupNode can have at most SortNode attached to it,
-        // however any number of KeepNodes and success/failure Comparisons can be applied.
-        public List<KeepNode> Keep { get; private set; }
         public SortNode? Sort { get; private set; }
         public SuccessNode? Success { get; private set; }
-        public List<FunctionNode> Functions { get; private set; }
 
-        private bool haveAdvantage = false;
-
-        public override IReadOnlyList<DieResult> Values => throw new InvalidOperationException("This node should not exist in an AST");
+        protected override FunctionScope FunctionScope => FunctionScope.Group;
 
         internal GroupPartialNode()
         {
             GroupExpressions = new List<DiceAST>();
-            Keep = new List<KeepNode>();
             Sort = null;
             Success = null;
             Functions = new List<FunctionNode>();
@@ -38,32 +31,6 @@ namespace Dice.AST
         internal void AddExpression(DiceAST expression)
         {
             GroupExpressions.Add(expression);
-        }
-
-        internal void AddKeep(KeepNode keep)
-        {
-            if (keep.KeepType == KeepType.Advantage || keep.KeepType == KeepType.Disadvantage)
-            {
-                if (Keep.Count > 0)
-                {
-                    if (haveAdvantage)
-                    {
-                        throw new DiceException(DiceErrorCode.AdvantageOnlyOnce);
-                    }
-                    else
-                    {
-                        throw new DiceException(DiceErrorCode.NoAdvantageKeep);
-                    }
-                }
-
-                haveAdvantage = true;
-            }
-            else if (haveAdvantage)
-            {
-                throw new DiceException(DiceErrorCode.NoAdvantageKeep);
-            }
-
-            Keep.Add(keep);
         }
 
         internal void AddSort(SortNode sort)
@@ -89,11 +56,6 @@ namespace Dice.AST
             }
         }
 
-        internal void AddFunction(FunctionNode fn)
-        {
-            Functions.Add(fn);
-        }
-
         /// <summary>
         /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree
         /// </summary>
@@ -110,11 +72,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.Reroll, ref group);
             AddFunctionNodes(FunctionTiming.AfterReroll, ref group);
             AddFunctionNodes(FunctionTiming.BeforeKeep, ref group);
-            foreach (var k in Keep)
-            {
-                k.Expression = group;
-                group = k;
-            }
+            AddFunctionNodes(FunctionTiming.Keep, ref group);
             AddFunctionNodes(FunctionTiming.AfterKeep, ref group);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
             if (Success != null)
@@ -143,54 +101,6 @@ namespace Dice.AST
             return group;
         }
 
-        private void AddFunctionNodes(FunctionTiming timing, ref DiceAST node)
-        {
-            if (Functions.Count == 0)
-            {
-                return;
-            }
-
-            // RollData instance is the same for every function, so just grab an arbitrary one
-            var data = Functions.First().Context.Data;
-            var needsCombining = new HashSet<string>(
-                Functions.Where(f => f.Slot.Timing == timing && f.Slot.Behavior == FunctionBehavior.CombineArguments)
-                    .Select(f => f.Slot.Name));
-            var combined = new Dictionary<string, FunctionNode>();
-            var finishedCombining = new HashSet<string>();
-
-            foreach (var fn in needsCombining)
-            {
-                var combinedArgs = new List<DiceAST>();
-                foreach (var toCombine in Functions.Where(f => f.Slot.Timing == timing && f.Slot.Name == fn))
-                {
-                    combinedArgs.AddRange(toCombine.Context.Arguments);
-                }
-
-                combined[fn] = new FunctionNode(FunctionScope.Group, fn, combinedArgs, data);
-            }
-
-            foreach (var fn in Functions.Where(f => f.Slot.Timing == timing))
-            {
-                if (needsCombining.Contains(fn.Slot.Name))
-                {
-                    // check if we've already added the combined function
-                    if (finishedCombining.Contains(fn.Slot.Name))
-                    {
-                        continue;
-                    }
-
-                    combined[fn.Slot.Name].Context.Expression = node;
-                    node = combined[fn.Slot.Name];
-                    finishedCombining.Add(fn.Slot.Name);
-                }
-                else
-                {
-                    fn.Context.Expression = node;
-                    node = fn;
-                }
-            }
-        }
-
         // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
         public override string ToString()
         {
@@ -211,11 +121,6 @@ namespace Dice.AST
             sb.Append(String.Join(", ", GroupExpressions.Select(o => o.ToString())));
             sb.Append('}');
 
-            foreach (var k in Keep)
-            {
-                sb.Append(k.ToString());
-            }
-
             if (Sort != null)
             {
                 sb.Append(Sort.ToString());
@@ -234,16 +139,6 @@ namespace Dice.AST
             sb.Append(">>");
 
             return sb.ToString();
-        }
-
-        protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
-        {
-            throw new InvalidOperationException("This node should not exist in an AST");
-        }
-
-        protected override long RerollInternal(RollData data, DiceAST root, int depth)
-        {
-            throw new InvalidOperationException("This node should not exist in an AST");
         }
     }
 }

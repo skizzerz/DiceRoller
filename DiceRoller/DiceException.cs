@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace Dice
 {
@@ -9,8 +10,6 @@ namespace Dice
     /// be made visible to the user in some fashion to let them know to adjust their dice expression.
     /// Errors which indicate bugs in the library or are programmer errors do not use this exception type.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors",
-        Justification = "ErrorCode is required, and the exception message is derived from ErrorCode")]
     [Serializable]
     public class DiceException : Exception
     {
@@ -19,24 +18,52 @@ namespace Dice
         public DiceException(DiceErrorCode error)
             : base(error.GetDescriptionString())
         {
+#if DEBUG
+            if (error.GetDescriptionString().Contains("{0}"))
+            {
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+            }
+#endif
+
             ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, object param)
             : base(String.Format(error.GetDescriptionString(), param))
         {
+#if DEBUG
+            if (!error.GetDescriptionString().Contains("{0}"))
+            {
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+            }
+#endif
+
             ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, Exception innerException)
             : base(error.GetDescriptionString(), innerException)
         {
+#if DEBUG
+            if (error.GetDescriptionString().Contains("{0}"))
+            {
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+            }
+#endif
+
             ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, object param, Exception innerException)
             : base(String.Format(error.GetDescriptionString(), param), innerException)
         {
+#if DEBUG
+            if (!error.GetDescriptionString().Contains("{0}"))
+            {
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+            }
+#endif
+
             ErrorCode = error;
         }
 

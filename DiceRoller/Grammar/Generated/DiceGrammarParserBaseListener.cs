@@ -441,6 +441,20 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>GroupEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>GroupEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.grouped_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>BasicExtra</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -454,6 +468,20 @@ public partial class DiceGrammarParserBaseListener : IDiceGrammarParserListener 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBasicExtra([NotNull] DiceGrammarParser.BasicExtraContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>BasicEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>BasicEmptyExtra</c>
+	/// labeled alternative in <see cref="DiceGrammarParser.basic_extras"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>CompImplicit</c>
 	/// labeled alternative in <see cref="DiceGrammarParser.compare_expr"/>.

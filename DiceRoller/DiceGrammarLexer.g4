@@ -59,7 +59,9 @@ AE_DIVIDE : '/' -> popMode, type(T_DIVIDE) ;
 AE_MACRO : '[' .+? ']' -> type(T_MACRO) ;
 AE_NUMBER : [0-9]+ ('.' [0-9]+)? -> type(T_NUMBER) ;
 
-/* T_FUNCTION is not allowed inside of ALLOW_EXTRAS; we instead lex for T_EXTRAS */
-T_EXTRAS : [a-zA-Z!] [a-zA-Z!]* ;
+/* T_FUNCTION is not allowed inside of ALLOW_EXTRAS; we instead lex for T_EXTRAS.
+  If we see ! at the end of an extra, prefer making that part of a != (T_NOT_EQUALS)
+  rather than rolling it into T_EXTRAS. */
+T_EXTRAS : [a-zA-Z!] [a-zA-Z!]* { !Text.EndsWith("!") || InputStream.LA(1) != '=' }? ;
 
 AE_WS : [ \t\r\n]+ -> skip ;

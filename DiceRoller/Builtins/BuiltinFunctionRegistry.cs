@@ -21,10 +21,12 @@ namespace Dice.Builtins
             // roll functions
             RegisterType(typeof(ExplodeFunctions));
             RegisterType(typeof(RerollFunctions));
+            RegisterType(typeof(KeepFunctions));
 
             // validation handlers
             Validate += ExplodeFunctions.ValidateExplode;
             Validate += RerollFunctions.ValidateReroll;
+            Validate += KeepFunctions.ValidateKeep;
 
             // mark class as finished; users can remove functions but cannot add any
             _finalized = true;

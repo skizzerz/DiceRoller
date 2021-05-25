@@ -61,19 +61,19 @@ namespace Dice
         [Description("Maximum number of dice {0} exceeded.")]
         TooManyDice = 8,
         /// <summary>
-        /// No function named {0} is registered for the current scope.
+        /// No function named "{0}" is registered for the current scope.
         /// </summary>
-        [Description("No function named {0} is registered for the current scope.")]
+        [Description("No function named \"{0}\" is registered for the current scope.")]
         NoSuchFunction = 9,
         /// <summary>
-        /// Incorrect number of arguments passed to internal function {0}.
+        /// Incorrect number of arguments passed to internal function "{0}".
         /// </summary>
-        [Description("Incorrect number of arguments passed to internal function {0}.")]
+        [Description("Incorrect number of arguments passed to internal function \"{0}\".")]
         IncorrectArity = 10,
         /// <summary>
-        /// Incorrect argument type passed to internal function {0}.
+        /// Incorrect argument type passed to internal function "{0}".
         /// </summary>
-        [Description("Incorrect argument type passed to internal function {0}.")]
+        [Description("Incorrect argument type passed to internal function \"{0}\".")]
         IncorrectArgType = 11,
         /// <summary>
         /// When defining failures, must also define at least one success.
@@ -116,9 +116,9 @@ namespace Dice
         [Description("Cannot specify advantage or disadvantage more than once.")]
         AdvantageOnlyOnce = 19,
         /// <summary>
-        /// No extra named {0} is registered.
+        /// No extra named "{0}" is registered.
         /// </summary>
-        [Description("No extra named {0} is registered.")]
+        [Description("No extra named \"{0}\" is registered.")]
         NoSuchExtra = 20,
     }
 }
