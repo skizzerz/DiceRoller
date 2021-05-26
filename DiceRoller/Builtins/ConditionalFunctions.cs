@@ -9,22 +9,13 @@ namespace Dice.Builtins
 {
     public static class ConditionalFunctions
     {
-        [DiceFunction("if", Scope = FunctionScope.Global)]
+        [DiceFunction("if", Scope = FunctionScope.Global, ArgumentPattern = "ECEE?")]
         public static void If(FunctionContext context)
         {
-            if (context.Arguments.Count < 3 || context.Arguments.Count > 4)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var test = context.Arguments[0];
+            var compare = (ComparisonNode)context.Arguments[1];
             var then = context.Arguments[2];
             var otherwise = context.Arguments.ElementAtOrDefault(3);
-
-            if (test is ComparisonNode || !(context.Arguments[1] is ComparisonNode compare) || then is ComparisonNode || otherwise is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
 
             var values = new List<DieResult>()
             {

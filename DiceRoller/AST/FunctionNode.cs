@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Dice.AST
@@ -93,6 +94,38 @@ namespace Dice.AST
 
         private long CallFunction(DiceAST root, int depth)
         {
+            // validate arguments if an argument pattern was specified
+            if (Slot.ArgumentPattern != null)
+            {
+                // argument string where ImplicitComparisonNodes are converted into Expressions
+                var argStrImpE = new string(Context.Arguments.Select(a => a.GetType() == typeof(ComparisonNode) ? 'C' : 'E').ToArray());
+
+                // argument string where ImplicitComparisonNodes are converted into Comparisons
+                var argStrImpC = new string(Context.Arguments.Select(a => a is ComparisonNode ? 'C' : 'E').ToArray());
+
+                var argTypeRegex = new Regex($"^{Slot.ArgumentPattern}$");
+                var argArityRegex = new Regex($"^{Slot.ArgumentPattern.Replace('E', '.').Replace('C', '.')}$");
+
+                if (!argArityRegex.IsMatch(argStrImpE))
+                {
+                    throw new DiceException(DiceErrorCode.IncorrectArity, Slot.Name);
+                }
+
+                if (argTypeRegex.IsMatch(argStrImpE))
+                {
+                    // ImplicitComparisonNode can only ever appear as the very first argument
+                    if (Context.Arguments.Count > 0 && Context.Arguments[0] is ImplicitComparisonNode ic)
+                    {
+                        ic.IsExpression = true;
+                    }
+                }
+                else if (!argTypeRegex.IsMatch(argStrImpC))
+                {
+                    throw new DiceException(DiceErrorCode.IncorrectArgType, Slot.Name);
+                }
+            }
+
+            // call the function
             Context.NumRolls = 0;
             Context.Root = root;
             Context.Depth = depth;

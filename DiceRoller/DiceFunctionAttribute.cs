@@ -46,6 +46,13 @@ namespace Dice
         public FunctionBehavior Behavior { get; set; } = FunctionBehavior.ExecuteSequentially;
 
         /// <summary>
+        /// If not null, this argument pattern is validated prior to the function being called.
+        /// It should be a string containing E indicating the argument is an expression or
+        /// C indicating it is a comparison. Regex metacharacters .()?*+ may also be used.
+        /// </summary>
+        public string? ArgumentPattern { get; set; }
+
+        /// <summary>
         /// Declare this method as a dice function
         /// </summary>
         /// <param name="name">Function name</param>

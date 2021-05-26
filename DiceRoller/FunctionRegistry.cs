@@ -141,7 +141,8 @@ namespace Dice
                     }
 
                     var callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback));
-                    RegisterFunction(attr.Name, attr.Extra, callback, attr.Scope, attr.Timing, attr.Behavior);
+                    var slot = new FunctionSlot(attr.Name, callback, attr.Timing, attr.Behavior, attr.ArgumentPattern);
+                    RegisterFunction(slot, attr.Scope, attr.Extra);
                 }
             }
         }
@@ -181,7 +182,8 @@ namespace Dice
                         callback = (FunctionCallback)m.CreateDelegate(typeof(FunctionCallback), obj);
                     }
 
-                    RegisterFunction(attr.Name, attr.Extra, callback, attr.Scope, attr.Timing, attr.Behavior);
+                    var slot = new FunctionSlot(attr.Name, callback, attr.Timing, attr.Behavior, attr.ArgumentPattern);
+                    RegisterFunction(slot, attr.Scope, attr.Extra);
                 }
             }
         }
@@ -193,7 +195,7 @@ namespace Dice
         /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
         public void RegisterFunction(string name, FunctionCallback callback)
         {
-            RegisterFunction(name, null, callback, FunctionScope.Global, FunctionTiming.Last, FunctionBehavior.ExecuteSequentially);
+            RegisterFunction(new FunctionSlot(name, callback), FunctionScope.Global);
         }
 
         /// <summary>
@@ -204,7 +206,7 @@ namespace Dice
         /// <param name="scope">The scope of the function.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope)
         {
-            RegisterFunction(name, null, callback, scope, FunctionTiming.Last, FunctionBehavior.ExecuteSequentially);
+            RegisterFunction(new FunctionSlot(name, callback), scope);
         }
 
         /// <summary>
@@ -216,7 +218,7 @@ namespace Dice
         /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
         public void RegisterFunction(string name, FunctionCallback callback, FunctionScope scope, FunctionTiming timing)
         {
-            RegisterFunction(name, null, callback, scope, timing, FunctionBehavior.ExecuteSequentially);
+            RegisterFunction(new FunctionSlot(name, callback, timing), scope);
         }
 
         /// <summary>
@@ -229,26 +231,9 @@ namespace Dice
         /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
         /// <param name="behavior">How the function behaves when multiples of it are specified on the same roll. Ignored for global functions.</param>
         /// <remarks>When overriding in a subclass, you will need to call the parent method for registration to fully succeed.</remarks>
-        public virtual void RegisterFunction(string name, string? extra, FunctionCallback callback, FunctionScope scope, FunctionTiming timing, FunctionBehavior behavior)
+        public virtual void RegisterFunction(FunctionSlot slot, FunctionScope scope, string? extra = null)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (name.Length == 0)
-            {
-                throw new ArgumentException("Function name cannot be empty", nameof(name));
-            }
-
-            var lname = name.ToLowerInvariant();
-            var slot = new FunctionSlot()
-            {
-                Name = name,
-                Timing = timing,
-                Behavior = behavior,
-                Callback = callback
-            };
+            var lname = slot.Name.ToLowerInvariant();
 
             switch (scope)
             {

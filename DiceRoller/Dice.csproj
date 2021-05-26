@@ -24,12 +24,15 @@ New user features:
 - The rerollN() function can now be specified multiple times for fine-grained reroll control
   e.g. 1d20.rerollN(2, =1).rerollN(1, =2, =3) rerolls either a "2" or "3" once but rerolls a "1" twice
 - More informative error messages if you omit something when specifying an extra on a roll
+- Dice expressions are no longer case sensitive. Roll 1d20 or 1D20, whichever you prefer!
 
 New developer features:
 - Builtin functions can be overridden by custom functions by registering a function with the same name
 - Builtin functions can be removed
 - Custom functions can be registered with the same timing as builtin functions
 - Custom extras can be registered along with custom functions
+- Custom functions can specify how multiples of the same function are executed when attached to the same roll
+- Custom functions can specify how their arguments should look, and will be validated before being called
 
 Bugfixes:
 - Fixed nullability annotation for DieResult.Data; this string can be nullable and has always defaulted to null

@@ -20,7 +20,7 @@ namespace Dice
         public FunctionScope Scope { get; private set; }
 
         /// <summary>
-        /// The function name, converted to lowercase.
+        /// The function name, in the case it was defined.
         /// </summary>
         public string Name { get; private set; }
 

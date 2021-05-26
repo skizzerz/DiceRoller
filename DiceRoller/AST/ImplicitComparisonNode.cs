@@ -12,6 +12,12 @@ namespace Dice.AST
 
         protected internal override DiceAST UnderlyingRollNode => Expression.UnderlyingRollNode;
 
+        /// <summary>
+        /// Whether or not this node is probably being evaluated as an expression or a comparison
+        /// Impacts ToString but does not otherwise have any ramifications on the function implementation
+        /// </summary>
+        internal bool IsExpression { get; set; }
+
         internal ImplicitComparisonNode(DiceAST expression)
             : base(CompareOp.Equals, expression)
         {
@@ -20,7 +26,7 @@ namespace Dice.AST
 
         public override string ToString()
         {
-            return Expression.ToString();
+            return IsExpression ? Expression.ToString() : base.ToString();
         }
 
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)

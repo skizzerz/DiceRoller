@@ -95,17 +95,5 @@ namespace TestDiceRoller.Grammar
         {
             EvaluateRoll("1---1", Roll20Conf, DiceErrorCode.ParseError);
         }
-
-        [TestMethod]
-        public void ThrowParseError_WhenAllCapsD()
-        {
-            EvaluateRoll("1D20", Roll20Conf, DiceErrorCode.ParseError);
-        }
-
-        [TestMethod]
-        public void ThrowParseError_WhenAllCapsExtra()
-        {
-            EvaluateRoll("1d20AD", Roll20Conf, DiceErrorCode.ParseError);
-        }
     }
 }

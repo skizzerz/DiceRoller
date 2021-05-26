@@ -18,53 +18,53 @@ namespace Dice
         public DiceException(DiceErrorCode error)
             : base(error.GetDescriptionString())
         {
+            ErrorCode = error;
+
 #if DEBUG
             if (error.GetDescriptionString().Contains("{0}"))
             {
-                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter", this);
             }
 #endif
-
-            ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, object param)
             : base(String.Format(error.GetDescriptionString(), param))
         {
+            ErrorCode = error;
+
 #if DEBUG
             if (!error.GetDescriptionString().Contains("{0}"))
             {
-                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter", this);
             }
 #endif
-
-            ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, Exception innerException)
             : base(error.GetDescriptionString(), innerException)
         {
+            ErrorCode = error;
+
 #if DEBUG
             if (error.GetDescriptionString().Contains("{0}"))
             {
-                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter", this);
             }
 #endif
-
-            ErrorCode = error;
         }
 
         public DiceException(DiceErrorCode error, object param, Exception innerException)
             : base(String.Format(error.GetDescriptionString(), param), innerException)
         {
+            ErrorCode = error;
+
 #if DEBUG
             if (!error.GetDescriptionString().Contains("{0}"))
             {
-                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter");
+                throw new InvalidOperationException("This DiceException constructor cannot be used with a message that requires a parameter", this);
             }
 #endif
-
-            ErrorCode = error;
         }
 
         protected DiceException(SerializationInfo info, StreamingContext context)

@@ -9,21 +9,10 @@ namespace Dice.Builtins
 {
     public static class MathFunctions
     {
-        [DiceFunction("floor", Scope = FunctionScope.Global)]
+        [DiceFunction("floor", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Floor(FunctionContext context)
         {
-            if (context.Arguments.Count != 1)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg = context.Arguments[0];
-
-            if (arg is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             var values = new List<DieResult>
             {
                 new DieResult(context.Name),
@@ -38,21 +27,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
-        [DiceFunction("ceil", Scope = FunctionScope.Global)]
+        [DiceFunction("ceil", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Ceiling(FunctionContext context)
         {
-            if (context.Arguments.Count != 1)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg = context.Arguments[0];
-
-            if (arg is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             var values = new List<DieResult>
             {
                 new DieResult(context.Name),
@@ -67,21 +45,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
-        [DiceFunction("round", Scope = FunctionScope.Global)]
+        [DiceFunction("round", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Round(FunctionContext context)
         {
-            if (context.Arguments.Count != 1)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg = context.Arguments[0];
-
-            if (arg is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             var values = new List<DieResult>
             {
                 new DieResult(context.Name),
@@ -96,21 +63,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
-        [DiceFunction("abs", Scope = FunctionScope.Global)]
+        [DiceFunction("abs", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Abs(FunctionContext context)
         {
-            if (context.Arguments.Count != 1)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg = context.Arguments[0];
-
-            if (arg is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             var values = new List<DieResult>
             {
                 new DieResult(context.Name),
@@ -125,22 +81,11 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
-        [DiceFunction("max", Scope = FunctionScope.Global)]
+        [DiceFunction("max", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Max(FunctionContext context)
         {
-            if (context.Arguments.Count != 2)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg1 = context.Arguments[0];
             var arg2 = context.Arguments[1];
-
-            if (arg1 is ComparisonNode || arg2 is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             context.Value = Math.Max(arg1.Value, arg2.Value);
             bool keptFirst = context.Value == arg1.Value;
 
@@ -208,22 +153,11 @@ namespace Dice.Builtins
             context.Values = values;
         }
 
-        [DiceFunction("min", Scope = FunctionScope.Global)]
+        [DiceFunction("min", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Min(FunctionContext context)
         {
-            if (context.Arguments.Count != 2)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             var arg1 = context.Arguments[0];
             var arg2 = context.Arguments[1];
-
-            if (arg1 is ComparisonNode || arg2 is ComparisonNode)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             context.Value = Math.Min(arg1.Value, arg2.Value);
             bool keptFirst = context.Value == arg1.Value;
 

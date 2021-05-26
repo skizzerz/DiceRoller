@@ -9,14 +9,9 @@ namespace Dice.Builtins
 {
     public static class OutputFunctions
     {
-        [DiceFunction("expand", Scope = FunctionScope.Group, Timing = FunctionTiming.BeforeSort)]
+        [DiceFunction("expand", Scope = FunctionScope.Group, Timing = FunctionTiming.BeforeSort, ArgumentPattern = "")]
         public static void Expand(FunctionContext context)
         {
-            if (context.Arguments.Count > 0)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, "expand");
-            }
-
             List<DieResult> values = new List<DieResult>();
             context.Value = context.Expression!.Value;
             context.ValueType = context.Expression.ValueType;

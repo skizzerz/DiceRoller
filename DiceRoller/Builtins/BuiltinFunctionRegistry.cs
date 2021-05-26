@@ -32,14 +32,14 @@ namespace Dice.Builtins
             _finalized = true;
         }
 
-        public override void RegisterFunction(string name, string? extra, FunctionCallback callback, FunctionScope scope, FunctionTiming timing, FunctionBehavior behavior)
+        public override void RegisterFunction(FunctionSlot slot, FunctionScope scope, string? extra = null)
         {
             if (_finalized)
             {
                 throw new InvalidOperationException("Cannot add items to the builtin function registry");
             }
 
-            base.RegisterFunction(name, extra, callback, scope, timing, behavior);
+            base.RegisterFunction(slot, scope, extra);
         }
 
         /// <summary>

@@ -27,55 +27,47 @@ namespace Dice.Builtins
             }
         }
 
-        [DiceFunction("explode", "!e", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("explode", "!e",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
         public static void Explode(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-
-            if (comparisons.Count < context.Arguments.Count)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             DoExplode(context, comparisons, compound: false, penetrate: false);
         }
 
-        [DiceFunction("compound", "!c", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("compound", "!c",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
         public static void Compound(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-
-            if (comparisons.Count < context.Arguments.Count)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             DoExplode(context, comparisons, compound: true, penetrate: false);
         }
 
-        [DiceFunction("penetrate", "!p", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("penetrate", "!p",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
         public static void Penetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-
-            if (comparisons.Count < context.Arguments.Count)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             DoExplode(context, comparisons, compound: false, penetrate: true);
         }
 
-        [DiceFunction("compoundPenetrate", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Basic, Timing = FunctionTiming.Explode)]
+        [DiceFunction("compoundPenetrate",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
         public static void CompoundPenetrate(FunctionContext context)
         {
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-
-            if (comparisons.Count < context.Arguments.Count)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-
             DoExplode(context, comparisons, compound: true, penetrate: true);
         }
 

@@ -33,37 +33,37 @@ namespace Dice.Builtins
             }
         }
 
-        [DiceFunction("advantage", "ad", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("advantage", "ad", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Advantage(FunctionContext context)
         {
             ApplyAdvantage(context, KeepType.KeepHighest);
         }
 
-        [DiceFunction("disadvantage", "da", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("disadvantage", "da", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Disadvantage(FunctionContext context)
         {
             ApplyAdvantage(context, KeepType.KeepLowest);
         }
 
-        [DiceFunction("dropLowest", "dl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("dropLowest", "dl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropLowest(FunctionContext context)
         {
             ApplyKeep(context, KeepType.DropLowest);
         }
 
-        [DiceFunction("dropHighest", "dh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("dropHighest", "dh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropHighest(FunctionContext context)
         {
             ApplyKeep(context, KeepType.DropHighest);
         }
 
-        [DiceFunction("keepLowest", "kl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("keepLowest", "kl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepLowest(FunctionContext context)
         {
             ApplyKeep(context, KeepType.KeepLowest);
         }
 
-        [DiceFunction("keepHighest", "kh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep)]
+        [DiceFunction("keepHighest", "kh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepHighest(FunctionContext context)
         {
             ApplyKeep(context, KeepType.KeepHighest);
@@ -71,11 +71,6 @@ namespace Dice.Builtins
 
         private static void ApplyAdvantage(FunctionContext context, KeepType type)
         {
-            if (context.Arguments.Count > 0)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
             // save originally rolled values, then reroll it
             var originalValue = context.Expression!.Value;
             decimal newValue;
@@ -132,18 +127,6 @@ namespace Dice.Builtins
 
         private static void ApplyKeep(FunctionContext context, KeepType type)
         {
-            if (context.Arguments.Count != 1)
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArity, context.Name);
-            }
-
-            // don't use an "is" expression here since we want to allow ImplicitComparisonNode,
-            // which is a subclass of ComparisonNode
-            if (context.Arguments[0].GetType() == typeof(ComparisonNode))
-            {
-                throw new DiceException(DiceErrorCode.IncorrectArgType, context.Name);
-            }
-            
             var sortedValues = context.Expression!.Values
                 .Where(d => d.IsLiveDie())
                 .OrderBy(d => d.Value).ToList();

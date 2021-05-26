@@ -97,7 +97,7 @@ namespace Dice.AST
 
             if (numDice > data.Config.MaxDice)
             {
-                throw new DiceException(DiceErrorCode.TooManyDice);
+                throw new DiceException(DiceErrorCode.TooManyDice, data.Config.MaxDice);
             }
 
             _values.Clear();
