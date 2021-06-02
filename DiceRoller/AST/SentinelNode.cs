@@ -11,11 +11,14 @@ namespace Dice.AST
     {
         public string Marker { get; private set; }
 
+        public object? Data { get; private set; }
+
         public override IReadOnlyList<DieResult> Values => throw new InvalidOperationException("This node should not exist in an AST");
 
-        internal SentinelNode(string marker)
+        internal SentinelNode(string marker, object? data = null)
         {
             Marker = marker;
+            Data = data;
         }
 
         public override string ToString()

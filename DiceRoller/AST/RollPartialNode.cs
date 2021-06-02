@@ -15,7 +15,6 @@ namespace Dice.AST
         public RollNode Roll { get; internal set; }
         public SortNode? Sort { get; private set; }
         public CritNode? Critical { get; private set; }
-        public SuccessNode? Success { get; private set; }
 
         protected override FunctionScope FunctionScope => FunctionScope.Basic;
 
@@ -24,7 +23,6 @@ namespace Dice.AST
             Roll = roll;
             Sort = null;
             Critical = null;
-            Success = null;
         }
 
         // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
@@ -32,11 +30,6 @@ namespace Dice.AST
         {
             var sb = new StringBuilder("RPARTIAL<<");
             sb.Append(Roll.ToString());
-
-            if (Success != null)
-            {
-                sb.Append(Success.ToString());
-            }
 
             if (Critical != null)
             {
@@ -81,19 +74,6 @@ namespace Dice.AST
             }
         }
 
-        internal void AddSuccess(SuccessNode success)
-        {
-            if (Success == null)
-            {
-                Success = success;
-            }
-            else
-            {
-                Success.AddSuccess(success.Success);
-                Success.AddFailure(success.Failure);
-            }
-        }
-
         /// <summary>
         /// Creates the RollNode subtree
         /// </summary>
@@ -113,18 +93,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.Keep, ref roll);
             AddFunctionNodes(FunctionTiming.AfterKeep, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref roll);
-
-            if (Success != null)
-            {
-                if (Success.Success == null)
-                {
-                    throw new DiceException(DiceErrorCode.InvalidSuccess);
-                }
-
-                Success.Expression = roll;
-                roll = Success;
-            }
-
+            AddFunctionNodes(FunctionTiming.Success, ref roll);
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref roll);
 

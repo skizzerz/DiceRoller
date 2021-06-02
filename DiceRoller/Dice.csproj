@@ -25,6 +25,8 @@ New user features:
   e.g. 1d20.rerollN(2, =1).rerollN(1, =2, =3) rerolls either a "2" or "3" once but rerolls a "1" twice
 - More informative error messages if you omit something when specifying an extra on a roll
 - Dice expressions are no longer case sensitive. Roll 1d20 or 1D20, whichever you prefer!
+- Defining a success condition is no longer required when all you want to do is define
+  a failure (negative success) condition
 
 New developer features:
 - Builtin functions can be overridden by custom functions by registering a function with the same name
@@ -41,6 +43,8 @@ Deprecations:
 - Dice.BuiltinFunctions and Dice.BuiltinMacros are deprecated; please use their counterparts in the Dice.Builtins
   namespace if you would like to directly call any of them from within your custom functions/macros.
   These two classes will be removed in the next major release.
+- DiceErrorCode.InvalidSuccess is deprecated and no longer used by the library.
+  This enum value will be removed in the next major release.
 
 See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseNotes>
         <SignAssembly>true</SignAssembly>

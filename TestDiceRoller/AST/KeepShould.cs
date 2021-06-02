@@ -90,8 +90,12 @@ namespace TestDiceRoller.AST
         [TestMethod]
         public void CountSuccesses_WhenKeepingSuccessDice()
         {
-            var success = new SuccessNode(greaterEqual5, equal1) { Expression = _4d6 };
-            var (data, node) = GetKeep(KeepType.DropLowest, StatConf, success, One);
+            var success = new FunctionNode(FunctionScope.Basic, "success", new List<DiceAST>() { greaterEqual5 }, Data(StatConf));
+            success.Context.Expression = _4d6;
+            var failure = new FunctionNode(FunctionScope.Basic, "failure", new List<DiceAST>() { equal1 }, Data(StatConf));
+            failure.Context.Expression = success;
+
+            var (data, node) = GetKeep(KeepType.DropLowest, StatConf, failure, One);
             EvaluateNode(node, data, 4, "4d6.success(>=5).failure(=1).dropLowest(1) => $5 + 3 + $6 + 1* => 2 successes");
         }
 

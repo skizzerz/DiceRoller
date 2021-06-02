@@ -138,7 +138,7 @@ namespace Dice
         }
 
         /// <summary>
-        /// Mark a die as dropped. We also strip success/failure info when dropping dice
+        /// Mark a die as dropped.
         /// </summary>
         /// <param name="flags"></param>
         /// <returns></returns>
@@ -155,7 +155,7 @@ namespace Dice
                 NumSides = NumSides,
                 Value = Value,
                 Data = Data,
-                Flags = (Flags & ~(DieFlags.Success | DieFlags.Failure)) | DieFlags.Dropped
+                Flags = Flags | DieFlags.Dropped
             };
         }
 

@@ -15,7 +15,6 @@ namespace Dice.AST
         public DiceAST? NumTimes { get; internal set; }
         public List<DiceAST> GroupExpressions { get; private set; }
         public SortNode? Sort { get; private set; }
-        public SuccessNode? Success { get; private set; }
 
         protected override FunctionScope FunctionScope => FunctionScope.Group;
 
@@ -23,7 +22,6 @@ namespace Dice.AST
         {
             GroupExpressions = new List<DiceAST>();
             Sort = null;
-            Success = null;
             Functions = new List<FunctionNode>();
             NumTimes = null;
         }
@@ -41,19 +39,6 @@ namespace Dice.AST
             }
 
             Sort = sort;
-        }
-
-        internal void AddSuccess(SuccessNode success)
-        {
-            if (Success == null)
-            {
-                Success = success;
-            }
-            else
-            {
-                Success.AddSuccess(success.Success);
-                Success.AddFailure(success.Failure);
-            }
         }
 
         /// <summary>
@@ -75,16 +60,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.Keep, ref group);
             AddFunctionNodes(FunctionTiming.AfterKeep, ref group);
             AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
-            if (Success != null)
-            {
-                if (Success.Success == null)
-                {
-                    throw new DiceException(DiceErrorCode.InvalidSuccess);
-                }
-
-                Success.Expression = group;
-                group = Success;
-            }
+            AddFunctionNodes(FunctionTiming.Success, ref group);
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref group);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref group);
             AddFunctionNodes(FunctionTiming.Crit, ref group);
@@ -124,11 +100,6 @@ namespace Dice.AST
             if (Sort != null)
             {
                 sb.Append(Sort.ToString());
-            }
-
-            if (Success != null)
-            {
-                sb.Append(Success.ToString());
             }
 
             foreach (var f in Functions)

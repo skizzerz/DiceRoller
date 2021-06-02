@@ -193,13 +193,17 @@ namespace Dice
                 }
                 else
                 {
-                    if (die.Flags.HasFlag(DieFlags.Success))
+                    // backwards compat; previously dropping a die stripped success/failure flags
+                    if (die.IsLiveDie())
                     {
-                        sb.Append('$');
-                    }
-                    else if (die.Flags.HasFlag(DieFlags.Failure))
-                    {
-                        sb.Append('#');
+                        if (die.Flags.HasFlag(DieFlags.Success))
+                        {
+                            sb.Append('$');
+                        }
+                        else if (die.Flags.HasFlag(DieFlags.Failure))
+                        {
+                            sb.Append('#');
+                        }
                     }
 
                     sb.Append(die.Value);

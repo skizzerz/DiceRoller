@@ -79,6 +79,7 @@ namespace Dice
         /// When defining failures, must also define at least one success.
         /// </summary>
         [Description("When defining failures, must also define at least one success.")]
+        [Obsolete("This error code is no longer used in the library and will be removed in a later version")]
         InvalidSuccess = 12,
         /// <summary>
         /// Cannot mix reroll types on a roll.

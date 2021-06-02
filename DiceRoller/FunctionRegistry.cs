@@ -14,7 +14,7 @@ namespace Dice
     public class FunctionRegistry
     {
         protected readonly Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks = new Dictionary<(string, FunctionScope), FunctionSlot>();
-        protected readonly Dictionary<string, string> Extras = new Dictionary<string, string>();
+        protected readonly Dictionary<string, FunctionExtra> Extras = new Dictionary<string, FunctionExtra>();
 
         public event EventHandler<ValidateEventArgs>? Validate;
 
@@ -64,7 +64,7 @@ namespace Dice
             throw new KeyNotFoundException($"No registered function matches the name and scope ({name}, FunctionScope.{scope})");
         }
 
-        public static FunctionSlot GetExtra(RollData data, string name, FunctionScope scope)
+        public static FunctionSlot GetExtraSlot(RollData data, string name, FunctionScope scope)
         {
             if (scope == FunctionScope.All || scope == FunctionScope.Roll || scope == FunctionScope.Global)
             {
@@ -75,20 +75,42 @@ namespace Dice
 
             if (data.FunctionRegistry.ContainsExtra(lname, scope))
             {
-                return data.FunctionRegistry.Callbacks[(data.FunctionRegistry.Extras[lname], scope)];
+                return data.FunctionRegistry.Callbacks[(data.FunctionRegistry.Extras[lname].FunctionName, scope)];
             }
 
             if (data.Config.FunctionRegistry.ContainsExtra(name, scope))
             {
-                return data.Config.FunctionRegistry.Callbacks[(data.Config.FunctionRegistry.Extras[lname], scope)];
+                return data.Config.FunctionRegistry.Callbacks[(data.Config.FunctionRegistry.Extras[lname].FunctionName, scope)];
             }
 
             if (data.Config.BuiltinFunctionRegistry.ContainsExtra(name, scope))
             {
-                return data.Config.BuiltinFunctionRegistry.Callbacks[(data.Config.BuiltinFunctionRegistry.Extras[lname], scope)];
+                return data.Config.BuiltinFunctionRegistry.Callbacks[(data.Config.BuiltinFunctionRegistry.Extras[lname].FunctionName, scope)];
             }
 
-            throw new KeyNotFoundException($"No registered extra matches the name and scope ({name}, FunctionScope.{scope})");
+            throw new KeyNotFoundException($"No registered top-level extra matches the name and scope ({name}, FunctionScope.{scope})");
+        }
+
+        public static FunctionExtra GetExtraData(RollData data, string name)
+        {
+            var lname = name.ToLowerInvariant();
+
+            if (data.FunctionRegistry.Extras.ContainsKey(lname))
+            {
+                return data.FunctionRegistry.Extras[lname];
+            }
+
+            if (data.Config.FunctionRegistry.Extras.ContainsKey(lname))
+            {
+                return data.Config.FunctionRegistry.Extras[lname];
+            }
+
+            if (data.Config.BuiltinFunctionRegistry.Extras.ContainsKey(lname))
+            {
+                return data.Config.BuiltinFunctionRegistry.Extras[lname];
+            }
+
+            throw new KeyNotFoundException($"There is no registered top-level extra named \"{name}\"");
         }
 
         /// <summary>
@@ -97,15 +119,32 @@ namespace Dice
         /// <param name="data"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        internal static List<string> GetAllExtras(RollData data, FunctionScope scope)
+        internal static List<FunctionExtra> GetAllExtras(RollData data, FunctionScope scope)
         {
-            var extras = new List<string>();
+            var extras = new List<FunctionExtra>();
 
-            extras.AddRange(data.FunctionRegistry.Extras.Where(e => data.FunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
-            extras.AddRange(data.Config.FunctionRegistry.Extras.Where(e => data.Config.FunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
-            extras.AddRange(data.Config.BuiltinFunctionRegistry.Extras.Where(e => data.Config.BuiltinFunctionRegistry.Contains(e.Value, scope)).Select(e => e.Key));
+            // user-defined extras attached to the current roll
+            extras.AddRange(data.FunctionRegistry.Extras.Where(e => data.FunctionRegistry.Contains(e.Value.FunctionName, scope)).Select(e => e.Value));
 
-            return extras.Distinct().OrderByDescending(e => e.Length).ToList();
+            // user-defined extras attached to global config
+            foreach (var extra in data.Config.FunctionRegistry.Extras.Where(e => data.Config.FunctionRegistry.Contains(e.Value.FunctionName, scope)).Select(e => e.Value))
+            {
+                if (!extras.Any(e => e.ExtraName == extra.ExtraName))
+                {
+                    extras.Add(extra);
+                }
+            }
+
+            // built-in extras
+            foreach (var extra in data.Config.BuiltinFunctionRegistry.Extras.Where(e => data.Config.BuiltinFunctionRegistry.Contains(e.Value.FunctionName, scope)).Select(e => e.Value))
+            {
+                if (!extras.Any(e => e.ExtraName == extra.ExtraName))
+                {
+                    extras.Add(extra);
+                }
+            }
+
+            return extras.OrderByDescending(e => e.ExtraName.Length).ToList();
         }
 
         /// <summary>
@@ -224,12 +263,9 @@ namespace Dice
         /// <summary>
         /// Registers the specified callback to the given name, scope, and timing.
         /// </summary>
-        /// <param name="name">Function name to register. Function names are case-insensitive.</param>
-        /// <param name="extra">Extra name to register for the function. Extra names are case-insensitive. Ignored when registering a function on global scope.</param>
-        /// <param name="callback">The method to be called whenever the function is called in a dice expression.</param>
+        /// <param name="slot">Details on the function itself.</param>
         /// <param name="scope">The scope of the function.</param>
-        /// <param name="timing">When in the order of evaluation of a roll the function should be executed. Ignored for global functions.</param>
-        /// <param name="behavior">How the function behaves when multiples of it are specified on the same roll. Ignored for global functions.</param>
+        /// <param name="extra">Details on the "extra" for the function. Ignored when registering a function on global scope.</param>
         /// <remarks>When overriding in a subclass, you will need to call the parent method for registration to fully succeed.</remarks>
         public virtual void RegisterFunction(FunctionSlot slot, FunctionScope scope, string? extra = null)
         {
@@ -269,12 +305,12 @@ namespace Dice
             if (extra != null && scope != FunctionScope.Global)
             {
                 var lextra = extra.ToLowerInvariant();
-                if (Extras.ContainsKey(lextra) && Extras[lextra] != lname)
+                if (Extras.ContainsKey(lextra) && Extras[lextra].FunctionName != lname)
                 {
                     throw new InvalidOperationException("An extra with the same name has already been registered");
                 }
 
-                Extras[lextra] = lname;
+                Extras[lextra] = new FunctionExtra(lextra, lname);
             }
         }
 
@@ -312,7 +348,7 @@ namespace Dice
             // if the last roll callback for this name was removed, also remove any extra for it
             if (scope != FunctionScope.Group && !Contains(name, FunctionScope.Roll))
             {
-                var toRemove = Extras.Where(kv => kv.Value == lname).Select(kv => kv.Key).ToList();
+                var toRemove = Extras.Where(kv => kv.Value.FunctionName == lname).Select(kv => kv.Key).ToList();
                 foreach (var extra in toRemove)
                 {
                     Extras.Remove(extra);
@@ -350,7 +386,7 @@ namespace Dice
                 FunctionScope.All => false,
                 FunctionScope.Global => false,
                 FunctionScope.Roll => ContainsExtra(name, FunctionScope.Basic) || ContainsExtra(name, FunctionScope.Group),
-                _ => Extras.ContainsKey(name.ToLowerInvariant()) && Contains(Extras[name.ToLowerInvariant()], scope)
+                _ => Extras.ContainsKey(name.ToLowerInvariant()) && Contains(Extras[name.ToLowerInvariant()].FunctionName, scope)
             };
         }
     }

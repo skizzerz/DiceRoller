@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
-using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime.Misc;
 
 using Dice.AST;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dice.Grammar
 {
@@ -114,13 +112,25 @@ namespace Dice.Grammar
 
             for (int i = 0; i < context.grouped_extras().Length; i++)
             {
-                do
+                while (true)
                 {
-                    groupNodes.Add(Stack.Pop());
-                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "GroupExtra");
+                    var node = Stack.Pop();
+                    if (node is SentinelNode s)
+                    {
+                        if (s.Marker == "GroupExtra")
+                        {
+                            // reached the end of this particular grouped_extra term
+                            break;
+                        }
+                        else if (s.Marker == "MultipartExtra")
+                        {
+                            // ignore these nodes now that all extras are resolved
+                            continue;
+                        }
+                    }
 
-                // pop the SentinelNode
-                Stack.Pop();
+                    groupNodes.Add(node);
+                }
             }
 
             groupNodes.Reverse();
@@ -128,11 +138,7 @@ namespace Dice.Grammar
 
             foreach (var node in groupNodes)
             {
-                if (node is SuccessNode)
-                {
-                    partial.AddSuccess((SuccessNode)node);
-                }
-                else if (node is SortNode)
+                if (node is SortNode)
                 {
                     partial.AddSort((SortNode)node);
                 }
@@ -187,6 +193,14 @@ namespace Dice.Grammar
                 args.Add(Stack.Pop());
             }
 
+            // we may have a sentinel on the stack from finishing up a previous extra
+            FunctionExtra? currentExtra = null;
+            var top = Stack.Peek();
+            if (top is SentinelNode sentinel && sentinel.Marker == "MultipartExtra")
+            {
+                currentExtra = (FunctionExtra?)sentinel.Data;
+            }
+
             // get the extra's name. This may in fact be multiple extras smooshed together without arguments,
             // so check for that as well. If that is the case, arg above is only the argument for the final extra.
             var fname = context.T_EXTRAS().GetText();
@@ -199,10 +213,35 @@ namespace Dice.Grammar
                 var lname = fname.ToLowerInvariant();
                 foreach (var extra in extras)
                 {
-                    if (lname.StartsWith(extra))
+                    if (currentExtra != null)
                     {
-                        fname = fname.Substring(extra.Length);
-                        var resolved = FunctionRegistry.GetExtra(Data, extra, FunctionScope.Group);
+                        // check for multipart extras
+                        foreach (var follower in extra.MultipartFollowers)
+                        {
+                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
+                            {
+                                fname = fname.Substring(follower.Key.Length);
+                                if (fname.Length == 0)
+                                {
+                                    Stack.Push(new FunctionNode(FunctionScope.Group, follower.Value, args, Data));
+                                }
+                                else
+                                {
+                                    Stack.Push(new FunctionNode(FunctionScope.Group, follower.Value, new List<DiceAST>(), Data));
+                                }
+
+                                goto extraProcessed;
+                            }
+                        }
+                    }
+
+                    // if no multipart extras match (or if we're just starting a string of extras),
+                    // check for a globally-registered extra
+                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName))
+                    {
+                        fname = fname.Substring(extra.ExtraName.Length);
+                        var resolved = FunctionRegistry.GetExtraSlot(Data, extra.ExtraName, FunctionScope.Group);
+                        currentExtra = extra;
 
                         if (fname.Length == 0)
                         {
@@ -213,16 +252,20 @@ namespace Dice.Grammar
                             Stack.Push(new FunctionNode(FunctionScope.Group, resolved.Name, new List<DiceAST>(), Data));
                         }
 
-                        break;
+                        goto extraProcessed;
                     }
                 }
 
+            extraProcessed:
                 if (fname.Length == startLength)
                 {
                     // no extra found
                     throw new DiceException(DiceErrorCode.NoSuchExtra, lname);
                 }
             } while (fname.Length > 0);
+
+            // let future invocations know that there may be a continuation from this call
+            Stack.Push(new SentinelNode("MultipartExtra", currentExtra));
         }
 
         public override void ExitGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context)
@@ -232,11 +275,12 @@ namespace Dice.Grammar
                 throw new DiceException(DiceErrorCode.NoSuchExtra, String.Empty);
             }
 
-            var resolved = FunctionRegistry.GetExtra(Data, String.Empty, FunctionScope.Group);
+            var resolved = FunctionRegistry.GetExtraSlot(Data, String.Empty, FunctionScope.Group);
             var args = new List<DiceAST>() { Stack.Pop() };
 
             Stack.Push(new SentinelNode("GroupExtra"));
             Stack.Push(new FunctionNode(FunctionScope.Group, resolved.Name, args, Data));
+            Stack.Push(new SentinelNode("MultipartExtra", FunctionRegistry.GetExtraData(Data, String.Empty)));
         }
 
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
@@ -260,35 +304,6 @@ namespace Dice.Grammar
             var lname = fname.ToLower();
             switch (lname)
             {
-                case "success":
-                    if (args.Count == 0 || args.Count > 2)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args[0] is ComparisonNode && (args.Count == 1 || args[1] is ComparisonNode))
-                    {
-                        Stack.Push(new SuccessNode((ComparisonNode)args[0], args.Count == 1 ? null : (ComparisonNode)args[1]));
-                    }
-                    else
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    break;
-                case "failure":
-                    if (args.Count != 1)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (!(args[0] is ComparisonNode))
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new SuccessNode(null, (ComparisonNode)args[0]));
-                    break;
                 case "sortasc":
                     if (args.Count != 0)
                     {
@@ -323,13 +338,25 @@ namespace Dice.Grammar
 
             for (int i = 0; i < context.basic_extras().Length; i++)
             {
-                do
+                while (true)
                 {
-                    extras.Add(Stack.Pop());
-                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "BasicExtra");
+                    var node = Stack.Pop();
+                    if (node is SentinelNode s)
+                    {
+                        if (s.Marker == "BasicExtra")
+                        {
+                            // reached the end of this particular grouped_extra term
+                            break;
+                        }
+                        else if (s.Marker == "MultipartExtra")
+                        {
+                            // ignore these nodes now that all extras are resolved
+                            continue;
+                        }
+                    }
 
-                // pop the SentinelNode
-                Stack.Pop();
+                    extras.Add(node);
+                }
             }
 
             extras.Reverse();
@@ -348,11 +375,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is SuccessNode)
-                {
-                    partial.AddSuccess((SuccessNode)node);
-                }
-                else if (node is CritNode)
+                if (node is CritNode)
                 {
                     partial.AddCritical((CritNode)node);
                 }
@@ -411,11 +434,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is SuccessNode)
-                {
-                    partial.AddSuccess((SuccessNode)node);
-                }
-                else if (node is CritNode)
+                if (node is CritNode)
                 {
                     partial.AddCritical((CritNode)node);
                 }
@@ -441,6 +460,14 @@ namespace Dice.Grammar
                 args.Add(Stack.Pop());
             }
 
+            // we may have a sentinel on the stack from finishing up a previous extra
+            FunctionExtra? currentExtra = null;
+            var top = Stack.Peek();
+            if (top is SentinelNode sentinel && sentinel.Marker == "MultipartExtra")
+            {
+                currentExtra = (FunctionExtra?)sentinel.Data;
+            }
+
             // get the extra's name. This may in fact be multiple extras smooshed together without arguments,
             // so check for that as well. If that is the case, arg above is only the argument for the final extra.
             var fname = context.T_EXTRAS().GetText();
@@ -453,10 +480,35 @@ namespace Dice.Grammar
                 var lname = fname.ToLowerInvariant();
                 foreach (var extra in extras)
                 {
-                    if (lname.StartsWith(extra))
+                    if (currentExtra != null)
                     {
-                        fname = fname.Substring(extra.Length);
-                        var resolved = FunctionRegistry.GetExtra(Data, extra, FunctionScope.Basic);
+                        // check for multipart extras
+                        foreach (var follower in extra.MultipartFollowers)
+                        {
+                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
+                            {
+                                fname = fname.Substring(follower.Key.Length);
+                                if (fname.Length == 0)
+                                {
+                                    Stack.Push(new FunctionNode(FunctionScope.Basic, follower.Value, args, Data));
+                                }
+                                else
+                                {
+                                    Stack.Push(new FunctionNode(FunctionScope.Basic, follower.Value, new List<DiceAST>(), Data));
+                                }
+
+                                goto extraProcessed;
+                            }
+                        }
+                    }
+
+                    // if no multipart extras match (or if we're just starting a string of extras),
+                    // check for a globally-registered extra
+                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName))
+                    {
+                        fname = fname.Substring(extra.ExtraName.Length);
+                        var resolved = FunctionRegistry.GetExtraSlot(Data, extra.ExtraName, FunctionScope.Basic);
+                        currentExtra = extra;
 
                         if (fname.Length == 0)
                         {
@@ -467,16 +519,20 @@ namespace Dice.Grammar
                             Stack.Push(new FunctionNode(FunctionScope.Basic, resolved.Name, new List<DiceAST>(), Data));
                         }
 
-                        break;
+                        goto extraProcessed;
                     }
                 }
 
+            extraProcessed:
                 if (fname.Length == startLength)
                 {
                     // no extra found
                     throw new DiceException(DiceErrorCode.NoSuchExtra, lname);
                 }
             } while (fname.Length > 0);
+
+            // let future invocations know that there may be a continuation from this call
+            Stack.Push(new SentinelNode("MultipartExtra", currentExtra));
         }
 
         public override void ExitBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context)
@@ -486,11 +542,12 @@ namespace Dice.Grammar
                 throw new DiceException(DiceErrorCode.NoSuchExtra, String.Empty);
             }
 
-            var resolved = FunctionRegistry.GetExtra(Data, String.Empty, FunctionScope.Basic);
+            var resolved = FunctionRegistry.GetExtraSlot(Data, String.Empty, FunctionScope.Basic);
             var args = new List<DiceAST>() { Stack.Pop() };
 
             Stack.Push(new SentinelNode("BasicExtra"));
             Stack.Push(new FunctionNode(FunctionScope.Basic, resolved.Name, args, Data));
+            Stack.Push(new SentinelNode("MultipartExtra", FunctionRegistry.GetExtraData(Data, String.Empty)));
         }
 
         public override void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context)
@@ -513,32 +570,6 @@ namespace Dice.Grammar
 
             switch (lname)
             {
-                case "success":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new SuccessNode(new ComparisonNode(args.Cast<ComparisonNode>()), null));
-                    break;
-                case "failure":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new SuccessNode(null, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
                 case "critical":
                     if (args.Count == 0)
                     {
