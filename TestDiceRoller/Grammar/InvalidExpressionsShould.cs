@@ -19,21 +19,21 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteCriticalExtra()
+        public void ThrowIncorrectArity_WhenIncompleteCriticalExtra()
         {
-            EvaluateRoll("3d6cs", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6cs", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteFumbleExtra()
+        public void ThrowIncorrectArity_WhenIncompleteFumbleExtra()
         {
-            EvaluateRoll("3d6cf", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6cf", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]
-        public void ThrowParseError_WhenIncompleteCriticalFumbleExtra()
+        public void ThrowIncorrectArity_WhenIncompleteCriticalFumbleExtra()
         {
-            EvaluateRoll("3d6cs>=5f", Roll9Conf, DiceErrorCode.ParseError);
+            EvaluateRoll("3d6cs>=5f", Roll9Conf, DiceErrorCode.IncorrectArity);
         }
 
         [TestMethod]

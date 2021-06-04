@@ -138,13 +138,9 @@ namespace Dice.Grammar
 
             foreach (var node in groupNodes)
             {
-                if (node is SortNode)
+                if (node is FunctionNode f)
                 {
-                    partial.AddSort((SortNode)node);
-                }
-                else if (node is FunctionNode)
-                {
-                    partial.AddFunction((FunctionNode)node);
+                    partial.AddFunction(f);
                 }
                 else
                 {
@@ -299,31 +295,8 @@ namespace Dice.Grammar
 
             args.Reverse();
 
-            // check for a built-in function
             var fname = context.T_FUNCTION().GetText();
-            var lname = fname.ToLower();
-            switch (lname)
-            {
-                case "sortasc":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new SortNode(SortDirection.Ascending));
-                    break;
-                case "sortdesc":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new SortNode(SortDirection.Descending));
-                    break;
-                default:
-                    Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Data));
-                    break;
-            }
+            Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Data));
         }
 
         public override void ExitRollBasic([NotNull] DiceGrammarParser.RollBasicContext context)
@@ -375,13 +348,13 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is SortNode)
+                if (node is FunctionNode f)
                 {
-                    partial.AddSort((SortNode)node);
+                    partial.AddFunction(f);
                 }
-                else if (node is FunctionNode)
+                else
                 {
-                    partial.AddFunction((FunctionNode)node);
+                    throw new InvalidOperationException("Unexpected node type when resolving basic node");
                 }
             }
 
@@ -402,13 +375,25 @@ namespace Dice.Grammar
 
             for (int i = 0; i < context.basic_extras().Length; i++)
             {
-                do
+                while (true)
                 {
-                    extras.Add(Stack.Pop());
-                } while (!(Stack.Peek() is SentinelNode s) || s.Marker != "BasicExtra");
+                    var node = Stack.Pop();
+                    if (node is SentinelNode s)
+                    {
+                        if (s.Marker == "BasicExtra")
+                        {
+                            // reached the end of this particular grouped_extra term
+                            break;
+                        }
+                        else if (s.Marker == "MultipartExtra")
+                        {
+                            // ignore these nodes now that all extras are resolved
+                            continue;
+                        }
+                    }
 
-                // pop the SentinelNode
-                Stack.Pop();
+                    extras.Add(node);
+                }
             }
 
             extras.Reverse();
@@ -430,13 +415,13 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is SortNode)
+                if (node is FunctionNode f)
                 {
-                    partial.AddSort((SortNode)node);
+                    partial.AddFunction(f);
                 }
-                else if (node is FunctionNode)
+                else
                 {
-                    partial.AddFunction((FunctionNode)node);
+                    throw new InvalidOperationException("Unexpected node type when resolving fudge node");
                 }
             }
 
@@ -556,32 +541,8 @@ namespace Dice.Grammar
 
             args.Reverse();
 
-            // check for a built-in function
             var fname = context.T_FUNCTION().GetText();
-            var lname = fname.ToLowerInvariant();
-
-            switch (lname)
-            {
-                case "sortasc":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new SortNode(SortDirection.Ascending));
-                    break;
-                case "sortdesc":
-                    if (args.Count != 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    Stack.Push(new SortNode(SortDirection.Descending));
-                    break;
-                default:
-                    Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Data));
-                    break;
-            }
+            Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Data));
         }
 
         public override void ExitGlobalFunction([NotNull] DiceGrammarParser.GlobalFunctionContext context)

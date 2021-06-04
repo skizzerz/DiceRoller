@@ -14,14 +14,12 @@ namespace Dice.AST
     {
         public DiceAST? NumTimes { get; internal set; }
         public List<DiceAST> GroupExpressions { get; private set; }
-        public SortNode? Sort { get; private set; }
 
         protected override FunctionScope FunctionScope => FunctionScope.Group;
 
         internal GroupPartialNode()
         {
             GroupExpressions = new List<DiceAST>();
-            Sort = null;
             Functions = new List<FunctionNode>();
             NumTimes = null;
         }
@@ -29,16 +27,6 @@ namespace Dice.AST
         internal void AddExpression(DiceAST expression)
         {
             GroupExpressions.Add(expression);
-        }
-
-        internal void AddSort(SortNode sort)
-        {
-            if (Sort != null)
-            {
-                throw new DiceException(DiceErrorCode.TooManySort);
-            }
-
-            Sort = sort;
         }
 
         /// <summary>
@@ -49,30 +37,11 @@ namespace Dice.AST
         internal DiceAST CreateGroupNode()
         {
             DiceAST group = new GroupNode(NumTimes, GroupExpressions);
-            AddFunctionNodes(FunctionTiming.First, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeExplode, ref group);
-            AddFunctionNodes(FunctionTiming.Explode, ref group);
-            AddFunctionNodes(FunctionTiming.AfterExplode, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeReroll, ref group);
-            AddFunctionNodes(FunctionTiming.Reroll, ref group);
-            AddFunctionNodes(FunctionTiming.AfterReroll, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeKeep, ref group);
-            AddFunctionNodes(FunctionTiming.Keep, ref group);
-            AddFunctionNodes(FunctionTiming.AfterKeep, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeSuccess, ref group);
-            AddFunctionNodes(FunctionTiming.Success, ref group);
-            AddFunctionNodes(FunctionTiming.AfterSuccess, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeCrit, ref group);
-            AddFunctionNodes(FunctionTiming.Crit, ref group);
-            AddFunctionNodes(FunctionTiming.AfterCrit, ref group);
-            AddFunctionNodes(FunctionTiming.BeforeSort, ref group);
-            if (Sort != null)
+
+            foreach (FunctionTiming timing in Enum.GetValues(typeof(FunctionTiming)))
             {
-                Sort.Expression = group;
-                group = Sort;
+                AddFunctionNodes(timing, ref group);
             }
-            AddFunctionNodes(FunctionTiming.AfterSort, ref group);
-            AddFunctionNodes(FunctionTiming.Last, ref group);
 
             return group;
         }
@@ -97,14 +66,12 @@ namespace Dice.AST
             sb.Append(String.Join(", ", GroupExpressions.Select(o => o.ToString())));
             sb.Append('}');
 
-            if (Sort != null)
+            foreach (FunctionTiming timing in Enum.GetValues(typeof(FunctionTiming)))
             {
-                sb.Append(Sort.ToString());
-            }
-
-            foreach (var f in Functions)
-            {
-                sb.Append(f.ToString());
+                foreach (var fn in Functions.Where(f => f.Slot.Timing == timing))
+                {
+                    sb.Append(fn.ToString());
+                }
             }
 
             sb.Append(">>");

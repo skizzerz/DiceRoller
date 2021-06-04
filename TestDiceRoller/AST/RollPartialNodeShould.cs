@@ -27,7 +27,7 @@ namespace TestDiceRoller.AST
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "fumble", new List<DiceAST>() { equal1 }, data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "foo", new List<DiceAST>(), data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "reroll", new List<DiceAST>() { equal1 }, data));
-            Assert.AreEqual("RPARTIAL<<1d20.reroll(=1).critical(=20).fumble(=1).foo()>>", partial.ToString());
+            Assert.AreEqual("RPARTIAL<<1d20.reroll(=1).foo().critical(=20).fumble(=1)>>", partial.ToString());
         }
 
         [TestMethod]

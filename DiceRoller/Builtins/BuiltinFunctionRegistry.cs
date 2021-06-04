@@ -24,6 +24,7 @@ namespace Dice.Builtins
             RegisterType(typeof(KeepFunctions));
             RegisterType(typeof(SuccessFunctions));
             RegisterType(typeof(CritFunctions));
+            RegisterType(typeof(SortFunctions));
 
             // wire multipart extras
             Extras[String.Empty].AddMultipart("f", "failure");
@@ -33,6 +34,7 @@ namespace Dice.Builtins
             Validate += ExplodeFunctions.ValidateExplode;
             Validate += RerollFunctions.ValidateReroll;
             Validate += KeepFunctions.ValidateKeep;
+            Validate += SortFunctions.ValidateSort;
 
             // mark class as finished; users can remove functions but cannot add any
             _finalized = true;
