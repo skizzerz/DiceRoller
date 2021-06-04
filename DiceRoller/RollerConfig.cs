@@ -46,7 +46,7 @@ namespace Dice
         /// may be rolled. If false, any die size from 1 to MaxSides, inclusive, can be rolled.
         /// Default: false
         /// </summary>
-        public bool NormalSidesOnly { get; set; } = false;
+        public bool NormalSidesOnly { get; set; }
 
         /// <summary>
         /// If set, this function will be called whenever a die is rolled to retrieve its result.
@@ -86,7 +86,7 @@ namespace Dice
 
         public RollerConfig()
         {
-            MacroRegistry.RegisterType(typeof(BuiltinMacros));
+            MacroRegistry.RegisterType(typeof(DiceMacros));
         }
     }
 }

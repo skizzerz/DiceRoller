@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,15 +42,25 @@ namespace Dice.AST
             sb.Append(Context.Name);
             for (int i = 1; i < Context.Arguments.Count; i++)
             {
-                sb.AppendFormat(":{0}", Context.Arguments[i]);
+                sb.AppendFormat(CultureInfo.InvariantCulture, ":{0}", Context.Arguments[i]);
             }
-            sb.Append("]");
+            sb.Append(']');
 
             return sb.ToString();
         }
 
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             if (data.MacroRegistry.Contains(Context.Name))
             {
                 data.MacroRegistry.Get(Context.Name).callback(Context);
@@ -93,6 +104,16 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             // Macros are currently only evaluated once. This may change in the future
             // once it is more understood what these can be used for.
             return 0;

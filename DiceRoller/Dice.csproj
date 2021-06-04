@@ -51,11 +51,12 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <AssemblyOriginatorKeyFile>DiceRoller.snk</AssemblyOriginatorKeyFile>
         <DelaySign>false</DelaySign>
         <DebugType>Full</DebugType>
-        <CodeAnalysisRuleSet>../DiceRoller.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <LangVersion>8.0</LangVersion>
         <Nullable>enable</Nullable>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <PackageIconUrl />
     </PropertyGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net452'">

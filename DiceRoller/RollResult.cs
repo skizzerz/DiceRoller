@@ -293,18 +293,19 @@ namespace Dice
             return false;
         }
 
-        public virtual bool Equals(RollResult r)
+        public virtual bool Equals(RollResult other)
         {
             // RollRoot is not considered when determining if two RollResults are equal.
             // This is because RollRoot is not preserved on serialization, and does not contain
             // any information that is not represented via other properties/fields.
             // Metadata is not considered because it doesn't impact the result itself.
-            return ResultType == r.ResultType
-                && Value == r.Value
-                && Values.SequenceEqual(r.Values)
-                && NumRolls == r.NumRolls
-                && AllRolls.SequenceEqual(r.AllRolls)
-                && AllMacros.SequenceEqual(r.AllMacros);
+            return other is object
+                && ResultType == other.ResultType
+                && Value == other.Value
+                && Values.SequenceEqual(other.Values)
+                && NumRolls == other.NumRolls
+                && AllRolls.SequenceEqual(other.AllRolls)
+                && AllMacros.SequenceEqual(other.AllMacros);
         }
 
         public override int GetHashCode()
@@ -318,12 +319,12 @@ namespace Dice
 
         public static bool operator ==(RollResult a, RollResult b)
         {
-            return a.Equals(b);
+            return ReferenceEquals(a, b) || a?.Equals(b) == true;
         }
 
         public static bool operator !=(RollResult a, RollResult b)
         {
-            return !a.Equals(b);
+            return !(a == b);
         }
     }
 }

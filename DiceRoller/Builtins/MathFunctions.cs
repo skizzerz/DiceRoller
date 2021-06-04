@@ -12,6 +12,11 @@ namespace Dice.Builtins
         [DiceFunction("floor", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Floor(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg = context.Arguments[0];
             var values = new List<DieResult>
             {
@@ -30,6 +35,11 @@ namespace Dice.Builtins
         [DiceFunction("ceil", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Ceiling(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg = context.Arguments[0];
             var values = new List<DieResult>
             {
@@ -48,6 +58,11 @@ namespace Dice.Builtins
         [DiceFunction("round", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Round(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg = context.Arguments[0];
             var values = new List<DieResult>
             {
@@ -66,6 +81,11 @@ namespace Dice.Builtins
         [DiceFunction("abs", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Abs(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg = context.Arguments[0];
             var values = new List<DieResult>
             {
@@ -84,6 +104,11 @@ namespace Dice.Builtins
         [DiceFunction("max", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Max(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg1 = context.Arguments[0];
             var arg2 = context.Arguments[1];
             context.Value = Math.Max(arg1.Value, arg2.Value);
@@ -156,6 +181,11 @@ namespace Dice.Builtins
         [DiceFunction("min", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Min(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var arg1 = context.Arguments[0];
             var arg2 = context.Arguments[1];
             context.Value = Math.Min(arg1.Value, arg2.Value);

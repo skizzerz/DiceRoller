@@ -4,11 +4,15 @@ using Dice.AST;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Dice.Grammar
 {
     [CLSCompliant(false)]
+    [SuppressMessage("Design", "CA1062:Validate arguments of public methods",
+        Justification = "Class is considered internal (for public API purposes) despite being marked public to align with antlr-generated code visibility")]
     public class DiceGrammarListener : DiceGrammarParserBaseListener
     {
         // holds the state of the current parse tree, the bottom of the stack is the root of the AST,
@@ -82,7 +86,7 @@ namespace Dice.Grammar
 
         public override void ExitNumberLiteral([NotNull] DiceGrammarParser.NumberLiteralContext context)
         {
-            Stack.Push(new LiteralNode(Convert.ToDecimal(context.GetText())));
+            Stack.Push(new LiteralNode(Convert.ToDecimal(context.GetText(), CultureInfo.InvariantCulture)));
         }
 
         public override void ExitNumberMacro([NotNull] DiceGrammarParser.NumberMacroContext context)
@@ -156,10 +160,10 @@ namespace Dice.Grammar
             var top = Stack.Pop();
             var partial = Stack.Pop();
 
-            if (partial is GroupPartialNode)
+            if (partial is GroupPartialNode group)
             {
                 // no NumTimes was specified
-                ((GroupPartialNode)partial).AddExpression(top);
+                group.AddExpression(top);
                 Stack.Push(partial);
             }
             else
@@ -214,7 +218,7 @@ namespace Dice.Grammar
                         // check for multipart extras
                         foreach (var follower in currentExtra.MultipartFollowers)
                         {
-                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
+                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key, StringComparison.InvariantCulture))
                             {
                                 fname = fname.Substring(follower.Key.Length);
                                 if (fname.Length == 0)
@@ -233,7 +237,7 @@ namespace Dice.Grammar
 
                     // if no multipart extras match (or if we're just starting a string of extras),
                     // check for a globally-registered extra
-                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName))
+                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName, StringComparison.InvariantCulture))
                     {
                         fname = fname.Substring(extra.ExtraName.Length);
                         var resolved = FunctionRegistry.GetExtraSlot(Data, extra.ExtraName, FunctionScope.Group);
@@ -462,7 +466,7 @@ namespace Dice.Grammar
                         // check for multipart extras
                         foreach (var follower in currentExtra.MultipartFollowers)
                         {
-                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
+                            if (follower.Key.Length > 0 && lname.StartsWith(follower.Key, StringComparison.InvariantCulture))
                             {
                                 fname = fname.Substring(follower.Key.Length);
                                 if (fname.Length == 0)
@@ -481,7 +485,7 @@ namespace Dice.Grammar
 
                     // if no multipart extras match (or if we're just starting a string of extras),
                     // check for a globally-registered extra
-                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName))
+                    if (extra.ExtraName.Length > 0 && lname.StartsWith(extra.ExtraName, StringComparison.InvariantCulture))
                     {
                         fname = fname.Substring(extra.ExtraName.Length);
                         var resolved = FunctionRegistry.GetExtraSlot(Data, extra.ExtraName, FunctionScope.Basic);

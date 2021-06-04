@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace Dice.AST
 {
@@ -63,7 +64,7 @@ namespace Dice.AST
                 && (Operation == MathOp.Multiply || Operation == MathOp.Divide)
                 && (ml.Operation == MathOp.Add || ml.Operation == MathOp.Subtract))
             {
-                sb.AppendFormat("({0})", Left.ToString());
+                sb.AppendFormat(CultureInfo.InvariantCulture, "({0})", Left.ToString());
             }
             else if (Left != null)
             {
@@ -85,7 +86,7 @@ namespace Dice.AST
                     sb.Append(" / ");
                     break;
                 case MathOp.Negate:
-                    sb.Append("-");
+                    sb.Append('-');
                     break;
                 default:
                     sb.Append("<<UNKNOWN MATH>>");
@@ -98,7 +99,7 @@ namespace Dice.AST
                     || (Operation == MathOp.Multiply && (mr.Operation == MathOp.Add || mr.Operation == MathOp.Subtract))
                     || Operation.IsUnary()))
             {
-                sb.AppendFormat("({0})", Right.ToString());
+                sb.AppendFormat(CultureInfo.InvariantCulture, "({0})", Right.ToString());
             }
             else
             {
@@ -206,12 +207,12 @@ namespace Dice.AST
             var leftRoll = Left?.UnderlyingRollNode;
             var rightRoll = Right.UnderlyingRollNode;
 
-            if (Left is FunctionNode && ((FunctionNode)Left).IsGlobalFunction())
+            if (Left is FunctionNode lf && lf.IsGlobalFunction())
             {
                 addLeftParen = false;
             }
 
-            if (Right is FunctionNode && ((FunctionNode)Right).IsGlobalFunction())
+            if (Right is FunctionNode rf && rf.IsGlobalFunction())
             {
                 addRightParen = false;
             }

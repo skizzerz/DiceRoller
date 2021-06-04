@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -9,8 +10,15 @@ namespace Dice.Builtins
 {
     public static class RerollFunctions
     {
+        [SuppressMessage("Security", "CA2109:Review visible event handlers",
+            Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateReroll(object sender, ValidateEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
             if (e.Timing != FunctionTiming.Reroll)
             {
                 return;
@@ -25,6 +33,11 @@ namespace Dice.Builtins
         [DiceFunction("reroll", "rr", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Roll, Timing = FunctionTiming.Reroll)]
         public static void Reroll(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
 
             if (context.Arguments.Count == 0)
@@ -43,6 +56,11 @@ namespace Dice.Builtins
         [DiceFunction("rerollOnce", "ro", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Roll, Timing = FunctionTiming.Reroll)]
         public static void RerollOnce(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
 
             if (context.Arguments.Count == 0)
@@ -61,6 +79,11 @@ namespace Dice.Builtins
         [DiceFunction("rerollN", Behavior = FunctionBehavior.CombineArguments, Scope = FunctionScope.Roll, Timing = FunctionTiming.Reroll)]
         public static void RerollN(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var dataList = new List<RerollData>();
 
             if (context.Arguments.Count < 2)

@@ -12,6 +12,11 @@ namespace Dice.Builtins
         [DiceFunction("if", Scope = FunctionScope.Global, ArgumentPattern = "ECEE?")]
         public static void If(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var test = context.Arguments[0];
             var compare = (ComparisonNode)context.Arguments[1];
             var then = context.Arguments[2];

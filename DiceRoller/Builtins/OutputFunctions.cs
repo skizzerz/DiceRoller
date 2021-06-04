@@ -12,6 +12,11 @@ namespace Dice.Builtins
         [DiceFunction("expand", Scope = FunctionScope.Group, Timing = FunctionTiming.BeforeSort, ArgumentPattern = "")]
         public static void Expand(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             List<DieResult> values = new List<DieResult>();
             context.Value = context.Expression!.Value;
             context.ValueType = context.Expression.ValueType;

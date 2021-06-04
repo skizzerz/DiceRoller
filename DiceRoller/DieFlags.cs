@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace Dice
     /// or fumble, or whether or not the die result was kept.
     /// </summary>
     [Flags]
+    [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix",
+        Justification = "Enum name indicates flags that may be attached to dice, so suffix has semantic meaning")]
     public enum DieFlags
     {
         /// <summary>

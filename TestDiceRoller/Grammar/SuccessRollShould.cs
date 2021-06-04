@@ -8,8 +8,8 @@ namespace TestDiceRoller.Grammar
     [TestClass]
     public class SuccessRollShould : TestBase
     {
-        private static RollerConfig SuccessConf => new RollerConfig() { GetRandomBytes = GetRNG(3, 4, 0, 5) };
-        private static RollerConfig FudgeConf => new RollerConfig() { GetRandomBytes = GetRNG(0, 1, 2, 2) };
+        private static RollerConfig SuccessConf => new RollerConfig { GetRandomBytes = GetRNG(3, 4, 0, 5) };
+        private static RollerConfig FudgeConf => new RollerConfig { GetRandomBytes = GetRNG(0, 1, 2, 2) };
 
         [TestMethod]
         public void Successfully_SuccessExtra()

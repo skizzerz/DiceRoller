@@ -10,7 +10,7 @@ namespace TestDiceRoller.AST
     [TestClass]
     public class SuccessShould : TestBase
     {
-        private static RollerConfig SuccessConf => new RollerConfig() { GetRandomBytes = GetRNG(3, 4, 0, 5) };
+        private static RollerConfig SuccessConf => new RollerConfig { GetRandomBytes = GetRNG(3, 4, 0, 5) };
 
         private enum SuccessType
         {
@@ -18,7 +18,7 @@ namespace TestDiceRoller.AST
             Failure
         }
 
-        (RollData, DiceAST) GetSuccess(SuccessType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
+        static (RollData, DiceAST) GetSuccess(SuccessType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
         {
             var arguments = new List<DiceAST>();
             if (argument != null)

@@ -8,6 +8,7 @@
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>DiceRoller.snk</AssemblyOriginatorKeyFile>
     <DebugType>Full</DebugType>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace Dice
@@ -7,7 +8,9 @@ namespace Dice
     /// <summary>
     /// Represents an entry in the function registry
     /// </summary>
-    public readonly struct FunctionSlot
+    [SuppressMessage("Design", "CA1051:Do not declare visible instance fields",
+        Justification = "Immutable struct; access via property buys us nothing here")]
+    public readonly struct FunctionSlot : IEquatable<FunctionSlot>
     {
         public readonly string Name;
         public readonly FunctionTiming Timing;
@@ -55,6 +58,39 @@ namespace Dice
             Behavior = behavior;
             Callback = callback ?? throw new ArgumentNullException(nameof(callback));
             ArgumentPattern = argumentPattern;
+        }
+
+        public bool Equals(FunctionSlot other)
+        {
+            return Name == other.Name
+                && Callback == other.Callback
+                && Timing == other.Timing
+                && Behavior == other.Behavior
+                && ArgumentPattern == other.ArgumentPattern;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is FunctionSlot slot && Equals(slot);
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode()
+                + Callback.GetHashCode()
+                + Timing.GetHashCode()
+                + Behavior.GetHashCode()
+                + (ArgumentPattern?.GetHashCode() ?? 0);
+        }
+
+        public static bool operator ==(FunctionSlot left, FunctionSlot right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(FunctionSlot left, FunctionSlot right)
+        {
+            return !(left == right);
         }
     }
 }

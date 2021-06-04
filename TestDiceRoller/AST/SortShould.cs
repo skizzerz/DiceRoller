@@ -18,7 +18,7 @@ namespace TestDiceRoller.AST
             SortDesc
         }
 
-        (RollData, DiceAST) GetSort(SortType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
+        static (RollData, DiceAST) GetSort(SortType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
         {
             var arguments = new List<DiceAST>();
             if (argument != null)
@@ -44,7 +44,7 @@ namespace TestDiceRoller.AST
         public void Successfully_SortDescending()
         {
             var (data, node) = GetSort(SortType.SortDesc, SortConf, _4d20);
-            EvaluateNode(node, Data(SortConf), 4, "4d20.sortDesc() => 18 + 9 + 6 + 3 => 36");
+            EvaluateNode(node, data, 4, "4d20.sortDesc() => 18 + 9 + 6 + 3 => 36");
         }
 
         [TestMethod]

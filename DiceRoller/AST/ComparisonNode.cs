@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,7 +83,7 @@ namespace Dice.AST
                     _ => "<<INVALID COMPAREOP>>",
                 };
 
-                c += comp.expr.Value.ToString();
+                c += comp.expr.Value.ToString(CultureInfo.InvariantCulture);
                 comps.Add(c);
             }
 

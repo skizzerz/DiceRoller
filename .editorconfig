@@ -1,0 +1,19 @@
+﻿root = true
+
+[*]
+indent_style = space
+indent_size = 4
+
+[*.cs]
+# CA1308: Normalize strings to uppercase
+# Normalizing to lowercase is exposed and documented in the public API, so this is a breaking change
+dotnet_diagnostic.CA1308.severity = none
+# CA1825: Avoid zero-length array allocations
+# Array.Empty<T>() does not exist on .NET 4.5, so we cannot migrate to that until 4.5 support is dropped
+dotnet_diagnostic.CA1825.severity = none
+# CA2300: Do not use insecure deserializer BinaryFormatter
+# Binary serialization is unsafe and must only be used with trusted input; required for backwards compat
+dotnet_diagnostic.CA2300.severity = none
+# CA2301: Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder
+# Binary serialization is unsafe and must only be used with trusted input; required for backwards compat
+dotnet_diagnostic.CA2301.severity = none

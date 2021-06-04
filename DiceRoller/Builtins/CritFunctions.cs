@@ -16,7 +16,8 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Crit)]
         public static void Critical(FunctionContext context)
         {
-            MarkCrits(context, critical: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
+            MarkCrits(context ?? throw new ArgumentNullException(nameof(context)),
+                critical: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 
         [DiceFunction("fumble", "cf",
@@ -26,7 +27,8 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Crit)]
         public static void Fumble(FunctionContext context)
         {
-            MarkCrits(context, fumble: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
+            MarkCrits(context ?? throw new ArgumentNullException(nameof(context)),
+                fumble: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 
         private static void MarkCrits(FunctionContext context, ComparisonNode? critical = null, ComparisonNode? fumble = null)

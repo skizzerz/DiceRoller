@@ -188,9 +188,9 @@ namespace Dice
             return false;
         }
 
-        public bool Equals(DieResult d)
+        public bool Equals(DieResult other)
         {
-            return DieType == d.DieType && NumSides == d.NumSides && Value == d.Value && Flags == d.Flags;
+            return DieType == other.DieType && NumSides == other.NumSides && Value == other.Value && Flags == other.Flags;
         }
 
         public override int GetHashCode()

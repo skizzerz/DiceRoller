@@ -2,13 +2,21 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.Builtins
 {
     public static class SortFunctions
     {
+        [SuppressMessage("Security", "CA2109:Review visible event handlers",
+            Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateSort(object sender, ValidateEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
             if (e.Timing != FunctionTiming.Sort)
             {
                 return;
@@ -26,6 +34,11 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Sort)]
         public static void SortAscending(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             DoSort(context, ascending: true);
         }
 
@@ -35,6 +48,11 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Sort)]
         public static void SortDescending(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             DoSort(context, ascending: false);
         }
 

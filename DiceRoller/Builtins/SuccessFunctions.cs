@@ -16,6 +16,11 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Success)]
         public static void Success(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             CountSuccesses(context, success: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 
@@ -26,6 +31,11 @@ namespace Dice.Builtins
             Timing = FunctionTiming.Success)]
         public static void Failure(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             CountSuccesses(context, failure: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 

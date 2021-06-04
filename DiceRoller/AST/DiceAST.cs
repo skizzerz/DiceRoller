@@ -53,6 +53,16 @@ namespace Dice.AST
         /// <returns>Total number of rolls taken to evaluate this subtree</returns>
         protected internal long Evaluate(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             if (this == root)
             {
                 data.InternalContext = new InternalContext();
@@ -84,6 +94,16 @@ namespace Dice.AST
         /// <returns>Number of dice rolls performed</returns>
         protected internal long Reroll(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             if (!Evaluated)
             {
                 return Evaluate(data, root, depth);

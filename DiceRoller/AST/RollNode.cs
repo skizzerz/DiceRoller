@@ -73,6 +73,16 @@ namespace Dice.AST
 
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             long rolls = NumDice.Evaluate(data, root, depth + 1);
             rolls += NumSides?.Evaluate(data, root, depth + 1) ?? 0;
             rolls += Roll(data);
@@ -82,6 +92,16 @@ namespace Dice.AST
 
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (root == null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+
             return Roll(data);
         }
 

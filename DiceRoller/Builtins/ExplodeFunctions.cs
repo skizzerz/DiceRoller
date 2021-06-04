@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Dice.AST;
@@ -9,8 +10,15 @@ namespace Dice.Builtins
 {
     public static class ExplodeFunctions
     {
+        [SuppressMessage("Security", "CA2109:Review visible event handlers",
+            Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateExplode(object sender, ValidateEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
             if (e.Timing != FunctionTiming.Explode)
             {
                 return;
@@ -34,6 +42,11 @@ namespace Dice.Builtins
             ArgumentPattern = "C*")]
         public static void Explode(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
             DoExplode(context, comparisons, compound: false, penetrate: false);
         }
@@ -45,6 +58,11 @@ namespace Dice.Builtins
             ArgumentPattern = "C*")]
         public static void Compound(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
             DoExplode(context, comparisons, compound: true, penetrate: false);
         }
@@ -56,6 +74,11 @@ namespace Dice.Builtins
             ArgumentPattern = "C*")]
         public static void Penetrate(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
             DoExplode(context, comparisons, compound: false, penetrate: true);
         }
@@ -67,6 +90,11 @@ namespace Dice.Builtins
             ArgumentPattern = "C*")]
         public static void CompoundPenetrate(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
             DoExplode(context, comparisons, compound: true, penetrate: true);
         }

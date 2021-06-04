@@ -57,7 +57,7 @@ namespace Dice.PbP
         /// <summary>
         /// Getter is marked internal for unit testing, to ensure serialization roundtrips correctly.
         /// </summary>
-        internal int Diverged { get; private set; } = 0;
+        internal int Diverged { get; private set; }
 
         /// <summary>
         /// Constructs a new, empty RollPost. This represents a new post being made. If editing an existing post,
@@ -310,6 +310,11 @@ namespace Dice.PbP
         /// <returns>True if the two RollPosts have diverged, false if they have not</returns>
         public virtual bool HasDivergedFrom(RollPost other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
             var ourList = Current.Count == 0 ? Stored : Current;
             var otherList = other.Current.Count == 0 ? other.Stored : other.Current;
 
@@ -396,7 +401,7 @@ namespace Dice.PbP
             }
 
             DieFlags flag;
-            switch (args[nextIdx].ToLower())
+            switch (args[nextIdx].ToLowerInvariant())
             {
                 case "critical":
                     flag = DieFlags.Critical;

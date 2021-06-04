@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 
 using Dice.AST;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dice.Builtins
 {
@@ -17,8 +18,15 @@ namespace Dice.Builtins
             DropLowest
         }
 
+        [SuppressMessage("Security", "CA2109:Review visible event handlers",
+            Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateKeep(object sender, ValidateEventArgs e)
         {
+            if (e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
             var advantageCount = e.Contexts.Count(c => c.Name == "advantage" || c.Name == "disadvantage");
             var haveOther = e.Contexts.Any(c => c.Name != "advantage" && c.Name != "disadvantage");
 
@@ -36,36 +44,66 @@ namespace Dice.Builtins
         [DiceFunction("advantage", "ad", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Advantage(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyAdvantage(context, KeepType.KeepHighest);
         }
 
         [DiceFunction("disadvantage", "da", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Disadvantage(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyAdvantage(context, KeepType.KeepLowest);
         }
 
         [DiceFunction("dropLowest", "dl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropLowest(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyKeep(context, KeepType.DropLowest);
         }
 
         [DiceFunction("dropHighest", "dh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropHighest(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyKeep(context, KeepType.DropHighest);
         }
 
         [DiceFunction("keepLowest", "kl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepLowest(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyKeep(context, KeepType.KeepLowest);
         }
 
         [DiceFunction("keepHighest", "kh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepHighest(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ApplyKeep(context, KeepType.KeepHighest);
         }
 

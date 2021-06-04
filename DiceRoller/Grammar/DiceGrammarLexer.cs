@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 
 namespace Dice.Grammar
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1708:Identifiers should differ by more than case",
+        Justification = "Generated code")]
     public partial class DiceGrammarLexer
     {
         public RollData? RollData { get; set; }

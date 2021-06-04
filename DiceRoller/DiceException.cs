@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Dice
 {
@@ -11,6 +12,8 @@ namespace Dice
     /// Errors which indicate bugs in the library or are programmer errors do not use this exception type.
     /// </summary>
     [Serializable]
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors",
+        Justification = "ErrorCode is required, and the exception message is derived from ErrorCode")]
     public class DiceException : Exception
     {
         public DiceErrorCode ErrorCode { get; protected set; }
@@ -29,7 +32,7 @@ namespace Dice
         }
 
         public DiceException(DiceErrorCode error, object param)
-            : base(String.Format(error.GetDescriptionString(), param))
+            : base(String.Format(CultureInfo.CurrentCulture, error.GetDescriptionString(), param))
         {
             ErrorCode = error;
 
@@ -55,7 +58,7 @@ namespace Dice
         }
 
         public DiceException(DiceErrorCode error, object param, Exception innerException)
-            : base(String.Format(error.GetDescriptionString(), param), innerException)
+            : base(String.Format(CultureInfo.CurrentCulture, error.GetDescriptionString(), param), innerException)
         {
             ErrorCode = error;
 

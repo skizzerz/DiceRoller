@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace Dice.AST
                 }
                 else
                 {
-                    sb.AppendFormat("({0})", NumTimes.ToString());
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "({0})", NumTimes.ToString());
                 }
             }
 

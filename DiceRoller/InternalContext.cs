@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,17 +28,17 @@ namespace Dice
         {
             GroupExpressions.Add(expr);
             GroupValues.Add(new ValueSnapshot(expr));
-            return (GroupExpressions.Count - 1).ToString();
+            return (GroupExpressions.Count - 1).ToString(CultureInfo.InvariantCulture);
         }
 
         internal DiceAST GetGroupExpression(string key)
         {
-            return GroupExpressions[Convert.ToInt32(key)];
+            return GroupExpressions[Convert.ToInt32(key, CultureInfo.InvariantCulture)];
         }
 
         internal ValueSnapshot GetGroupValues(string key)
         {
-            return GroupValues[Convert.ToInt32(key)];
+            return GroupValues[Convert.ToInt32(key, CultureInfo.InvariantCulture)];
         }
 
         internal class ValueSnapshot

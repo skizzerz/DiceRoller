@@ -18,7 +18,7 @@ namespace TestDiceRoller.AST
             Fumble
         }
 
-        (RollData, DiceAST) GetCrit(CritType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
+        static (RollData, DiceAST) GetCrit(CritType type, RollerConfig config, DiceAST expression, DiceAST argument = null)
         {
             var arguments = new List<DiceAST>();
             if (argument != null)

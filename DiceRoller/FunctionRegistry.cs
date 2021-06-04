@@ -13,13 +13,23 @@ namespace Dice
     /// </summary>
     public class FunctionRegistry
     {
-        protected readonly Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks = new Dictionary<(string, FunctionScope), FunctionSlot>();
-        protected readonly Dictionary<string, FunctionExtra> Extras = new Dictionary<string, FunctionExtra>();
+        protected Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks { get; private set; } = new Dictionary<(string, FunctionScope), FunctionSlot>();
+        protected Dictionary<string, FunctionExtra> Extras { get; private set; } = new Dictionary<string, FunctionExtra>();
 
         public event EventHandler<ValidateEventArgs>? Validate;
 
         public static bool FunctionExists(RollData data, string name, FunctionScope scope)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             return data.FunctionRegistry.Contains(name, scope)
                 || data.Config.FunctionRegistry.Contains(name, scope)
                 || data.Config.BuiltinFunctionRegistry.Contains(name, scope);
@@ -27,6 +37,16 @@ namespace Dice
 
         public static bool ExtraExists(RollData data, string name, FunctionScope scope)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             if (scope == FunctionScope.All || scope == FunctionScope.Global)
             {
                 throw new ArgumentException("Scope cannot be All or Global", nameof(scope));
@@ -39,6 +59,16 @@ namespace Dice
 
         public static FunctionSlot GetFunction(RollData data, string name, FunctionScope scope)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             if (scope == FunctionScope.All || scope == FunctionScope.Roll)
             {
                 throw new ArgumentException("Scope cannot be All or Roll", nameof(scope));
@@ -66,6 +96,16 @@ namespace Dice
 
         public static FunctionSlot GetExtraSlot(RollData data, string name, FunctionScope scope)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             if (scope == FunctionScope.All || scope == FunctionScope.Roll || scope == FunctionScope.Global)
             {
                 throw new ArgumentException("Scope cannot be All, Roll, or Global", nameof(scope));
@@ -93,6 +133,16 @@ namespace Dice
 
         public static FunctionExtra GetExtraData(RollData data, string name)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             var lname = name.ToLowerInvariant();
 
             if (data.FunctionRegistry.Extras.ContainsKey(lname))
@@ -168,6 +218,11 @@ namespace Dice
         /// <param name="t">Type to register methods from</param>
         public void RegisterType(Type t)
         {
+            if (t == null)
+            {
+                throw new ArgumentNullException(nameof(t));
+            }
+
             foreach (var m in t.GetMethods().Where(m => m.IsPublic && m.IsStatic))
             {
                 var attr = m.GetCustomAttributes(typeof(DiceFunctionAttribute), false).Cast<DiceFunctionAttribute>().SingleOrDefault();
@@ -364,6 +419,11 @@ namespace Dice
         /// <returns></returns>
         protected internal bool Contains(string name, FunctionScope scope)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             return scope switch
             {
                 FunctionScope.All => Contains(name, FunctionScope.Global) || Contains(name, FunctionScope.Basic) || Contains(name, FunctionScope.Group),
@@ -381,6 +441,11 @@ namespace Dice
         /// <returns></returns>
         protected internal bool ContainsExtra(string name, FunctionScope scope)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             return scope switch
             {
                 FunctionScope.All => false,

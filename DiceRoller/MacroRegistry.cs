@@ -26,6 +26,11 @@ namespace Dice
         /// <param name="t">Type to register methods from</param>
         public void RegisterType(Type t)
         {
+            if (t == null)
+            {
+                throw new ArgumentNullException(nameof(t));
+            }
+
             foreach (var m in t.GetMethods().Where(m => m.IsPublic && m.IsStatic))
             {
                 var attrs = m.GetCustomAttributes(typeof(DiceMacroAttribute), false).Cast<DiceMacroAttribute>();
@@ -38,7 +43,7 @@ namespace Dice
                     }
 
                     var callback = (MacroCallback)m.CreateDelegate(typeof(MacroCallback));
-                    var lname = attr.Name.ToLower();
+                    var lname = attr.Name.ToLowerInvariant();
                     
                     if (Contains(lname))
                     {
@@ -85,7 +90,7 @@ namespace Dice
                         callback = (MacroCallback)m.CreateDelegate(typeof(MacroCallback), obj);
                     }
 
-                    var lname = attr.Name.ToLower();
+                    var lname = attr.Name.ToLowerInvariant();
 
                     if (Contains(lname))
                     {
@@ -114,7 +119,7 @@ namespace Dice
                 throw new ArgumentException("Macro name cannot be empty", nameof(name));
             }
 
-            var lname = name.ToLower();
+            var lname = name.ToLowerInvariant();
 
             if (Contains(lname))
             {
@@ -145,7 +150,7 @@ namespace Dice
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var lname = name.ToLower();
+            var lname = name.ToLowerInvariant();
 
             Callbacks.Remove(lname);
         }
@@ -161,12 +166,12 @@ namespace Dice
 
         internal (string name, MacroCallback callback) Get(string lname)
         {
-            return Callbacks[lname.ToLower()];
+            return Callbacks[lname.ToLowerInvariant()];
         }
 
         internal bool Contains(string name)
         {
-            return Callbacks.ContainsKey(name.ToLower());
+            return Callbacks.ContainsKey(name.ToLowerInvariant());
         }
     }
 }
