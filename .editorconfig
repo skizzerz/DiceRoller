@@ -5,15 +5,79 @@ indent_style = space
 indent_size = 4
 
 [*.cs]
+trim_trailing_spaces = true
+
+#### Builtin Suppressions ####
+# These suppressions are for issues with built-in analyzers for things that we
+# cannot or will not address
+
 # CA1308: Normalize strings to uppercase
 # Normalizing to lowercase is exposed and documented in the public API, so this is a breaking change
 dotnet_diagnostic.CA1308.severity = none
-# CA1825: Avoid zero-length array allocations
-# Array.Empty<T>() does not exist on .NET 4.5, so we cannot migrate to that until 4.5 support is dropped
-dotnet_diagnostic.CA1825.severity = none
+
 # CA2300: Do not use insecure deserializer BinaryFormatter
 # Binary serialization is unsafe and must only be used with trusted input; required for backwards compat
 dotnet_diagnostic.CA2300.severity = none
+
 # CA2301: Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder
 # Binary serialization is unsafe and must only be used with trusted input; required for backwards compat
 dotnet_diagnostic.CA2301.severity = none
+
+#### StyleCop Suppressions ####
+# StyleCop is a very opinionated analyzer, and I happen to disagree with many of its opinions;
+# it is largely enabled solely because builtin analyzers do not detect missing doc comments on public APIs
+# These suppressions disable things I find stupid or non-helpful
+
+# SA1007: Operator keyword should be followed by space
+dotnet_diagnostic.SA1007.severity = none
+
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = none
+
+# SA1116: Split parameters should start on line after declaration
+dotnet_diagnostic.SA1116.severity = none
+
+# SA1117: Parameters should be on same line or separate lines
+dotnet_diagnostic.SA1117.severity = none
+
+# SA1121: Use built-in type alias
+dotnet_diagnostic.SA1121.severity = none
+
+# SA1201: Elements should appear in the correct order
+dotnet_diagnostic.SA1201.severity = none
+
+# SA1202: Elements should be ordered by access
+dotnet_diagnostic.SA1202.severity = none
+
+# SA1204: Static elements should appear before instance elements
+dotnet_diagnostic.SA1204.severity = none
+
+# SA1306: Field names should begin with lower-case letter
+dotnet_diagnostic.SA1306.severity = none
+
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1413: Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1413.severity = none
+
+# SA1500: Braces for multi-line statements should not share line
+dotnet_diagnostic.SA1500.severity = none
+
+# SA1515: Single-line comment should be preceded by blank line
+dotnet_diagnostic.SA1515.severity = none
+
+# SA1623: Property summary documentation should match accessors
+dotnet_diagnostic.SA1623.severity = none
+
+#### Temporary Suppressions ####
+# These suppressions are meant to be temporary and should be revisited each release to determine
+# whether or not they should continue to be suppressed
+
+# CA1825: Avoid zero-length array allocations
+# Array.Empty<T>() does not exist on .NET 4.5, so we cannot migrate to that until 4.5 support is dropped
+dotnet_diagnostic.CA1825.severity = none
+
+# SA1633: File should have header
+# This is something that should probably happen, but suppressing for now to reduce noise
+dotnet_diagnostic.SA1633.severity = none

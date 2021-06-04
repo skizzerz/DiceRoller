@@ -89,9 +89,9 @@ namespace Dice
         /// <summary>
         /// Evaluates the root of the tree, returning the RollResult.
         /// </summary>
-        /// <param name="root"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="root">Root of the parsed AST.</param>
+        /// <param name="data">Data associated with the roll.</param>
+        /// <returns>Returns the evaluated result of the roll.</returns>
         internal static RollResult Roll(DiceAST root, RollData data)
         {
             var numRolls = root.Evaluate(data, root, 0);
@@ -103,7 +103,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their minimum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Min(string diceExpr)
         {
@@ -114,7 +114,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their minimum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Min(string diceExpr, RollerConfig? config)
@@ -126,7 +126,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their minimum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
@@ -154,7 +154,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their maximum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Max(string diceExpr)
         {
@@ -165,7 +165,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their maximum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Max(string diceExpr, RollerConfig? config)
@@ -177,7 +177,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their maximum value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
@@ -205,7 +205,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their average value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Average(string diceExpr)
         {
@@ -216,7 +216,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their average value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
         public static RollResult Average(string diceExpr, RollerConfig? config)
@@ -228,7 +228,7 @@ namespace Dice
         /// Evaluates the dice expression using the default configuration,
         /// and fixing all dice to roll their average value.
         /// </summary>
-        /// <param name="diceExpr">Dice expression to evaluate</param>
+        /// <param name="diceExpr">Dice expression to evaluate.</param>
         /// <param name="config">Configuration to use. If null, the DefaultConfig is used instead.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         /// <returns>A RollResult containing the details of the roll.</returns>
@@ -274,9 +274,9 @@ namespace Dice
         /// <summary>
         /// Parses the diceExpr into an AST without evaluating it.
         /// </summary>
-        /// <param name="diceExpr"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="diceExpr">Dice expression to parse.</param>
+        /// <param name="data">Data associated with the roll.</param>
+        /// <returns>Returns the unevaluated AST for the dice expression.</returns>
         internal static DiceAST Parse(string diceExpr, RollData data)
         {
             // parse diceExpr

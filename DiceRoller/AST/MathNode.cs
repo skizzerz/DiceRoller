@@ -1,40 +1,47 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace Dice.AST
 {
     /// <summary>
-    /// Represents a math expression on two nodes
+    /// Represents a math expression on two nodes.
     /// </summary>
     public class MathNode : DiceAST
     {
         private readonly List<DieResult> _values;
 
         /// <summary>
-        /// The math operation to be performed
+        /// The math operation to be performed.
         /// </summary>
         public MathOp Operation { get; private set; }
 
         /// <summary>
         /// Left hand side of the math expression,
-        /// will be null for unary expressions
+        /// will be null for unary expressions.
         /// </summary>
         public DiceAST? Left { get; private set; }
 
         /// <summary>
-        /// Right hand side of the math expression
+        /// Right hand side of the math expression.
         /// </summary>
         public DiceAST Right { get; private set; }
 
+        /// <inheritdoc/>
         public override IReadOnlyList<DieResult> Values
         {
             get { return _values; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MathNode"/> class.
+        /// </summary>
+        /// <param name="operation">Math operation.</param>
+        /// <param name="left">Left side of a binary operation; null if unary.</param>
+        /// <param name="right">Right side of a binary operation, or the unary operand.</param>
         internal MathNode(MathOp operation, DiceAST? left, DiceAST right)
         {
             Operation = operation;
@@ -53,6 +60,7 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             // This logic is necessarily different from DoMath below since we cannot inspect Values.
@@ -109,6 +117,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = Left?.Evaluate(data, root, depth + 1) ?? 0;
@@ -118,6 +127,7 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = Left?.Reroll(data, root, depth + 1) ?? 0;
@@ -153,6 +163,7 @@ namespace Dice.AST
                         // except we want all exceptions that can arise from user input to derive from DiceException
                         throw new DiceException(DiceErrorCode.DivideByZero);
                     }
+
                     Value = Left!.Value / Right.Value;
                     sd = SpecialDie.Divide;
                     break;
@@ -300,6 +311,7 @@ namespace Dice.AST
                 {
                     _values.Add(new DieResult(SpecialDie.OpenParen));
                 }
+
                 _values.AddRange(Left.Values);
                 if (addLeftParen)
                 {
@@ -313,6 +325,7 @@ namespace Dice.AST
             {
                 _values.Add(new DieResult(SpecialDie.OpenParen));
             }
+
             _values.AddRange(Right.Values);
             if (addRightParen)
             {

@@ -1,13 +1,21 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Builtin functions that sort the list of dice that were rolled.
+    /// </summary>
     public static class SortFunctions
     {
+        /// <summary>
+        /// Validates that only one sort is being performed on the dice.
+        /// </summary>
+        /// <param name="sender">Unused.</param>
+        /// <param name="e">Event arguments.</param>
         [SuppressMessage("Security", "CA2109:Review visible event handlers",
             Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateSort(object sender, ValidateEventArgs e)
@@ -28,6 +36,10 @@ namespace Dice.Builtins
             }
         }
 
+        /// <summary>
+        /// Sort dice in ascending order.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("sortAsc", "sa",
             ArgumentPattern = "",
             Scope = FunctionScope.Roll,
@@ -42,6 +54,10 @@ namespace Dice.Builtins
             DoSort(context, ascending: true);
         }
 
+        /// <summary>
+        /// Sort dice in descending order.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("sortDesc", "sd",
             ArgumentPattern = "",
             Scope = FunctionScope.Roll,

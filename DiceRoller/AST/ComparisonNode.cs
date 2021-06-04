@@ -29,6 +29,12 @@ namespace Dice.AST
         /// </summary>
         public override IReadOnlyList<DieResult> Values => new List<DieResult>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComparisonNode"/> class
+        /// with a single comparison.
+        /// </summary>
+        /// <param name="operation">Type of comparison being made.</param>
+        /// <param name="expression">Expression to compare with.</param>
         internal ComparisonNode(CompareOp operation, DiceAST expression)
         {
             if (expression == null)
@@ -42,6 +48,11 @@ namespace Dice.AST
             };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComparisonNode"/> class
+        /// by combining existing ComparisonNodes into a single one.
+        /// </summary>
+        /// <param name="comparisons">Comparisons to check against.</param>
         internal ComparisonNode(IEnumerable<ComparisonNode> comparisons)
         {
             _comparisons = new List<Comparison>();
@@ -56,6 +67,11 @@ namespace Dice.AST
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComparisonNode"/> class
+        /// with a list of existing Comparisons.
+        /// </summary>
+        /// <param name="comparisons">Comparisons to check against.</param>
         internal ComparisonNode(IEnumerable<Comparison> comparisons)
         {
             _comparisons = new List<Comparison>(comparisons);
@@ -66,12 +82,12 @@ namespace Dice.AST
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var comps = new List<string>();
             foreach (var comp in _comparisons)
             {
-
                 var c = comp.op switch
                 {
                     CompareOp.Equals => "=",
@@ -90,11 +106,18 @@ namespace Dice.AST
             return String.Join(", ", comps);
         }
 
+        /// <summary>
+        /// Add a comparison to this node. All comparisons are tested
+        /// independently, and the node is considered successful if at least
+        /// one comparison succeeds.
+        /// </summary>
+        /// <param name="comparison">Comparison to add.</param>
         internal void Add(ComparisonNode comparison)
         {
             _comparisons.AddRange(comparison.Comparisons);
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             // this doesn't increase depth as there is no actual logic that a ComparisonNode itself performs
@@ -110,6 +133,7 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = 0;
@@ -122,6 +146,12 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <summary>
+        /// Determines whether any of the comparisons added to this node
+        /// match the given value.
+        /// </summary>
+        /// <param name="theirValue">Value to compare against.</param>
+        /// <returns>Returns true if at least one comparison matches the value, false otherwise.</returns>
         public bool Compare(decimal theirValue)
         {
             return Comparisons.Any(c =>

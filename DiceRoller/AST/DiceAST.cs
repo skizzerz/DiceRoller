@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-
+using System.Text;
 
 namespace Dice.AST
 {
     /// <summary>
-    /// Represents a node in the dice expression Abstract Syntax Tree
+    /// Represents a node in the dice expression Abstract Syntax Tree.
     /// </summary>
     public abstract class DiceAST
     {
         /// <summary>
-        /// If true, this node has been evaluated
+        /// If true, this node has been evaluated.
         /// </summary>
         public bool Evaluated { get; private set; }
 
@@ -41,16 +40,16 @@ namespace Dice.AST
         /// Retrieves a normalized representation of the dice expression.
         /// This may differ from the exact string that was typed in by the user.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a string with the normalized representation.</returns>
         public abstract override string ToString();
 
         /// <summary>
         /// Evaluates the node, causing it to store its result in Value.
         /// </summary>
-        /// <param name="data">Configuration of the roller</param>
-        /// <param name="root">Root of the AST</param>
-        /// <param name="depth">Current recursion depth</param>
-        /// <returns>Total number of rolls taken to evaluate this subtree</returns>
+        /// <param name="data">Configuration of the roller.</param>
+        /// <param name="root">Root of the AST.</param>
+        /// <param name="depth">Current recursion depth.</param>
+        /// <returns>Total number of rolls taken to evaluate this subtree.</returns>
         protected internal long Evaluate(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -86,12 +85,12 @@ namespace Dice.AST
         }
 
         /// <summary>
-        /// Re-do the roll without re-evaluating the entire subtree again
+        /// Re-do the roll without re-evaluating the entire subtree again.
         /// </summary>
-        /// <param name="data">Roller config</param>
-        /// <param name="root">AST root</param>
-        /// <param name="depth">Recursion depth</param>
-        /// <returns>Number of dice rolls performed</returns>
+        /// <param name="data">Roller config.</param>
+        /// <param name="root">AST root.</param>
+        /// <param name="depth">Recursion depth.</param>
+        /// <returns>Number of dice rolls performed.</returns>
         protected internal long Reroll(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -124,7 +123,22 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <summary>
+        /// Evaluates the node, causing it to store its result in Value.
+        /// </summary>
+        /// <param name="data">Configuration of the roller.</param>
+        /// <param name="root">Root of the AST.</param>
+        /// <param name="depth">Current recursion depth.</param>
+        /// <returns>Total number of rolls taken to evaluate this subtree.</returns>
         protected abstract long EvaluateInternal(RollData data, DiceAST root, int depth);
+
+        /// <summary>
+        /// Re-do the roll without re-evaluating the entire subtree again.
+        /// </summary>
+        /// <param name="data">Roller config.</param>
+        /// <param name="root">AST root.</param>
+        /// <param name="depth">Recursion depth.</param>
+        /// <returns>Number of dice rolls performed.</returns>
         protected abstract long RerollInternal(RollData data, DiceAST root, int depth);
     }
 }

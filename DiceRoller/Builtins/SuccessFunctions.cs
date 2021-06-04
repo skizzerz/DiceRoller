@@ -1,14 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
 using Dice.AST;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Builtin functions used to transform a result into successes, for
+    /// use in dice pool systems.
+    /// </summary>
     public static class SuccessFunctions
     {
+        /// <summary>
+        /// Mark dice as successes if the comparison succeeds. Successes
+        /// each add 1 to the final result.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("success", "",
             ArgumentPattern = "C+",
             Behavior = FunctionBehavior.CombineArguments,
@@ -24,6 +32,11 @@ namespace Dice.Builtins
             CountSuccesses(context, success: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 
+        /// <summary>
+        /// Mark dice as failures if the comparison succeeds. Failures
+        /// each subtract 1 from the final result.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("failure",
             ArgumentPattern = "C+",
             Behavior = FunctionBehavior.CombineArguments,

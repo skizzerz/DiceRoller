@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-
+using System.Text;
 using Dice.AST;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Builtin functions that deal with marking dice as criticals or fumbles.
+    /// </summary>
     public static class CritFunctions
     {
+        /// <summary>
+        /// Marks dice as critical successes if the comparison succeeds against them.
+        /// Will also strip pre-existing critical markings from dice.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("critical", "cs",
             ArgumentPattern = "C+",
             Behavior = FunctionBehavior.CombineArguments,
@@ -20,6 +27,11 @@ namespace Dice.Builtins
                 critical: new ComparisonNode(context.Arguments.Cast<ComparisonNode>()));
         }
 
+        /// <summary>
+        /// Marks dice as fumbles if the comparison succeeds against them.
+        /// Will also strip pre-existing fumble markings from dice.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("fumble", "cf",
             ArgumentPattern = "C+",
             Behavior = FunctionBehavior.CombineArguments,

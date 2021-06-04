@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Dice.PbP
 {
@@ -60,8 +60,9 @@ namespace Dice.PbP
         internal int Diverged { get; private set; }
 
         /// <summary>
-        /// Constructs a new, empty RollPost. This represents a new post being made. If editing an existing post,
-        /// the RollPost should be constructed via deserializing the old RollPost stored in the database or other storage medium.
+        /// Initializes a new instance of the <see cref="RollPost"/> class with default values.
+        /// This represents a new post being made. If editing an existing post, the RollPost should be constructed
+        /// via deserializing the old RollPost stored in the database or other storage medium.
         /// </summary>
         public RollPost() {
             PristineList = _pristine;
@@ -70,10 +71,11 @@ namespace Dice.PbP
         }
 
         /// <summary>
-        /// Constructs a new RollPost using serialized data. This should be used whenever creating a RollPost based on an existing post.
+        /// Initializes a new instance of the <see cref="RollPost"/> class with existing data.
+        /// This should be used whenever creating a RollPost based on an existing post.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">Serialization info.</param>
+        /// <param name="context">Serialization streaming context.</param>
         protected RollPost(SerializationInfo info, StreamingContext context)
             : this()
         {
@@ -100,8 +102,9 @@ namespace Dice.PbP
         /// <summary>
         /// Serializes binary data to the given stream. This will *not* roundtrip (when deserializing Current will be empty).
         /// This method should be called when serializing this object to the database, to ensure that it is deserialized in the correct state.
+        /// <para>BINARY SERIALIZATION IS NOT SAFE. You should prefer to serialize to JSON or XML rather than call this method.</para>
         /// </summary>
-        /// <param name="serializationStream"></param>
+        /// <param name="serializationStream">Stream to write serialized data to.</param>
         public void Serialize(Stream serializationStream)
         {
             var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
@@ -110,9 +113,10 @@ namespace Dice.PbP
 
         /// <summary>
         /// Deserializes binary data from the given stream, that data must have been serialized via RollPost.Serialize().
+        /// <para>THIS METHOD IS NOT SAFE TO CALL ON UNTRUSTED INPUT.</para>
         /// </summary>
-        /// <param name="serializationStream"></param>
-        /// <returns></returns>
+        /// <param name="serializationStream">Stream to read serialized data from.</param>
+        /// <returns>Returns the deserialized RollPost.</returns>
         public static RollPost Deserialize(Stream serializationStream)
         {
             var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
@@ -123,7 +127,7 @@ namespace Dice.PbP
         /// Completes deserialization of the RollPost once the entire object graph has been deserialized.
         /// <para>This method should not be directly called.</para>
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">Unused.</param>
         public virtual void OnDeserialization(object sender)
         {
             _pristine = PristineList.ToList();
@@ -138,8 +142,8 @@ namespace Dice.PbP
         /// Serializes a RollPost.
         /// <para>This method should not be directly called, use Serialize() instead.</para>
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">Serialization information.</param>
+        /// <param name="context">Serialization streaming context.</param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -158,7 +162,7 @@ namespace Dice.PbP
         /// <summary>
         /// Adds a new roll to the post using the DefaultConfig if the roll needs to be evaluated.
         /// </summary>
-        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
+        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current.</param>
         public void AddRoll(string diceExpr)
         {
             AddRoll(diceExpr, null, null);
@@ -167,8 +171,8 @@ namespace Dice.PbP
         /// <summary>
         /// Adds a new roll to the post using the given config if the roll needs to be evaluated.
         /// </summary>
-        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
-        /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
+        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current.</param>
+        /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used.</param>
         public void AddRoll(string diceExpr, RollerConfig? config)
         {
             AddRoll(diceExpr, config, null);
@@ -177,8 +181,8 @@ namespace Dice.PbP
         /// <summary>
         /// Adds a new roll to the post using the given config if the roll needs to be evaluated, and with additional data.
         /// </summary>
-        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current</param>
-        /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used</param>
+        /// <param name="diceExpr">The dice expression to add, will be evaluated then added to the end of Current.</param>
+        /// <param name="config">The configuration used for the roll. If null, RollerConfig.Default is used.</param>
         /// <param name="data">Additional data that is scoped to this roll.</param>
         public void AddRoll(string diceExpr, RollerConfig? config, RollData? data)
         {
@@ -210,7 +214,6 @@ namespace Dice.PbP
                 // and then re-use a previously-rolled value. If we do, those saved macros may be incorrect.
                 // As such, when we detect a divergence (pristine->stored->new roll), we ensure that we don't go back to
                 // a previous state (so no stored->pristine or new roll->stored).
-
                 if (Diverged == 0 && normalizedExpr == pristineVersion?.Expression)
                 {
                     // use the pristine result for this roll
@@ -278,7 +281,7 @@ namespace Dice.PbP
         /// <para>If you wish to add your own checks, extend RollPost in your own class and override Validate. Call the base
         /// Validate() only if your own checks all succeed. Otherwise, you may accidentally overwrite Pristine on validation failure.</para>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns true if no tampering is detected, false otherwise.</returns>
         public virtual bool Validate()
         {
             // update _stored
@@ -306,8 +309,8 @@ namespace Dice.PbP
         /// Test if two RollPosts have diverged. Much like Validate, two RollPosts are considered to be divergent if one is not
         /// a prefix of the other.
         /// </summary>
-        /// <param name="other">RollPost to check against</param>
-        /// <returns>True if the two RollPosts have diverged, false if they have not</returns>
+        /// <param name="other">RollPost to check against.</param>
+        /// <returns>True if the two RollPosts have diverged, false if they have not.</returns>
         public virtual bool HasDivergedFrom(RollPost other)
         {
             if (other == null)
@@ -340,14 +343,12 @@ namespace Dice.PbP
             // for success/failure, it only counts number of successes or number of failures, returning an integer >= 0 for each. In other words,
             // [roll:X:success] doesn't deduct 1 whenever it sees a failure roll, unlike [roll:X] which will give successes - failures.
             // All other formulations of the macro are an error (which we pass down, as someone else may have their own roll macro which implements extended features)
-
             var args = context.Arguments;
 
             if (args.Count == 1)
             {
                 return; // no X
             }
-
 
             if (!Int32.TryParse(args[1], out int rollIdx))
             {

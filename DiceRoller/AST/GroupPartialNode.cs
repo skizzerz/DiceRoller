@@ -13,11 +13,22 @@ namespace Dice.AST
     /// </summary>
     internal class GroupPartialNode : PartialNode
     {
+        /// <summary>
+        /// Number of times the group will be evaluated.
+        /// </summary>
         public DiceAST? NumTimes { get; internal set; }
+
+        /// <summary>
+        /// Expressions comprising the grouped roll.
+        /// </summary>
         public List<DiceAST> GroupExpressions { get; private set; }
 
+        /// <inheritdoc/>
         protected override FunctionScope FunctionScope => FunctionScope.Group;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupPartialNode"/> class.
+        /// </summary>
         internal GroupPartialNode()
         {
             GroupExpressions = new List<DiceAST>();
@@ -25,16 +36,20 @@ namespace Dice.AST
             NumTimes = null;
         }
 
+        /// <summary>
+        /// Add an expression to the grouped roll.
+        /// </summary>
+        /// <param name="expression">Expression to add.</param>
         internal void AddExpression(DiceAST expression)
         {
             GroupExpressions.Add(expression);
         }
 
         /// <summary>
-        /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree
+        /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree.
         /// </summary>
-        /// <param name="numTimes">Expression to roll the group some number of times, may be null</param>
-        /// <returns></returns>
+        /// <param name="numTimes">Expression to roll the group some number of times, may be null.</param>
+        /// <returns>Returns the created GroupNode.</returns>
         internal DiceAST CreateGroupNode()
         {
             DiceAST group = new GroupNode(NumTimes, GroupExpressions);
@@ -47,7 +62,7 @@ namespace Dice.AST
             return group;
         }
 
-        // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
+        /// <inheritdoc/>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("GPARTIAL<<");

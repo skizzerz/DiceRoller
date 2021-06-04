@@ -16,19 +16,31 @@ namespace Dice.AST
         private readonly List<DieResult> _values;
 
         /// <summary>
-        /// The context for this function call
+        /// The context for this function call.
         /// </summary>
         public FunctionContext Context { get; private set; }
 
-        internal readonly FunctionSlot Slot;
+        /// <summary>
+        /// Slot corresponding to this function call.
+        /// </summary>
+        internal FunctionSlot Slot { get; private set; }
 
+        /// <inheritdoc/>
         public override IReadOnlyList<DieResult> Values
         {
             get { return _values; }
         }
 
+        /// <inheritdoc/>
         protected internal override DiceAST UnderlyingRollNode => Context.Expression?.UnderlyingRollNode ?? this;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FunctionNode"/> class.
+        /// </summary>
+        /// <param name="scope">Function scope.</param>
+        /// <param name="name">Function name, in user-specified casing.</param>
+        /// <param name="arguments">Function arguments.</param>
+        /// <param name="data">Roll config.</param>
         internal FunctionNode(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
             try
@@ -43,11 +55,16 @@ namespace Dice.AST
             }
         }
 
+        /// <summary>
+        /// Retrieves whether or not this FunctionNode encapsulates a global function.
+        /// </summary>
+        /// <returns>Returns true if this is a global function, false otherwise.</returns>
         public bool IsGlobalFunction()
         {
             return Context.Scope == FunctionScope.Global;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder(Context.Expression?.ToString() ?? String.Empty);
@@ -64,6 +81,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = Context.Expression?.Evaluate(data, root, depth + 1) ?? 0;
@@ -78,6 +96,7 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             long rolls = Context.Expression?.Reroll(data, root, depth + 1) ?? 0;

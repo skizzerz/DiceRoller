@@ -1,14 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Registry of built-in functions. These are registered by default
+    /// but can be removed if undesired. Any functions registered in other
+    /// registries will be used before these should names collide.
+    /// </summary>
     public class BuiltinFunctionRegistry : FunctionRegistry
     {
         private readonly bool _finalized;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuiltinFunctionRegistry"/> class.
+        /// </summary>
         internal BuiltinFunctionRegistry()
         {
             _finalized = false;
@@ -40,6 +48,7 @@ namespace Dice.Builtins
             _finalized = true;
         }
 
+        /// <inheritdoc/>
         public override void RegisterFunction(FunctionSlot slot, FunctionScope scope, string? extra = null)
         {
             if (_finalized)
@@ -52,9 +61,9 @@ namespace Dice.Builtins
 
         /// <summary>
         /// Removes all builtin functions matching the given scope.
-        /// This does not clear validation handlers
+        /// This does not clear validation handlers.
         /// </summary>
-        /// <param name="scope"></param>
+        /// <param name="scope">Function scope to remove.</param>
         public void Clear(FunctionScope scope)
         {
             if (scope == FunctionScope.All)

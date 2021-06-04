@@ -20,11 +20,17 @@ namespace Dice.AST
         /// </summary>
         public MacroContext Context { get; private set; }
 
+        /// <inheritdoc/>
         public override IReadOnlyList<DieResult> Values
         {
             get { return _values; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MacroNode"/> class.
+        /// </summary>
+        /// <param name="param">Unparsed parameter of the macro.</param>
+        /// <param name="data">Roll config.</param>
         internal MacroNode(string param, RollData data)
         {
             if (String.IsNullOrWhiteSpace(param))
@@ -36,6 +42,7 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder("[");
@@ -44,11 +51,13 @@ namespace Dice.AST
             {
                 sb.AppendFormat(CultureInfo.InvariantCulture, ":{0}", Context.Arguments[i]);
             }
+
             sb.Append(']');
 
             return sb.ToString();
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -102,6 +111,7 @@ namespace Dice.AST
             return 0;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Diagnostics.CodeAnalysis;
-
+using System.Text;
+using System.Threading.Tasks;
 using Dice.AST;
 
 namespace Dice
@@ -84,7 +83,8 @@ namespace Dice
         private readonly IReadOnlyList<decimal> AllMacros;
 
         /// <summary>
-        /// Creates a new invalid roll result
+        /// Initializes a new instance of the <see cref="RollResult"/> class;
+        /// this instance is not valid and cannot be directly used.
         /// </summary>
         private RollResult()
         {
@@ -99,6 +99,12 @@ namespace Dice
             AllMacros = new decimal[0];
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RollResult"/> class.
+        /// </summary>
+        /// <param name="data">Data pertaining to the roll just made.</param>
+        /// <param name="rollRoot">Root of the parsed dice AST.</param>
+        /// <param name="numRolls">Number of dice rolled to fully evaluate the AST.</param>
         internal RollResult(RollData data, DiceAST rollRoot, int numRolls)
         {
             RollRoot = rollRoot;
@@ -116,10 +122,10 @@ namespace Dice
         }
 
         /// <summary>
-        /// Constructs a new instance of RollResult using the serialized data.
+        /// Initializes a new instance of the <see cref="RollResult"/> class using serialized data.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">Serialization info.</param>
+        /// <param name="context">Serialization streaming context.</param>
         protected RollResult(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -145,9 +151,10 @@ namespace Dice
         }
 
         /// <summary>
-        /// Display a representation of the roll
+        /// Retrieve a representation of the roll, including the expression
+        /// rolled, the values of each die rolled, and the total.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a roll representation as described above.</returns>
         public override string ToString()
         {
             var sb = new StringBuilder(Expression);
@@ -241,8 +248,9 @@ namespace Dice
         /// <summary>
         /// Serializes binary data to the given stream.
         /// This method should be called when serializing this object to the database, to ensure that it is deserialized in the correct state.
+        /// <para>BINARY SERIALIZATION IS NOT SAFE. You should prefer to serialize to JSON or XML rather than call this method.</para>
         /// </summary>
-        /// <param name="serializationStream"></param>
+        /// <param name="serializationStream">Stream to write serialized data to.</param>
         public void Serialize(Stream serializationStream)
         {
             var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
@@ -251,9 +259,10 @@ namespace Dice
 
         /// <summary>
         /// Deserializes binary data from the given stream, that data must have been serialized via RollPost.Serialize().
+        /// <para>THIS METHOD IS NOT SAFE TO CALL ON UNTRUSTED INPUT.</para>
         /// </summary>
-        /// <param name="serializationStream"></param>
-        /// <returns></returns>
+        /// <param name="serializationStream">Stream to read serialized data from.</param>
+        /// <returns>Returns the deserialized RollResult.</returns>
         public static RollResult Deserialize(Stream serializationStream)
         {
             var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Persistence));
@@ -263,8 +272,8 @@ namespace Dice
         /// <summary>
         /// Serializes the RollResult.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">Serialization info.</param>
+        /// <param name="context">Serialization streaming context.</param>
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -283,6 +292,7 @@ namespace Dice
             info.AddValue("AllMacros", AllMacros.ToArray(), typeof(decimal[]));
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj is RollResult r)
@@ -293,6 +303,7 @@ namespace Dice
             return false;
         }
 
+        /// <inheritdoc/>
         public virtual bool Equals(RollResult other)
         {
             // RollRoot is not considered when determining if two RollResults are equal.
@@ -308,6 +319,7 @@ namespace Dice
                 && AllMacros.SequenceEqual(other.AllMacros);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             // See above for why RollRoot and Metadata isn't present in the hash code

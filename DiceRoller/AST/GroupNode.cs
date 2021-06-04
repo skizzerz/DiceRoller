@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Dice.AST
 {
@@ -36,6 +36,11 @@ namespace Dice.AST
             get { return _values; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupNode"/> class.
+        /// </summary>
+        /// <param name="numTimes">Number of times to evaluate this group.</param>
+        /// <param name="exprs">Expressions inside of the group.</param>
         internal GroupNode(DiceAST? numTimes, List<DiceAST> exprs)
         {
             if (exprs == null)
@@ -52,6 +57,7 @@ namespace Dice.AST
             _values = new List<DieResult>();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -67,6 +73,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -86,6 +93,7 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -101,6 +109,13 @@ namespace Dice.AST
             return Roll(data, root, depth);
         }
 
+        /// <summary>
+        /// Evaluates this group node.
+        /// </summary>
+        /// <param name="data">Roll config.</param>
+        /// <param name="root">Root of the parsed AST.</param>
+        /// <param name="depth">Current evaluation depth.</param>
+        /// <returns>Returns the number of dice rolled during group evaluation.</returns>
         internal long Roll(RollData data, DiceAST root, int depth)
         {
             long rolls = 0;

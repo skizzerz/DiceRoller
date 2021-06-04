@@ -14,21 +14,21 @@ namespace Dice
         /// The maximum number of dice that may be rolled, including dice
         /// rolled due to rerolls or exploding dice. Exceeding this limit
         /// will result in a DiceException being thrown.
-        /// Default: 1,000
+        /// <para>Default: 1,000.</para>
         /// </summary>
         public int MaxDice { get; set; } = 1000;
 
         /// <summary>
         /// The maximum number of sides that any individual die can have.
         /// Exceeding this limit will result in a DiceException being thrown.
-        /// Default: 10,000
+        /// <para>Default: 10,000.</para>
         /// </summary>
         public int MaxSides { get; set; } = 10000;
 
         /// <summary>
         /// The maximum amount of nesting that can happen in dice expressions.
         /// Exceeding this limit will result in a DiceException being thrown.
-        /// Default: 20
+        /// <para>Default: 20.</para>
         /// </summary>
         public short MaxRecursionDepth { get; set; } = 20;
 
@@ -37,14 +37,14 @@ namespace Dice
         /// rerolls, exploding dice, or anything else that rerolls dice.
         /// Once a die is rerolled this many times, the final value is fixed
         /// (no exception is thrown).
-        /// Default: 100
+        /// <para>Default: 100.</para>
         /// </summary>
         public int MaxRerolls { get; set; } = 100;
 
         /// <summary>
         /// If true, only standard dice sizes (d2, d3, d4, d6, d8, d10, d12, d20, d100, d1,000, d10,000)
         /// may be rolled. If false, any die size from 1 to MaxSides, inclusive, can be rolled.
-        /// Default: false
+        /// <para>Default: false.</para>
         /// </summary>
         public bool NormalSidesOnly { get; set; }
 
@@ -84,6 +84,9 @@ namespace Dice
         /// </summary>
         public BuiltinFunctionRegistry BuiltinFunctionRegistry { get; } = new BuiltinFunctionRegistry();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RollerConfig"/> class.
+        /// </summary>
         public RollerConfig()
         {
             MacroRegistry.RegisterType(typeof(DiceMacros));

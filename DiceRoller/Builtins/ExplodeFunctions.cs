@@ -1,15 +1,21 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
+using System.Linq;
 using Dice.AST;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Built-in functions which add new dice the roll when certain conditions are met.
+    /// </summary>
     public static class ExplodeFunctions
     {
+        /// <summary>
+        /// Validate whether or not the combination of explode functions on the roll are valid.
+        /// </summary>
+        /// <param name="sender">Unused.</param>
+        /// <param name="e">Details about the roll.</param>
         [SuppressMessage("Security", "CA2109:Review visible event handlers",
             Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateExplode(object sender, ValidateEventArgs e)
@@ -35,6 +41,11 @@ namespace Dice.Builtins
             }
         }
 
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and added to the roll result.
+        /// This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("explode", "!e",
             Behavior = FunctionBehavior.CombineArguments,
             Scope = FunctionScope.Basic,
@@ -51,6 +62,11 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: false);
         }
 
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and merged into the existing die.
+        /// This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("compound", "!c",
             Behavior = FunctionBehavior.CombineArguments,
             Scope = FunctionScope.Basic,
@@ -67,6 +83,11 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: true, penetrate: false);
         }
 
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and added to the roll result;
+        /// 1 is subtracted from each such die. This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("penetrate", "!p",
             Behavior = FunctionBehavior.CombineArguments,
             Scope = FunctionScope.Basic,
@@ -83,6 +104,11 @@ namespace Dice.Builtins
             DoExplode(context, comparisons, compound: false, penetrate: true);
         }
 
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and merged into the existing die;
+        /// 1 is subtracted from each such die. This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("compoundPenetrate",
             Behavior = FunctionBehavior.CombineArguments,
             Scope = FunctionScope.Basic,
@@ -118,7 +144,6 @@ namespace Dice.Builtins
             {
                 shouldExplode = (d, x) => d.Value + x == d.NumSides;
             }
-
 
             foreach (var die in context.Expression!.Values)
             {

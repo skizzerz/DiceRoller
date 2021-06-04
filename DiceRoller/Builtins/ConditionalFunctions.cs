@@ -1,14 +1,21 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
 using Dice.AST;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Builtin functions that enable conditional execution.
+    /// </summary>
     public static class ConditionalFunctions
     {
+        /// <summary>
+        /// Returns one of two different results depending on whether or not a comparison
+        /// succeeds against an expression.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("if", Scope = FunctionScope.Global, ArgumentPattern = "ECEE?")]
         public static void If(FunctionContext context)
         {

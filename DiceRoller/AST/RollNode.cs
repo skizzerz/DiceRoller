@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Dice.AST
 {
@@ -19,25 +19,34 @@ namespace Dice.AST
         /// What sort of roll is being made.
         /// </summary>
         public RollType RollType { get; private set; }
+
         /// <summary>
         /// How many dice are being rolled. Decimals are truncated,
         /// and negative numbers throw a BadDiceException.
         /// </summary>
         public DiceAST NumDice { get; private set; }
+
         /// <summary>
         /// How many sides does each die have? Decimals are truncated.
         /// Invalid numbers (according to roller config) throw a BadSidesException.
         /// May be null in the case of standard fudge dice.
         /// </summary>
         public DiceAST? NumSides { get; private set; }
+
         /// <summary>
-        /// The results of each individual die rolled
+        /// The results of each individual die rolled.
         /// </summary>
         public override IReadOnlyList<DieResult> Values
         {
             get { return _values; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RollNode"/> class.
+        /// </summary>
+        /// <param name="rollType">Type of roll being made.</param>
+        /// <param name="numDice">Number of dice in the roll.</param>
+        /// <param name="numSides">Number of sides per die.</param>
         internal RollNode(RollType rollType, DiceAST numDice, DiceAST? numSides)
         {
             RollType = rollType;
@@ -51,6 +60,7 @@ namespace Dice.AST
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -71,6 +81,7 @@ namespace Dice.AST
             return sb.ToString();
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -90,6 +101,7 @@ namespace Dice.AST
             return rolls;
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             if (data == null)
@@ -151,6 +163,17 @@ namespace Dice.AST
             return numDice;
         }
 
+        /// <summary>
+        /// Performs a single die roll.
+        /// </summary>
+        /// <param name="data">Roll configuration and related data.</param>
+        /// <param name="rollType">Type of roll to make.</param>
+        /// <param name="numSides">Number of sides of the die.</param>
+        /// <param name="flags">Flags to add to the die.</param>
+        /// <returns>
+        /// Returns a DieResult containing the result of the roll. It will be marked with the passed-in
+        /// flags as well as the Critical flag if the die rolled maximium and the Fumble flag if it rolled minimum.
+        /// </returns>
         internal static DieResult DoRoll(RollData data, RollType rollType, int numSides, DieFlags flags = 0)
         {
             if (numSides < 1 || numSides > data.Config.MaxSides)
@@ -271,9 +294,9 @@ namespace Dice.AST
         /// Ensure that a roll lies within the allowed range of values.
         /// If a roll is too high, we could introduce bias into the result.
         /// </summary>
-        /// <param name="roll"></param>
-        /// <param name="numSides"></param>
-        /// <returns></returns>
+        /// <param name="roll">Output of the RNG, should be an array of 4 bytes.</param>
+        /// <param name="numSides">Number of sides of the die.</param>
+        /// <returns>Returns true if using the random number for this roll would not introduce bias, false otherwise.</returns>
         private static bool IsFairRoll(byte[] roll, uint numSides)
         {
             uint rollAmt = BitConverter.ToUInt32(roll, 0);
