@@ -23,9 +23,11 @@ namespace Dice.Builtins
             RegisterType(typeof(RerollFunctions));
             RegisterType(typeof(KeepFunctions));
             RegisterType(typeof(SuccessFunctions));
+            RegisterType(typeof(CritFunctions));
 
             // wire multipart extras
             Extras[String.Empty].AddMultipart("f", "failure");
+            Extras["cs"].AddMultipart("f", "fumble");
 
             // validation handlers
             Validate += ExplodeFunctions.ValidateExplode;

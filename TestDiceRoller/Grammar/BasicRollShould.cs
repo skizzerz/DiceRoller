@@ -33,6 +33,30 @@ namespace TestDiceRoller.Grammar
         }
 
         [TestMethod]
+        public void Successfully_RollOneDie_PlusNumber()
+        {
+            EvaluateRoll("1d20+1", Roll9Conf, 1, "1d20 + 1 => 9 + 1 => 10");
+        }
+
+        [TestMethod]
+        public void Successfully_RollOneDie_MinusNumber()
+        {
+            EvaluateRoll("1d20-1", Roll9Conf, 1, "1d20 - 1 => 9 - 1 => 8");
+        }
+
+        [TestMethod]
+        public void Successfully_RollOneDie_TimesNumber()
+        {
+            EvaluateRoll("1d20*2", Roll9Conf, 1, "1d20 * 2 => 9 * 2 => 18");
+        }
+
+        [TestMethod]
+        public void Successfully_RollOneDie_DivideNumber()
+        {
+            EvaluateRoll("1d20/2", Roll9Conf, 1, "1d20 / 2 => 9 / 2 => 4.5");
+        }
+
+        [TestMethod]
         public void Successfully_RollOneDie_StandardFudge()
         {
             EvaluateRoll("1dF", Roll1Conf, 1, "1dF => -1! => -1");

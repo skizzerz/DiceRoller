@@ -14,7 +14,6 @@ namespace Dice.AST
     {
         public RollNode Roll { get; internal set; }
         public SortNode? Sort { get; private set; }
-        public CritNode? Critical { get; private set; }
 
         protected override FunctionScope FunctionScope => FunctionScope.Basic;
 
@@ -22,7 +21,6 @@ namespace Dice.AST
         {
             Roll = roll;
             Sort = null;
-            Critical = null;
         }
 
         // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
@@ -30,11 +28,6 @@ namespace Dice.AST
         {
             var sb = new StringBuilder("RPARTIAL<<");
             sb.Append(Roll.ToString());
-
-            if (Critical != null)
-            {
-                sb.Append(Critical.ToString());
-            }
 
             if (Sort != null)
             {
@@ -61,19 +54,6 @@ namespace Dice.AST
             Sort = sort;
         }
 
-        internal void AddCritical(CritNode crit)
-        {
-            if (Critical == null)
-            {
-                Critical = crit;
-            }
-            else
-            {
-                Critical.AddCritical(crit.Critical);
-                Critical.AddFumble(crit.Fumble);
-            }
-        }
-
         /// <summary>
         /// Creates the RollNode subtree
         /// </summary>
@@ -96,13 +76,7 @@ namespace Dice.AST
             AddFunctionNodes(FunctionTiming.Success, ref roll);
             AddFunctionNodes(FunctionTiming.AfterSuccess, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeCrit, ref roll);
-
-            if (Critical != null)
-            {
-                Critical.Expression = roll;
-                roll = Critical;
-            }
-
+            AddFunctionNodes(FunctionTiming.Crit, ref roll);
             AddFunctionNodes(FunctionTiming.AfterCrit, ref roll);
             AddFunctionNodes(FunctionTiming.BeforeSort, ref roll);
 

@@ -216,7 +216,7 @@ namespace Dice.Grammar
                     if (currentExtra != null)
                     {
                         // check for multipart extras
-                        foreach (var follower in extra.MultipartFollowers)
+                        foreach (var follower in currentExtra.MultipartFollowers)
                         {
                             if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
                             {
@@ -375,11 +375,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is CritNode)
-                {
-                    partial.AddCritical((CritNode)node);
-                }
-                else if (node is SortNode)
+                if (node is SortNode)
                 {
                     partial.AddSort((SortNode)node);
                 }
@@ -434,11 +430,7 @@ namespace Dice.Grammar
 
             foreach (var node in extras)
             {
-                if (node is CritNode)
-                {
-                    partial.AddCritical((CritNode)node);
-                }
-                else if (node is SortNode)
+                if (node is SortNode)
                 {
                     partial.AddSort((SortNode)node);
                 }
@@ -483,7 +475,7 @@ namespace Dice.Grammar
                     if (currentExtra != null)
                     {
                         // check for multipart extras
-                        foreach (var follower in extra.MultipartFollowers)
+                        foreach (var follower in currentExtra.MultipartFollowers)
                         {
                             if (follower.Key.Length > 0 && lname.StartsWith(follower.Key))
                             {
@@ -570,32 +562,6 @@ namespace Dice.Grammar
 
             switch (lname)
             {
-                case "critical":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new CritNode(new ComparisonNode(args.Cast<ComparisonNode>()), null));
-                    break;
-                case "fumble":
-                    if (args.Count == 0)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArity, fname);
-                    }
-
-                    if (args.OfType<ComparisonNode>().Count() < args.Count)
-                    {
-                        throw new DiceException(DiceErrorCode.IncorrectArgType, fname);
-                    }
-
-                    Stack.Push(new CritNode(null, new ComparisonNode(args.Cast<ComparisonNode>())));
-                    break;
                 case "sortasc":
                     if (args.Count != 0)
                     {

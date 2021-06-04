@@ -23,7 +23,8 @@ namespace TestDiceRoller.AST
             };
             data.Config.FunctionRegistry.RegisterFunction("foo", Foo, FunctionScope.Roll, FunctionTiming.BeforeCrit);
             var partial = new RollPartialNode(new RollNode(RollType.Normal, One, Twenty));
-            partial.AddCritical(new CritNode(equal20, equal1));
+            partial.AddFunction(new FunctionNode(FunctionScope.Basic, "critical", new List<DiceAST>() { equal20 }, data));
+            partial.AddFunction(new FunctionNode(FunctionScope.Basic, "fumble", new List<DiceAST>() { equal1 }, data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "foo", new List<DiceAST>(), data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "reroll", new List<DiceAST>() { equal1 }, data));
             Assert.AreEqual("RPARTIAL<<1d20.reroll(=1).critical(=20).fumble(=1).foo()>>", partial.ToString());
@@ -39,7 +40,8 @@ namespace TestDiceRoller.AST
             data.Config.FunctionRegistry.RegisterFunction("foo", Foo, FunctionScope.Roll, FunctionTiming.BeforeCrit);
             data.Config.GetRandomBytes = GetRNG(0, 1);
             var partial = new RollPartialNode(new RollNode(RollType.Normal, One, Twenty));
-            partial.AddCritical(new CritNode(equal20, equal1));
+            partial.AddFunction(new FunctionNode(FunctionScope.Basic, "critical", new List<DiceAST>() { equal20 }, data));
+            partial.AddFunction(new FunctionNode(FunctionScope.Basic, "fumble", new List<DiceAST>() { equal1 }, data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "foo", new List<DiceAST>(), data));
             partial.AddFunction(new FunctionNode(FunctionScope.Basic, "reroll", new List<DiceAST>() { equal1 }, data));
 

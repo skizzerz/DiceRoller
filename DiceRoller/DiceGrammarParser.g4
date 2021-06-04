@@ -77,12 +77,12 @@ grouped_roll_inner
 
 grouped_extras
     : T_EXTRAS (compare_expr)? # GroupExtra
-    | compare_expr # GroupEmptyExtra
+    | explicit_compare_expr # GroupEmptyExtra
     ;
 
 basic_extras
     : T_EXTRAS (compare_expr)? # BasicExtra
-    | compare_expr # BasicEmptyExtra
+    | explicit_compare_expr # BasicEmptyExtra
     ;
 
 compare_expr

@@ -1692,8 +1692,8 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class GroupEmptyExtraContext : Grouped_extrasContext {
-		[System.Diagnostics.DebuggerNonUserCode] public Compare_exprContext compare_expr() {
-			return GetRuleContext<Compare_exprContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public Explicit_compare_exprContext explicit_compare_expr() {
+			return GetRuleContext<Explicit_compare_exprContext>(0);
 		}
 		public GroupEmptyExtraContext(Grouped_extrasContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
@@ -1757,15 +1757,11 @@ public partial class DiceGrammarParser : Parser {
 			case T_GREATER_EQUALS:
 			case T_LESS_EQUALS:
 			case T_NOT_EQUALS:
-			case T_LPAREN:
-			case T_MINUS:
-			case T_MACRO:
-			case T_NUMBER:
 				_localctx = new GroupEmptyExtraContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 211;
-				compare_expr();
+				explicit_compare_expr();
 				}
 				break;
 			default:
@@ -1813,8 +1809,8 @@ public partial class DiceGrammarParser : Parser {
 		}
 	}
 	public partial class BasicEmptyExtraContext : Basic_extrasContext {
-		[System.Diagnostics.DebuggerNonUserCode] public Compare_exprContext compare_expr() {
-			return GetRuleContext<Compare_exprContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public Explicit_compare_exprContext explicit_compare_expr() {
+			return GetRuleContext<Explicit_compare_exprContext>(0);
 		}
 		public BasicEmptyExtraContext(Basic_extrasContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
@@ -1861,15 +1857,11 @@ public partial class DiceGrammarParser : Parser {
 			case T_GREATER_EQUALS:
 			case T_LESS_EQUALS:
 			case T_NOT_EQUALS:
-			case T_LPAREN:
-			case T_MINUS:
-			case T_MACRO:
-			case T_NUMBER:
 				_localctx = new BasicEmptyExtraContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 218;
-				compare_expr();
+				explicit_compare_expr();
 				}
 				break;
 			default:
@@ -2387,12 +2379,12 @@ public partial class DiceGrammarParser : Parser {
 		'\x2', '\xD1', '\xD3', '\a', '\x19', '\x2', '\x2', '\xD2', '\xD4', '\x5', 
 		'\"', '\x12', '\x2', '\xD3', '\xD2', '\x3', '\x2', '\x2', '\x2', '\xD3', 
 		'\xD4', '\x3', '\x2', '\x2', '\x2', '\xD4', '\xD7', '\x3', '\x2', '\x2', 
-		'\x2', '\xD5', '\xD7', '\x5', '\"', '\x12', '\x2', '\xD6', '\xD1', '\x3', 
+		'\x2', '\xD5', '\xD7', '\x5', '$', '\x13', '\x2', '\xD6', '\xD1', '\x3', 
 		'\x2', '\x2', '\x2', '\xD6', '\xD5', '\x3', '\x2', '\x2', '\x2', '\xD7', 
 		'\x1F', '\x3', '\x2', '\x2', '\x2', '\xD8', '\xDA', '\a', '\x19', '\x2', 
 		'\x2', '\xD9', '\xDB', '\x5', '\"', '\x12', '\x2', '\xDA', '\xD9', '\x3', 
 		'\x2', '\x2', '\x2', '\xDA', '\xDB', '\x3', '\x2', '\x2', '\x2', '\xDB', 
-		'\xDE', '\x3', '\x2', '\x2', '\x2', '\xDC', '\xDE', '\x5', '\"', '\x12', 
+		'\xDE', '\x3', '\x2', '\x2', '\x2', '\xDC', '\xDE', '\x5', '$', '\x13', 
 		'\x2', '\xDD', '\xD8', '\x3', '\x2', '\x2', '\x2', '\xDD', '\xDC', '\x3', 
 		'\x2', '\x2', '\x2', '\xDE', '!', '\x3', '\x2', '\x2', '\x2', '\xDF', 
 		'\xE2', '\x5', '\xE', '\b', '\x2', '\xE0', '\xE2', '\x5', '$', '\x13', 
