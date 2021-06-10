@@ -15,6 +15,7 @@ namespace Dice.AST
         /// The die range is from 1 to the number of sides.
         /// </summary>
         Normal,
+
         /// <summary>
         /// The die range is from -N to N, where N is the number of sides.
         /// </summary>

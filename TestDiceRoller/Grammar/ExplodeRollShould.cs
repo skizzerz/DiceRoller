@@ -16,6 +16,7 @@ namespace TestDiceRoller.Grammar
         // for d100!p => 100, 20(19), 6(5) => 124
         // the final 9 is never rolled
         private static RollerConfig Explode100Conf => new RollerConfig() { GetRandomBytes = GetRNG(99, 19, 5, 9) };
+        private static RollerConfig ImplodeConf => new RollerConfig() { GetRandomBytes = GetRNG(0, 0, 1, 9) };
 
         [TestMethod]
         public void Successfully_ExplodeExtraWithoutCondition()
@@ -177,6 +178,67 @@ namespace TestDiceRoller.Grammar
         public void Successfully_CombineConditions_FunctionFunction()
         {
             EvaluateRoll("1d20.explode(=6).explode(=20)", Explode20Conf, 4, "1d20.explode(=6, =20) => 20! + 20! + 6 + 1! => 47");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!eo")]
+        [DataRow("1d20.explodeOnce()")]
+        public void Successfully_ExplodeOnce_WithoutCondition(string roll)
+        {
+            EvaluateRoll(roll, Explode20Conf, 2, "1d20.explodeOnce() => 20! + 20! => 40");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!eo20")]
+        [DataRow("1d20!eo=20")]
+        [DataRow("1d20.explodeOnce(=20)")]
+        public void Successfully_ExplodeOnce_WithCondition(string roll)
+        {
+            EvaluateRoll(roll, Explode20Conf, 2, "1d20.explodeOnce(=20) => 20! + 20! => 40");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!i")]
+        [DataRow("1d20.implode()")]
+        public void Successfully_Implode_WithoutCondition(string roll)
+        {
+            EvaluateRoll(roll, ImplodeConf, 3, "1d20.implode() => 1! - 1! - 2 => -2");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!i<=2")]
+        [DataRow("1d20.implode(<=2)")]
+        public void Successfully_Implode_WithCondition(string roll)
+        {
+            EvaluateRoll(roll, ImplodeConf, 4, "1d20.implode(<=2) => 1! - 1! - 2 - 10 => -12");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!io")]
+        [DataRow("1d20.implodeOnce()")]
+        public void Successfully_ImplodeOnce_WithoutCondition(string roll)
+        {
+            EvaluateRoll(roll, ImplodeConf, 2, "1d20.implodeOnce() => 1! - 1! => 0");
+        }
+
+        [DataTestMethod]
+        [DataRow("1d20!io<=2")]
+        [DataRow("1d20.implodeOnce(<=2)")]
+        public void Successfully_ImplodeOnce_WithCondition(string roll)
+        {
+            EvaluateRoll(roll, ImplodeConf, 2, "1d20.implodeOnce(<=2) => 1! - 1! => 0");
+        }
+
+        [TestMethod]
+        public void Successfully_CompoundImplode_WithoutCondition()
+        {
+            EvaluateRoll("1d20.compoundImplode()", ImplodeConf, 3, "1d20.compoundImplode() => -2! => -2");
+        }
+
+        [TestMethod]
+        public void Successfully_CompoundImplode_WithCondition()
+        {
+            EvaluateRoll("1d20.compoundImplode(<=2)", ImplodeConf, 4, "1d20.compoundImplode(<=2) => -12! => -12");
         }
     }
 }

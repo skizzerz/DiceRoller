@@ -30,7 +30,7 @@ namespace Dice
         public IReadOnlyList<DiceAST> Arguments { get; private set; }
 
         /// <summary>
-        /// RollData attached to this function execution
+        /// RollData attached to this function execution.
         /// </summary>
         public RollData Data { get; private set; }
 
@@ -57,20 +57,27 @@ namespace Dice
         public IEnumerable<DieResult>? Values { get; set; }
 
         /// <summary>
-        /// Number of extra rolls performed during function execution
+        /// Number of extra rolls performed during function execution.
         /// </summary>
         internal long NumRolls { get; set; }
 
         /// <summary>
-        /// When evaluating, the root node of the AST
+        /// When evaluating, the root node of the AST.
         /// </summary>
         internal DiceAST? Root { get; set; }
 
         /// <summary>
-        /// When evaluating, the current evaluation depth as of the time of this function call
+        /// When evaluating, the current evaluation depth as of the time of this function call.
         /// </summary>
         internal int? Depth { get; set; }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FunctionContext"/> class.
+        /// </summary>
+        /// <param name="scope">Scope the function is attached to.</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="arguments">Arguments passed to the function.</param>
+        /// <param name="data">Roll configuration.</param>
         internal FunctionContext(FunctionScope scope, string name, IReadOnlyList<DiceAST> arguments, RollData data)
         {
             Scope = scope;
@@ -87,9 +94,9 @@ namespace Dice
         /// <summary>
         /// Roll an extra die as part of the function execution.
         /// </summary>
-        /// <param name="rollType">Type of roll to perform</param>
-        /// <param name="numSides">Number of sides to roll</param>
-        /// <returns></returns>
+        /// <param name="rollType">Type of roll to perform.</param>
+        /// <param name="numSides">Number of sides to roll.</param>
+        /// <returns>The result of the die roll.</returns>
         public DieResult RollExtra(RollType rollType, int numSides)
         {
             NumRolls++;
@@ -97,10 +104,10 @@ namespace Dice
         }
 
         /// <summary>
-        /// Rerolls the given die
+        /// Rerolls the given die.
         /// </summary>
-        /// <param name="die">A DieResult representing a basic roll or group roll</param>
-        /// <returns></returns>
+        /// <param name="die">A DieResult representing a basic roll or group roll.</param>
+        /// <returns>The result of the reroll.</returns>
         public DieResult Reroll(DieResult die)
         {
             if (Expression == null)

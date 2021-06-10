@@ -11,6 +11,30 @@ namespace Dice.Builtins
     /// </summary>
     public static class ExplodeFunctions
     {
+        [Flags]
+        private enum ExplodeBehavior
+        {
+            /// <summary>
+            /// No special behavior.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Accumulate all rolls into a single DieResult.
+            /// </summary>
+            Compound = 1,
+
+            /// <summary>
+            /// Subtract one from each subsequent die roll.
+            /// </summary>
+            Penetrate = 2,
+
+            /// <summary>
+            /// Subtract subsequent dice instead of adding them.
+            /// </summary>
+            Implode = 4
+        }
+
         /// <summary>
         /// Validate whether or not the combination of explode functions on the roll are valid.
         /// </summary>
@@ -59,7 +83,28 @@ namespace Dice.Builtins
             }
 
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-            DoExplode(context, comparisons, compound: false, penetrate: false);
+            DoExplode(context, comparisons, ExplodeBehavior.None);
+        }
+
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and added to the roll result.
+        /// This happens at most once.
+        /// </summary>
+        /// <param name="context">Function context.</param>
+        [DiceFunction("explodeOnce", "!eo",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
+        public static void ExplodeOnce(FunctionContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
+            DoExplode(context, comparisons, ExplodeBehavior.None, max: 1);
         }
 
         /// <summary>
@@ -80,7 +125,7 @@ namespace Dice.Builtins
             }
 
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-            DoExplode(context, comparisons, compound: true, penetrate: false);
+            DoExplode(context, comparisons, ExplodeBehavior.Compound);
         }
 
         /// <summary>
@@ -101,7 +146,7 @@ namespace Dice.Builtins
             }
 
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-            DoExplode(context, comparisons, compound: false, penetrate: true);
+            DoExplode(context, comparisons, ExplodeBehavior.Penetrate);
         }
 
         /// <summary>
@@ -122,15 +167,85 @@ namespace Dice.Builtins
             }
 
             var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
-            DoExplode(context, comparisons, compound: true, penetrate: true);
+            DoExplode(context, comparisons, ExplodeBehavior.Compound | ExplodeBehavior.Penetrate);
         }
 
-        private static void DoExplode(FunctionContext context, List<ComparisonNode> comparisons, bool compound, bool penetrate)
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and subtracted from the roll result.
+        /// This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
+        [DiceFunction("implode", "!i",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
+        public static void Implode(FunctionContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
+            DoExplode(context, comparisons, ExplodeBehavior.Implode);
+        }
+
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and subtracted from the roll result.
+        /// This happens at most once.
+        /// </summary>
+        /// <param name="context">Function context.</param>
+        [DiceFunction("implodeOnce", "!io",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
+        public static void ImplodeOnce(FunctionContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
+            DoExplode(context, comparisons, ExplodeBehavior.Implode, max: 1);
+        }
+
+        /// <summary>
+        /// When the comparison succeeds, a new die is rolled and subtracted from the roll result.
+        /// This continues until the comparison fails.
+        /// </summary>
+        /// <param name="context">Function context.</param>
+        [DiceFunction("compoundImplode",
+            Behavior = FunctionBehavior.CombineArguments,
+            Scope = FunctionScope.Basic,
+            Timing = FunctionTiming.Explode,
+            ArgumentPattern = "C*")]
+        public static void CompoundImplode(FunctionContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var comparisons = context.Arguments.OfType<ComparisonNode>().ToList();
+            DoExplode(context, comparisons, ExplodeBehavior.Compound | ExplodeBehavior.Implode);
+        }
+
+        private static void DoExplode(FunctionContext context, List<ComparisonNode> comparisons, ExplodeBehavior behavior, int max = Int32.MaxValue)
+        {
+            bool compound = behavior.HasFlag(ExplodeBehavior.Compound);
+            bool penetrate = behavior.HasFlag(ExplodeBehavior.Penetrate);
+            bool implode = behavior.HasFlag(ExplodeBehavior.Implode);
             long rolls = 0;
             Func<DieResult, decimal, bool> shouldExplode;
             var values = new List<DieResult>();
+            // this value is subtracted from the result of each subsequent roll
             decimal penetrateValueAdjustment = penetrate ? 1 : 0;
+            // this value is multiplied by the final value of each subsequent roll
+            decimal implodeAdjustment = implode ? -1 : 1;
+            SpecialDie explodeOp = implode ? SpecialDie.Subtract : SpecialDie.Add;
 
             context.Value = 0;
             context.Values = values;
@@ -139,6 +254,15 @@ namespace Dice.Builtins
             if (comparisons.Count > 0)
             {
                 shouldExplode = (d, x) => comparisons.Any(c => c.Compare(d.Value + x));
+            }
+            else if (implode)
+            {
+                shouldExplode = (d, x) => d.Value + x == d.DieType switch
+                {
+                    DieType.Normal => 1,
+                    DieType.Fudge => -d.NumSides,
+                    _ => throw new InvalidOperationException("Unexpected die type when evaluating explode expression")
+                };
             }
             else
             {
@@ -205,20 +329,21 @@ namespace Dice.Builtins
                     }
 
                     result = context.RollExtra(rt, numSides);
+
                     // if we're penetrating, subtract 1 from all subsequent rolls
                     result.Value -= penetrateValueAdjustment;
 
-                    context.Value += result.Value;
+                    context.Value += implodeAdjustment * result.Value;
                     if (compound)
                     {
-                        accum.Value += result.Value;
+                        accum.Value += implodeAdjustment * result.Value;
                     }
                     else
                     {
-                        values.Add(new DieResult(SpecialDie.Add));
+                        values.Add(new DieResult(explodeOp));
                         values.Add(result);
                     }
-                } while (shouldExplode(result, penetrateValueAdjustment));
+                } while (rolls < max && shouldExplode(result, penetrateValueAdjustment));
 
                 if (compound)
                 {
