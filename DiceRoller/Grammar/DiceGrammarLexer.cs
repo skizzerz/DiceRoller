@@ -3,12 +3,25 @@ using System.Text.RegularExpressions;
 
 namespace Dice.Grammar
 {
+    /// <summary>
+    /// Converts a dice expression into tokens.
+    /// This class should be considered internal and *not* part of the library's public API.
+    /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1708:Identifiers should differ by more than case",
         Justification = "Generated code")]
     public partial class DiceGrammarLexer
     {
+        /// <summary>
+        /// Roll data and configuration for the expression being lexed.
+        /// </summary>
         public RollData? RollData { get; set; }
 
+        /// <summary>
+        /// Determine if the text just lexed is likely a dice expression versus a
+        /// global function call. This is called by the generated antlr lexer via
+        /// DiceGrammarLexer.g4.
+        /// </summary>
+        /// <returns>true if the string is likely a dice roll, false if it's likely a global function call.</returns>
         private bool IsLikelyDiceExpression()
         {
             if (RollData == null)

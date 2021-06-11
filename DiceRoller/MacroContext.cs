@@ -47,10 +47,15 @@ namespace Dice
         public IReadOnlyList<string> Arguments { get; private set; }
 
         /// <summary>
-        /// RollData attached to this macro execution
+        /// RollData attached to this macro execution.
         /// </summary>
         public RollData Data { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MacroContext"/> class.
+        /// </summary>
+        /// <param name="param">Unparsed text inside of the macro.</param>
+        /// <param name="data">Roll configuration and data.</param>
         internal MacroContext(string param, RollData data)
         {
             Value = Decimal.MinValue;

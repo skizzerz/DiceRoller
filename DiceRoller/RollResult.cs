@@ -329,11 +329,23 @@ namespace Dice
             return new { ResultType, Value, Values = valuesCode, NumRolls, Expression, AllRolls = rollsCode, AllMacros = macrosCode }.GetHashCode();
         }
 
+        /// <summary>
+        /// Test if two RollResults are equal.
+        /// </summary>
+        /// <param name="a">First RollResult to check.</param>
+        /// <param name="b">Second RollResult to check.</param>
+        /// <returns>true if both RollResults are equal, false otherwise.</returns>
         public static bool operator ==(RollResult a, RollResult b)
         {
             return ReferenceEquals(a, b) || a?.Equals(b) == true;
         }
 
+        /// <summary>
+        /// Test if two RollResults are not equal.
+        /// </summary>
+        /// <param name="a">First RollResult to check.</param>
+        /// <param name="b">Second RollResult to check.</param>
+        /// <returns>true if both RollResults are not equal, false otherwise.</returns>
         public static bool operator !=(RollResult a, RollResult b)
         {
             return !(a == b);

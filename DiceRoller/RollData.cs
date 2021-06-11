@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Dice
 {
     /// <summary>
-    /// Holds data relevant to the scope of a single roll (as opposed to the global scope of RollerConfig)
+    /// Holds data relevant to the scope of a single roll (as opposed to the global scope of RollerConfig).
     /// </summary>
     public class RollData
     {
@@ -36,7 +36,7 @@ namespace Dice
         internal RollerConfig Config { get; set; } = Roller.DefaultConfig;
 
         /// <summary>
-        /// Opaque contextual information used when evaluating dice expressions
+        /// Opaque contextual information used when evaluating dice expressions.
         /// </summary>
         internal InternalContext InternalContext { get; set; } = new InternalContext();
     }

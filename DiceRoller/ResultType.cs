@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 namespace Dice
 {
     /// <summary>
-    /// Whether a RollResult's value represents the sum of the dice rolled
-    /// or the number of successes.
+    /// What sort of thing a RollResult represents.
     /// </summary>
     public enum ResultType
     {
+        /// <summary>
+        /// The RollResult represents the total of all faces rolled on the dice.
+        /// </summary>
         Total,
+
+        /// <summary>
+        /// The RollResult represents the number of successes rolled in a pool of dice.
+        /// </summary>
         Successes
     }
 }

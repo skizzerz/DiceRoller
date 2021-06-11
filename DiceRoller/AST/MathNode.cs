@@ -250,6 +250,7 @@ namespace Dice.AST
                     {
                         addLeftParen = false;
                     }
+
                     // the gnarly mess below is testing if the group node is already wrapped in a single set of parens
                     // if it is, then we don't add another set. So, we check for (1+2+3) and don't turn that into ((1+2+3)), but
                     // we DO turn (1+2)+(3+4) into ((1+2)+(3+4)) unless we're adding/subtracting (which is caught above).

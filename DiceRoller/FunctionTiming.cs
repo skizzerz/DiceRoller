@@ -13,37 +13,120 @@ namespace Dice
     /// </summary>
     /// <remarks>
     /// The following changes to this enum are not considered breaking:
-    /// - Adding new items, including in the middle of the enum
+    /// <list type="bullet">
+    /// <item><description>Adding new items, including in the middle of the enum</description></item>
+    /// </list>
     /// The following changes to this enum are considered breaking:
-    /// - Removing items
-    /// - Rearranging items
+    /// <list type="bullet">
+    /// <item><description>Removing items</description></item>
+    /// <item><description>Rearranging items</description></item>
+    /// </list>
     /// </remarks>
     public enum FunctionTiming
     {
         /// <summary>
-        /// The function should be executed before any other expressions
+        /// The function should be executed before any other expressions.
         /// </summary>
         First,
-        BeforeExplode,
-        Explode,
-        AfterExplode,
-        BeforeReroll,
-        Reroll,
-        AfterReroll,
-        BeforeKeep,
-        Keep,
-        AfterKeep,
-        BeforeSuccess,
-        Success,
-        AfterSuccess,
-        BeforeCrit,
-        Crit,
-        AfterCrit,
-        BeforeSort,
-        Sort,
-        AfterSort,
+
         /// <summary>
-        /// The function should be executed after all other expressions
+        /// Execute before bultin explode functions.
+        /// </summary>
+        BeforeExplode,
+
+        /// <summary>
+        /// Builtin explode functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Explode,
+
+        /// <summary>
+        /// Execute after builtin explode functions.
+        /// </summary>
+        AfterExplode,
+
+        /// <summary>
+        /// Execute before builtin reroll functions.
+        /// </summary>
+        BeforeReroll,
+
+        /// <summary>
+        /// Builtin reroll functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Reroll,
+
+        /// <summary>
+        /// Execute after builtin reroll functions.
+        /// </summary>
+        AfterReroll,
+
+        /// <summary>
+        /// Execute before builtin keep/drop functions.
+        /// </summary>
+        BeforeKeep,
+
+        /// <summary>
+        /// Builtin keep/drop functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Keep,
+
+        /// <summary>
+        /// Execute after builtin keep/drop functions.
+        /// </summary>
+        AfterKeep,
+
+        /// <summary>
+        /// Execute before builtin success/failure functions.
+        /// </summary>
+        BeforeSuccess,
+
+        /// <summary>
+        /// Builtin success/failure functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// Execute after builtin success/failure functions.
+        /// </summary>
+        AfterSuccess,
+
+        /// <summary>
+        /// Execute before builtin crit/fumble functions.
+        /// </summary>
+        BeforeCrit,
+
+        /// <summary>
+        /// Builtin crit/fumble functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Crit,
+
+        /// <summary>
+        /// Execute after builtin crit/fumble functions.
+        /// </summary>
+        AfterCrit,
+
+        /// <summary>
+        /// Execute before builtin sorting functions.
+        /// </summary>
+        BeforeSort,
+
+        /// <summary>
+        /// Builtin sorting functions.
+        /// Custom functions should generally not use this timing.
+        /// </summary>
+        Sort,
+
+        /// <summary>
+        /// Execute after builtin sorting functions.
+        /// </summary>
+        AfterSort,
+
+        /// <summary>
+        /// The function should be executed after all other expressions.
         /// </summary>
         Last
     }

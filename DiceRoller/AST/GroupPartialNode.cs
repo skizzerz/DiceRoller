@@ -48,7 +48,6 @@ namespace Dice.AST
         /// <summary>
         /// Creates the GroupNode from all of the partial pieces and returns the root of the GroupNode's subtree.
         /// </summary>
-        /// <param name="numTimes">Expression to roll the group some number of times, may be null.</param>
         /// <returns>Returns the created GroupNode.</returns>
         internal DiceAST CreateGroupNode()
         {

@@ -13,22 +13,26 @@ namespace Dice
     public enum FunctionScope
     {
         /// <summary>
-        /// The function is a global function (not attached to a die roll)
+        /// The function is a global function (not attached to a die roll).
         /// </summary>
         Global,
+
         /// <summary>
         /// The function is attached to normal, fudge, or grouped rolls, useful
         /// when registering functions that work on multiple roll types.
         /// </summary>
         Roll,
+
         /// <summary>
-        /// The function is attached to a normal or fudge die roll
+        /// The function is attached to a normal or fudge die roll.
         /// </summary>
         Basic,
+
         /// <summary>
-        /// The function is attached to a grouped roll
+        /// The function is attached to a grouped roll.
         /// </summary>
         Group,
+
         /// <summary>
         /// The function can be executed globally as well as attached to any sort
         /// of roll. Useful when registering functions that work everywhere.

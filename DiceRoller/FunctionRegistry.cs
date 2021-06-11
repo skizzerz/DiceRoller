@@ -14,6 +14,7 @@ namespace Dice
     public class FunctionRegistry
     {
         protected Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks { get; private set; } = new Dictionary<(string, FunctionScope), FunctionSlot>();
+
         protected Dictionary<string, FunctionExtra> Extras { get; private set; } = new Dictionary<string, FunctionExtra>();
 
         public event EventHandler<ValidateEventArgs>? Validate;
@@ -131,6 +132,12 @@ namespace Dice
             throw new KeyNotFoundException($"No registered top-level extra matches the name and scope ({name}, FunctionScope.{scope})");
         }
 
+        /// <summary>
+        /// Get metadata of an extra.
+        /// </summary>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="name">Extra name.</param>
+        /// <returns>Metadata associated with the extra.</returns>
         public static FunctionExtra GetExtraData(RollData data, string name)
         {
             if (data == null)
@@ -164,11 +171,11 @@ namespace Dice
         }
 
         /// <summary>
-        /// Retrieve all extras registered for the given scope in descending order by string length
+        /// Retrieve all extras registered for the given scope in descending order by string length.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="scope"></param>
-        /// <returns></returns>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="scope">Function scope to retrieve extras for.</param>
+        /// <returns>A list of extras in descending order by string length.</returns>
         internal static List<FunctionExtra> GetAllExtras(RollData data, FunctionScope scope)
         {
             var extras = new List<FunctionExtra>();
@@ -201,8 +208,8 @@ namespace Dice
         /// Fire the Validate event on all registries associated with this roll.
         /// An event handler may throw an exception on validation failure to indicate an invalid set of function calls.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="eventArgs"></param>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="eventArgs">Arguments to pass to the event listeners.</param>
         internal static void FireValidateEvent(RollData data, ValidateEventArgs eventArgs)
         {
             data.FunctionRegistry.Validate?.Invoke(data.FunctionRegistry, eventArgs);
@@ -215,7 +222,7 @@ namespace Dice
         /// DiceFunctionAttribute to be registered as callbacks. To register instance methods as well
         /// as static methods, use the other RegisterType overload.
         /// </summary>
-        /// <param name="t">Type to register methods from</param>
+        /// <param name="t">Type to register methods from.</param>
         public void RegisterType(Type t)
         {
             if (t == null)
@@ -370,10 +377,11 @@ namespace Dice
         }
 
         /// <summary>
-        /// Removes the function with the given name and scope.
+        /// Removes the function with the given name and scope. If the function is registered in multiple scopes,
+        /// this will only remove it from the scopes specified.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="scope"></param>
+        /// <param name="name">Function name.</param>
+        /// <param name="scope">Function scope to remove. Specify All to remove from all scopes or Roll to remove from all roll scopes.</param>
         /// <remarks>When overriding in a subclass, you will need to call the parent method for removal to fully succeed.</remarks>
         public void Remove(string name, FunctionScope scope)
         {
@@ -412,11 +420,11 @@ namespace Dice
         }
 
         /// <summary>
-        /// Controls whether or not this particular registry contains a callback with the given name and scope
+        /// Controls whether or not this particular registry contains a callback with the given name and scope.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="scope">Scope to check; if All or Roll this function will return true if a callback is defined for any of their encompassing scopes</param>
-        /// <returns></returns>
+        /// <param name="name">Function name to check.</param>
+        /// <param name="scope">Scope to check; if All or Roll this function will return true if a callback is defined for any of their encompassing scopes.</param>
+        /// <returns>true if the registry contains a function with the given name in the given scope, false otherwise.</returns>
         protected internal bool Contains(string name, FunctionScope scope)
         {
             if (name == null)
@@ -434,11 +442,11 @@ namespace Dice
 
         /// <summary>
         /// Controls whether or not this particular registry contains an extra with the given name and scope.
-        /// This always returns false when given a scope of All or Global
+        /// This always returns false when given a scope of All or Global.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="scope">Scope to check; if Roll this function will return true if an extra is defined for either Basic or Group</param>
-        /// <returns></returns>
+        /// <param name="name">Name of the extra to check.</param>
+        /// <param name="scope">Scope to check; if Roll this function will return true if an extra is defined for either Basic or Group.</param>
+        /// <returns>true if the registry contains an extra with the given name in the given scope, false otherwise.</returns>
         protected internal bool ContainsExtra(string name, FunctionScope scope)
         {
             if (name == null)

@@ -1,15 +1,18 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+
+using Antlr4.Runtime.Misc;
 
 using Dice.AST;
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
 namespace Dice.Grammar
 {
+    /// <summary>
+    /// Listener for the parse tree walker of dice expressions.
+    /// This class should be considered internal and *not* part of the library's public API.
+    /// </summary>
     [CLSCompliant(false)]
     [SuppressMessage("Design", "CA1062:Validate arguments of public methods",
         Justification = "Class is considered internal (for public API purposes) despite being marked public to align with antlr-generated code visibility")]
@@ -38,12 +41,17 @@ namespace Dice.Grammar
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiceGrammarListener"/> class.
+        /// </summary>
+        /// <param name="data">Roll data and configuration.</param>
         public DiceGrammarListener(RollData data)
         {
             Stack = new Stack<DiceAST>();
             Data = data;
         }
 
+        /// <inheritdoc/>
         public override void ExitMultMult([NotNull] DiceGrammarParser.MultMultContext context)
         {
             var right = Stack.Pop();
@@ -51,6 +59,7 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Multiply, left, right));
         }
 
+        /// <inheritdoc/>
         public override void ExitMultDiv([NotNull] DiceGrammarParser.MultDivContext context)
         {
             var right = Stack.Pop();
@@ -58,6 +67,7 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Divide, left, right));
         }
 
+        /// <inheritdoc/>
         public override void ExitAddAdd([NotNull] DiceGrammarParser.AddAddContext context)
         {
             var right = Stack.Pop();
@@ -65,6 +75,7 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Add, left, right));
         }
 
+        /// <inheritdoc/>
         public override void ExitAddSub([NotNull] DiceGrammarParser.AddSubContext context)
         {
             var right = Stack.Pop();
@@ -72,23 +83,27 @@ namespace Dice.Grammar
             Stack.Push(new MathNode(MathOp.Subtract, left, right));
         }
 
+        /// <inheritdoc/>
         public override void ExitFuncMinus([NotNull] DiceGrammarParser.FuncMinusContext context)
         {
             var param = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Negate, null, param));
         }
 
+        /// <inheritdoc/>
         public override void ExitUnaryExprMinus([NotNull] DiceGrammarParser.UnaryExprMinusContext context)
         {
             var param = Stack.Pop();
             Stack.Push(new MathNode(MathOp.Negate, null, param));
         }
 
+        /// <inheritdoc/>
         public override void ExitNumberLiteral([NotNull] DiceGrammarParser.NumberLiteralContext context)
         {
             Stack.Push(new LiteralNode(Convert.ToDecimal(context.GetText(), CultureInfo.InvariantCulture)));
         }
 
+        /// <inheritdoc/>
         public override void ExitNumberMacro([NotNull] DiceGrammarParser.NumberMacroContext context)
         {
             // T_MACRO includes the surrounding [], so strip those out (via Substring)
@@ -96,6 +111,7 @@ namespace Dice.Grammar
             Stack.Push(new MacroNode(macro.Substring(1, macro.Length - 2), Data));
         }
 
+        /// <inheritdoc/>
         public override void EnterRollGroup([NotNull] DiceGrammarParser.RollGroupContext context)
         {
             // add GroupPartialNode to act as a sentinel and accumulator for all group stuff
@@ -104,6 +120,7 @@ namespace Dice.Grammar
             Stack.Push(new GroupPartialNode());
         }
 
+        /// <inheritdoc/>
         public override void ExitRollGroup([NotNull] DiceGrammarParser.RollGroupContext context)
         {
             List<DiceAST> groupNodes = new List<DiceAST>();
@@ -155,6 +172,7 @@ namespace Dice.Grammar
             Stack.Push(partial.CreateGroupNode());
         }
 
+        /// <inheritdoc/>
         public override void ExitGroupInit([NotNull] DiceGrammarParser.GroupInitContext context)
         {
             var top = Stack.Pop();
@@ -176,6 +194,7 @@ namespace Dice.Grammar
             }
         }
 
+        /// <inheritdoc/>
         public override void ExitGroupAdditional([NotNull] DiceGrammarParser.GroupAdditionalContext context)
         {
             var top = Stack.Pop();
@@ -184,6 +203,7 @@ namespace Dice.Grammar
             Stack.Push(partial);
         }
 
+        /// <inheritdoc/>
         public override void ExitGroupExtra([NotNull] DiceGrammarParser.GroupExtraContext context)
         {
             // we might have a comparison on the stack
@@ -268,6 +288,7 @@ namespace Dice.Grammar
             Stack.Push(new SentinelNode("MultipartExtra", currentExtra));
         }
 
+        /// <inheritdoc/>
         public override void ExitGroupEmptyExtra([NotNull] DiceGrammarParser.GroupEmptyExtraContext context)
         {
             if (!FunctionRegistry.ExtraExists(Data, String.Empty, FunctionScope.Group))
@@ -283,6 +304,7 @@ namespace Dice.Grammar
             Stack.Push(new SentinelNode("MultipartExtra", FunctionRegistry.GetExtraData(Data, String.Empty)));
         }
 
+        /// <inheritdoc/>
         public override void ExitGroupFunction([NotNull] DiceGrammarParser.GroupFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -303,6 +325,7 @@ namespace Dice.Grammar
             Stack.Push(new FunctionNode(FunctionScope.Group, fname, args, Data));
         }
 
+        /// <inheritdoc/>
         public override void ExitRollBasic([NotNull] DiceGrammarParser.RollBasicContext context)
         {
             List<DiceAST> extras = new List<DiceAST>();
@@ -365,6 +388,7 @@ namespace Dice.Grammar
             Stack.Push(partial.CreateRollNode());
         }
 
+        /// <inheritdoc/>
         public override void ExitRollFudge([NotNull] DiceGrammarParser.RollFudgeContext context)
         {
             // we'll have 1 or 2 + # of extras nodes on the stack, bottom-most 2 nodes are the number of dice and sides
@@ -432,6 +456,7 @@ namespace Dice.Grammar
             Stack.Push(partial.CreateRollNode());
         }
 
+        /// <inheritdoc/>
         public override void ExitBasicExtra([NotNull] DiceGrammarParser.BasicExtraContext context)
         {
             // we might have a comparison on the stack
@@ -516,6 +541,7 @@ namespace Dice.Grammar
             Stack.Push(new SentinelNode("MultipartExtra", currentExtra));
         }
 
+        /// <inheritdoc/>
         public override void ExitBasicEmptyExtra([NotNull] DiceGrammarParser.BasicEmptyExtraContext context)
         {
             if (!FunctionRegistry.ExtraExists(Data, String.Empty, FunctionScope.Basic))
@@ -531,6 +557,7 @@ namespace Dice.Grammar
             Stack.Push(new SentinelNode("MultipartExtra", FunctionRegistry.GetExtraData(Data, String.Empty)));
         }
 
+        /// <inheritdoc/>
         public override void ExitBasicFunction([NotNull] DiceGrammarParser.BasicFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -549,6 +576,7 @@ namespace Dice.Grammar
             Stack.Push(new FunctionNode(FunctionScope.Basic, fname, args, Data));
         }
 
+        /// <inheritdoc/>
         public override void ExitGlobalFunction([NotNull] DiceGrammarParser.GlobalFunctionContext context)
         {
             // we will have N function arguments at the top of the stack
@@ -566,42 +594,49 @@ namespace Dice.Grammar
             Stack.Push(new FunctionNode(FunctionScope.Global, fname, args, Data));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompImplicit([NotNull] DiceGrammarParser.CompImplicitContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ImplicitComparisonNode(top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompEquals([NotNull] DiceGrammarParser.CompEqualsContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.Equals, top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompGreater([NotNull] DiceGrammarParser.CompGreaterContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.GreaterThan, top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompGreaterEquals([NotNull] DiceGrammarParser.CompGreaterEqualsContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.GreaterEquals, top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompLess([NotNull] DiceGrammarParser.CompLessContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.LessThan, top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompLessEquals([NotNull] DiceGrammarParser.CompLessEqualsContext context)
         {
             var top = Stack.Pop();
             Stack.Push(new ComparisonNode(CompareOp.LessEquals, top));
         }
 
+        /// <inheritdoc/>
         public override void ExitCompNotEquals([NotNull] DiceGrammarParser.CompNotEqualsContext context)
         {
             var top = Stack.Pop();

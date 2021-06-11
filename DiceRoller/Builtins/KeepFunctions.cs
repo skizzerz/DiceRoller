@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-using Dice.AST;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Builtin functions related to keeping/dropping dice from a roll.
+    /// </summary>
     public static class KeepFunctions
     {
         private enum KeepType
@@ -18,6 +18,11 @@ namespace Dice.Builtins
             DropLowest
         }
 
+        /// <summary>
+        /// Validate that regular keep/drop functions are not intermixed with advantage/disadvantage.
+        /// </summary>
+        /// <param name="sender">Unused.</param>
+        /// <param name="e">Event args.</param>
         [SuppressMessage("Security", "CA2109:Review visible event handlers",
             Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
         public static void ValidateKeep(object sender, ValidateEventArgs e)
@@ -41,6 +46,10 @@ namespace Dice.Builtins
             }
         }
 
+        /// <summary>
+        /// Rolls the dice expression twice and keeps the one with the highest result.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("advantage", "ad", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Advantage(FunctionContext context)
         {
@@ -52,6 +61,10 @@ namespace Dice.Builtins
             ApplyAdvantage(context, KeepType.KeepHighest);
         }
 
+        /// <summary>
+        /// Rolls the dice expression twice and keeps the one with the lowest result.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("disadvantage", "da", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "")]
         public static void Disadvantage(FunctionContext context)
         {
@@ -63,6 +76,10 @@ namespace Dice.Builtins
             ApplyAdvantage(context, KeepType.KeepLowest);
         }
 
+        /// <summary>
+        /// Drops some number of the lowest dice from the roll.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("dropLowest", "dl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropLowest(FunctionContext context)
         {
@@ -74,6 +91,10 @@ namespace Dice.Builtins
             ApplyKeep(context, KeepType.DropLowest);
         }
 
+        /// <summary>
+        /// Drops some number of the highest dice from the roll.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("dropHighest", "dh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void DropHighest(FunctionContext context)
         {
@@ -85,6 +106,10 @@ namespace Dice.Builtins
             ApplyKeep(context, KeepType.DropHighest);
         }
 
+        /// <summary>
+        /// Keeps some number of the lowest dice from the roll, dropping the rest.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("keepLowest", "kl", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepLowest(FunctionContext context)
         {
@@ -96,6 +121,10 @@ namespace Dice.Builtins
             ApplyKeep(context, KeepType.KeepLowest);
         }
 
+        /// <summary>
+        /// Keeps some number of the highest dice from the roll, dropping the rest.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("keepHighest", "kh", Scope = FunctionScope.Roll, Timing = FunctionTiming.Keep, ArgumentPattern = "E")]
         public static void KeepHighest(FunctionContext context)
         {
@@ -126,7 +155,6 @@ namespace Dice.Builtins
                     newValues.Add(die);
                 }
             }
-
 
             if (context.Expression.ValueType == ResultType.Total)
             {

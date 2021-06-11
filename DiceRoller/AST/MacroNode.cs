@@ -72,11 +72,11 @@ namespace Dice.AST
 
             if (data.MacroRegistry.Contains(Context.Name))
             {
-                data.MacroRegistry.Get(Context.Name).callback(Context);
+                data.MacroRegistry.Get(Context.Name).Callback(Context);
             }
             else if (data.Config.MacroRegistry.Contains(Context.Name))
             {
-                data.Config.MacroRegistry.Get(Context.Name).callback(Context);
+                data.Config.MacroRegistry.Get(Context.Name).Callback(Context);
             }
 
             data.MacroRegistry.GlobalCallbacks?.Invoke(Context);

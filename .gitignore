@@ -248,3 +248,6 @@ release.bat
 
 # ANTLR generates .interp files which we do not need nor want
 *.interp
+
+# XML documentation files
+/Dice.xml

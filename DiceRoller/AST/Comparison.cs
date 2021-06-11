@@ -60,11 +60,23 @@ namespace Dice.AST
             return new { op, expr }.GetHashCode();
         }
 
+        /// <summary>
+        /// Test if two Comparisons are equal.
+        /// </summary>
+        /// <param name="a">First comparison to check.</param>
+        /// <param name="b">Second comparison to check.</param>
+        /// <returns>true if the Comparisons are equal, false otherwise.</returns>
         public static bool operator==(Comparison a, Comparison b)
         {
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Test if two Comparisons are not equal.
+        /// </summary>
+        /// <param name="a">First comparison to check.</param>
+        /// <param name="b">Second comparison to check.</param>
+        /// <returns>true if the Comparisons are not equal, false otherwise.</returns>
         public static bool operator!=(Comparison a, Comparison b)
         {
             return !a.Equals(b);

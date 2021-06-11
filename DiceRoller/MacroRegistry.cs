@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dice
 {
@@ -14,16 +12,16 @@ namespace Dice
         /// <summary>
         /// Callbacks which should be executed on every macro run.
         /// </summary>
-        internal MacroCallback? GlobalCallbacks;
+        internal MacroCallback? GlobalCallbacks { get; set; }
 
-        private readonly Dictionary<string, (string name, MacroCallback callback)> Callbacks = new Dictionary<string, (string, MacroCallback)>();
+        private readonly Dictionary<string, (string Name, MacroCallback Callback)> Callbacks = new Dictionary<string, (string, MacroCallback)>();
 
         /// <summary>
         /// Registers a type, which causes all public static methods of that type with the
         /// DiceMacroAttribute to be registered as callbacks. To register instance methods as well
         /// as static methods, use the other RegisterType overload.
         /// </summary>
-        /// <param name="t">Type to register methods from</param>
+        /// <param name="t">Type to register methods from.</param>
         public void RegisterType(Type t)
         {
             if (t == null)
@@ -44,7 +42,7 @@ namespace Dice
 
                     var callback = (MacroCallback)m.CreateDelegate(typeof(MacroCallback));
                     var lname = attr.Name.ToLowerInvariant();
-                    
+
                     if (Contains(lname))
                     {
                         throw new InvalidOperationException("A macro with the same name has already been registered");
@@ -133,7 +131,7 @@ namespace Dice
         /// Registers a callback to the global macro registry.
         /// The same callback may be registered more than once.
         /// </summary>
-        /// <param name="callback"></param>
+        /// <param name="callback">Callback to register.</param>
         public void RegisterGlobalMacro(MacroCallback callback)
         {
             GlobalCallbacks += callback ?? throw new ArgumentNullException(nameof(callback));
@@ -142,7 +140,7 @@ namespace Dice
         /// <summary>
         /// Removes the macro with the given name.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">Name to remove.</param>
         public void Remove(string name)
         {
             if (name == null)
@@ -158,17 +156,27 @@ namespace Dice
         /// <summary>
         /// Removes all instances of the callback from the global macro registry.
         /// </summary>
-        /// <param name="callback"></param>
+        /// <param name="callback">Callback to remove.</param>
         public void RemoveGlobal(MacroCallback callback)
         {
             GlobalCallbacks -= callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
-        internal (string name, MacroCallback callback) Get(string lname)
+        /// <summary>
+        /// Retrieves the macro with the given name.
+        /// </summary>
+        /// <param name="lname">Name to retrieve.</param>
+        /// <returns>Returns a tuple of the normalized name and the callback.</returns>
+        internal (string Name, MacroCallback Callback) Get(string lname)
         {
             return Callbacks[lname.ToLowerInvariant()];
         }
 
+        /// <summary>
+        /// Check if the macro registry contains a callback with the given name.
+        /// </summary>
+        /// <param name="name">Name to check.</param>
+        /// <returns>true if a callback exists with the name, false otherwise.</returns>
         internal bool Contains(string name)
         {
             return Callbacks.ContainsKey(name.ToLowerInvariant());

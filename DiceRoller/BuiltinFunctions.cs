@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
 
-using Dice.AST;
 using Dice.Builtins;
+
+// class is deprecated, so suppress some warnings about doc comments
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable SA1600 // Elements should be documented
 
 namespace Dice
 {
@@ -89,3 +88,6 @@ namespace Dice
         }
     }
 }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning restore SA1600 // Elements should be documented

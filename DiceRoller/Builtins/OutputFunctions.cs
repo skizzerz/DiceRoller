@@ -1,14 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 
 using Dice.AST;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Functions that do not change the roll result but manipulate the output in some fashion.
+    /// </summary>
     public static class OutputFunctions
     {
+        /// <summary>
+        /// Expands a grouped dice roll into the individual dice roll rather than one meta-result per grouping.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("expand", Scope = FunctionScope.Group, Timing = FunctionTiming.BeforeSort, ArgumentPattern = "")]
         public static void Expand(FunctionContext context)
         {

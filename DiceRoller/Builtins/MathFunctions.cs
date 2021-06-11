@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
-
-using Dice.AST;
+using System.Linq;
 
 namespace Dice.Builtins
 {
+    /// <summary>
+    /// Functions that perform mathematical operations.
+    /// </summary>
     public static class MathFunctions
     {
+        /// <summary>
+        /// Computes the floor of the argument (the largest integer less than or equal to the number).
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("floor", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Floor(FunctionContext context)
         {
@@ -32,6 +36,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
+        /// <summary>
+        /// Computes the ceiling of the argument (the smallest integer greater than or equal to the number).
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("ceil", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Ceiling(FunctionContext context)
         {
@@ -55,6 +63,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
+        /// <summary>
+        /// Rounds the argument, with 0.5 rounding away from 0 (1.5 rounds to 2, -1.5 rounds to -2).
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("round", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Round(FunctionContext context)
         {
@@ -78,6 +90,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
+        /// <summary>
+        /// Computes the absolute value of the argument.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("abs", Scope = FunctionScope.Global, ArgumentPattern = "E")]
         public static void Abs(FunctionContext context)
         {
@@ -101,6 +117,10 @@ namespace Dice.Builtins
             context.ValueType = arg.ValueType;
         }
 
+        /// <summary>
+        /// Returns the maximum value of two arguments.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("max", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Max(FunctionContext context)
         {
@@ -178,6 +198,10 @@ namespace Dice.Builtins
             context.Values = values;
         }
 
+        /// <summary>
+        /// Returns the minimum value of two arguments.
+        /// </summary>
+        /// <param name="context">Function context.</param>
         [DiceFunction("min", Scope = FunctionScope.Global, ArgumentPattern = "EE")]
         public static void Min(FunctionContext context)
         {

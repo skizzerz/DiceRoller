@@ -21,7 +21,7 @@ namespace Dice.AST
         public DiceAST? NumTimes { get; private set; }
 
         /// <summary>
-        /// The list of expressions which make up the grouped roll
+        /// The list of expressions which make up the grouped roll.
         /// </summary>
         public IReadOnlyList<DiceAST> Expressions
         {
@@ -29,7 +29,7 @@ namespace Dice.AST
         }
 
         /// <summary>
-        /// The values of each iteration of the grouped roll
+        /// The values of each iteration of the grouped roll.
         /// </summary>
         public override IReadOnlyList<DieResult> Values
         {

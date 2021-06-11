@@ -16,35 +16,59 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>die dice roller game games d&amp;d pathfinder rpg pbp tabletop vtt</PackageTags>
         <PackageReleaseNotes>Backwards-incompatible changes:
-- None
+- Some DiceAST subclasses were removed. The DiceAST class hierarchy is considered an
+  implementation detail and not a public API for the purposes of semantic versioning. However,
+  the change is being noted here so any library consumers incorrectly casting to or using these
+  subclasses can audit their code.
 
 New user features:
-- The rerollN() function now accepts any numerical expression for the first argument (max # of rerolls)
-  e.g. 1d20.rerollN(2+3, =1) or 1d20.rerollN(1d6, =1)
+- The rerollN() function now accepts any numerical expression for the first argument
+  (max # of rerolls) e.g. 1d20.rerollN(2+3, =1) or 1d20.rerollN(1d6, =1)
 - The rerollN() function can now be specified multiple times for fine-grained reroll control
-  e.g. 1d20.rerollN(2, =1).rerollN(1, =2, =3) rerolls either a "2" or "3" once but rerolls a "1" twice
+  e.g. 1d20.rerollN(2, =1).rerollN(1, =2, =3) rerolls either a "2" or "3" once but rerolls a
+  "1" twice
 - More informative error messages if you omit something when specifying an extra on a roll
 - Dice expressions are no longer case sensitive. Roll 1d20 or 1D20, whichever you prefer!
 - Defining a success condition is no longer required when all you want to do is define
   a failure (negative success) condition
+- New function explodeOnce() / !eo to perform an explode operation at most once.
+- New function implode() / !i to act as the inverse of explode; when the comparison is met a new
+  die is rolled and subtracted from the result. This continues until the comparison fails.
+- New function implodeOnce() / !io to perform an implode operation at most once.
+- New function compoundImplode() to perform an implode operation with compound semantics, causing
+  a single die to be sent as output containing the final result of the implode operation.
 
 New developer features:
-- Builtin functions can be overridden by custom functions by registering a function with the same name
+- Builtin functions can be overridden by custom functions by registering a function with the
+  same name
 - Builtin functions can be removed
 - Custom functions can be registered with the same timing as builtin functions
 - Custom extras can be registered along with custom functions
-- Custom functions can specify how multiples of the same function are executed when attached to the same roll
-- Custom functions can specify how their arguments should look, and will be validated before being called
+- Custom functions can specify how multiples of the same function are executed when attached to
+  the same roll
+- Custom functions can specify how their arguments should look, and will be validated before being
+  called
+- XML documentation added to all classes, methods, and properties for better IntelliSense.
+  Improving the XML documentation quality is still a work in progress, please leave suggestions
+  in a new issue on GitHub!
 
 Bugfixes:
-- Fixed nullability annotation for DieResult.Data; this string can be nullable and has always defaulted to null
+- Fixed nullability annotation for DieResult.Data; this string can be nullable and has always
+  defaulted to null
 
 Deprecations:
-- Dice.BuiltinFunctions and Dice.BuiltinMacros are deprecated; please use their counterparts in the Dice.Builtins
-  namespace if you would like to directly call any of them from within your custom functions/macros.
-  These two classes will be removed in the next major release.
-- DiceErrorCode.InvalidSuccess is deprecated and no longer used by the library.
-  This enum value will be removed in the next major release.
+- Dice.BuiltinFunctions and Dice.BuiltinMacros are deprecated; please use their counterparts in
+  the Dice.Builtins namespace if you would like to directly call any of them from within your
+  custom functions/macros. These two classes will be removed in the next major release.
+- DiceErrorCode.InvalidSuccess is deprecated and no longer used by the library. This enum value
+  will be removed in the next major release.
+- Direct access to the DiceAST classes and the parser is deprecated; these will become
+  inaccessible or transition to using a public interface instead of exposing the classes directly
+  in the next major release. No deprecation notice is emitted while compiling for these
+  deprecations.
+- .NET Framework 4.5.2 support is deprecated; support will be dropped when .NET Framework 4.5.2
+  reaches end of support from Microsoft on April 26, 2022. Circumstances in the future may cause
+  an earlier removal.
 
 See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseNotes>
         <SignAssembly>true</SignAssembly>
@@ -58,6 +82,9 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <PackageIconUrl />
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+      <DocumentationFile>C:\Projects\DiceRoller\Dice.xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
