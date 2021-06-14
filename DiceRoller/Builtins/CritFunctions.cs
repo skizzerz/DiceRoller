@@ -76,17 +76,10 @@ namespace Dice.Builtins
                 {
                     flags |= DieFlags.Critical;
 
-                    // if tracking successes; a critical success is worth 2 successes
                     if (context.ValueType == ResultType.Successes)
                     {
                         // just in case the die wasn't already marked as a success
-                        if ((die.Flags & DieFlags.Success) == 0)
-                        {
-                            flags |= DieFlags.Success;
-                            ++context.Value;
-                        }
-
-                        ++context.Value;
+                        flags |= DieFlags.Success;
                     }
                 }
 
@@ -94,21 +87,14 @@ namespace Dice.Builtins
                 {
                     flags |= DieFlags.Fumble;
 
-                    // if tracking failures; a critical failure is worth -2 successes
                     if (context.ValueType == ResultType.Successes)
                     {
                         // just in case the die wasn't already marked as a failure
-                        if ((die.Flags & DieFlags.Failure) == 0)
-                        {
-                            flags |= DieFlags.Failure;
-                            --context.Value;
-                        }
-
-                        --context.Value;
+                        flags |= DieFlags.Failure;
                     }
                 }
 
-                values.Add(new DieResult()
+                var newDie = new DieResult()
                 {
                     DieType = die.DieType,
                     NumSides = die.NumSides,
@@ -117,7 +103,16 @@ namespace Dice.Builtins
                     // assuming a comparison was defined for it.
                     // (we may have an existing flag if the die rolled min or max value)
                     Flags = (die.Flags & ~mask) | flags
-                });
+                };
+
+                // if tracking successes, a critical success is worth 2 successes and a critical failure (fumble + failure) is worth 2 failures
+                // adjust our value to the difference between our new success count and prior one if any
+                if (context.ValueType == ResultType.Successes)
+                {
+                    context.Value += newDie.SuccessCount - die.SuccessCount;
+                }
+
+                values.Add(newDie);
             }
 
             context.Values = values;

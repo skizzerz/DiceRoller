@@ -9,15 +9,15 @@ namespace Dice
     /// <summary>
     /// An attribute that can be applied to a callback to mark it as a dice function.
     /// Dice functions should have the following signature:
-    /// <para>
+    /// <code>
     /// void DiceFunction(FunctionContext context)
-    /// </para>
+    /// </code>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public sealed class DiceFunctionAttribute : Attribute
     {
         /// <summary>
-        /// Function name
+        /// Function name.
         /// </summary>
         public string Name { get; private set; }
 
@@ -29,7 +29,7 @@ namespace Dice
         public string? Extra { get; private set; }
 
         /// <summary>
-        /// Function scope
+        /// Function scope.
         /// </summary>
         public FunctionScope Scope { get; set; } = FunctionScope.Global;
 
@@ -53,19 +53,21 @@ namespace Dice
         public string? ArgumentPattern { get; set; }
 
         /// <summary>
-        /// Declare this method as a dice function
+        /// Initializes a new instance of the <see cref="DiceFunctionAttribute"/> class
+        /// with the given function name. No extra will be registered for this function.
         /// </summary>
-        /// <param name="name">Function name</param>
+        /// <param name="name">Function name.</param>
         public DiceFunctionAttribute(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         /// <summary>
-        /// Declare this method as a dice function
+        /// Initializes a new instance of the <see cref="DiceFunctionAttribute"/> class
+        /// with the given function and extra name.
         /// </summary>
-        /// <param name="name">Function name</param>
-        /// <param name="extra">Extra name</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="extra">Extra name.</param>
         public DiceFunctionAttribute(string name, string extra)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));

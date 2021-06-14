@@ -6,21 +6,38 @@ using System.Text;
 namespace Dice.AST
 {
     /// <summary>
-    /// Base class for partial nodes; this should not exist in an AST
+    /// Base class for partial nodes; this should not exist in an AST.
     /// </summary>
     internal abstract class PartialNode : DiceAST
     {
+        /// <summary>
+        /// Function scope used when AddFunctionNodes is called.
+        /// </summary>
         protected abstract FunctionScope FunctionScope { get; }
 
+        /// <summary>
+        /// Functions attached to the partial node. Will be formed properly into a subtree when the node is finished.
+        /// </summary>
         public List<FunctionNode> Functions { get; protected set; } = new List<FunctionNode>();
 
+        /// <inheritdoc/>
         public override IReadOnlyList<DieResult> Values => throw new InvalidOperationException("This node should not exist in an AST");
 
+        /// <summary>
+        /// Add a function node to this partial node. Should only be called by the parser listener.
+        /// </summary>
+        /// <param name="fn">Function to add.</param>
         internal void AddFunction(FunctionNode fn)
         {
             Functions.Add(fn);
         }
 
+        /// <summary>
+        /// Build a subtree by adding all functions attached to this partial node as children
+        /// to the passed-in node.
+        /// </summary>
+        /// <param name="timing">Timing filter; only functions with the given timing are added.</param>
+        /// <param name="node">Node to add functions as children to. Will be replaced with the final descendent added.</param>
         protected void AddFunctionNodes(FunctionTiming timing, ref DiceAST node)
         {
             var fns = Functions.Where(f => f.Slot.Timing == timing).ToList();
@@ -74,11 +91,13 @@ namespace Dice.AST
             }
         }
 
+        /// <inheritdoc/>
         protected override long EvaluateInternal(RollData data, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");
         }
 
+        /// <inheritdoc/>
         protected override long RerollInternal(RollData data, DiceAST root, int depth)
         {
             throw new InvalidOperationException("This node should not exist in an AST");

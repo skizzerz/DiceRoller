@@ -17,30 +17,36 @@ namespace Dice
     public enum DieFlags
     {
         /// <summary>
-        /// Indicates the die was a critical, meant for display purposes
+        /// Indicates the die was a critical, meant for display purposes.
         /// </summary>
         Critical = 1,
+
         /// <summary>
-        /// Indicates the die was a fumble, meant for display purposes
+        /// Indicates the die was a fumble, meant for display purposes.
         /// </summary>
         Fumble = 2,
+
         /// <summary>
-        /// Indicates the die counted as a success
+        /// Indicates the die counted as a success.
         /// </summary>
         Success = 4,
+
         /// <summary>
-        /// Indicates the die counted as a failure
+        /// Indicates the die counted as a failure.
         /// </summary>
         Failure = 8,
+
         /// <summary>
-        /// Indicates the die result was not kept (dropped)
+        /// Indicates the die result was not kept (dropped).
         /// </summary>
         Dropped = 16,
+
         /// <summary>
         /// Indicates the die was added due to an explosion or reroll, and was not one of the original dice rolled.
         /// May appear on Literal dice to indicate it is a placeholder number (such as a placeholder 0 when no dice are rolled).
         /// </summary>
         Extra = 32,
+
         /// <summary>
         /// Indicates the die was generated as part of a macro.
         /// </summary>

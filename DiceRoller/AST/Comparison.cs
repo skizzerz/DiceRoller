@@ -66,7 +66,7 @@ namespace Dice.AST
         /// <param name="a">First comparison to check.</param>
         /// <param name="b">Second comparison to check.</param>
         /// <returns>true if the Comparisons are equal, false otherwise.</returns>
-        public static bool operator==(Comparison a, Comparison b)
+        public static bool operator ==(Comparison a, Comparison b)
         {
             return a.Equals(b);
         }
@@ -77,7 +77,7 @@ namespace Dice.AST
         /// <param name="a">First comparison to check.</param>
         /// <param name="b">Second comparison to check.</param>
         /// <returns>true if the Comparisons are not equal, false otherwise.</returns>
-        public static bool operator!=(Comparison a, Comparison b)
+        public static bool operator !=(Comparison a, Comparison b)
         {
             return !a.Equals(b);
         }

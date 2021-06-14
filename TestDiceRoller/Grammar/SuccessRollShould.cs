@@ -68,6 +68,8 @@ namespace TestDiceRoller.Grammar
         [TestMethod]
         public void Successfully_CriticalSuccessFailureExtra()
         {
+            // This test ensures that on a success-type roll, that marking something as critical or fumble implicitly adds
+            // a success/failure condition for those same rolls. The below should be 1 success - 2 successes + 2 successes = 1 success
             EvaluateRoll("4d6=5cs6f1", SuccessConf, 4, "4d6.success(=5).critical(=6).fumble(=1) => 4 + $5 + #1! + $6! => 1 success");
         }
 

@@ -28,9 +28,6 @@ dotnet_diagnostic.CA2301.severity = none
 # it is largely enabled solely because builtin analyzers do not detect missing doc comments on public APIs
 # These suppressions disable things I find stupid or non-helpful
 
-# SA1007: Operator keyword should be followed by space
-dotnet_diagnostic.SA1007.severity = none
-
 # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = none
 

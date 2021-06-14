@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
         <PackageId>DiceRoller</PackageId>
-        <Version>4.2.0-alpha</Version>
+        <Version>4.2.0</Version>
         <Authors>Ryan Schmidt</Authors>
         <Company>SkizNet</Company>
         <Product>DiceRoller</Product>
@@ -82,9 +82,7 @@ See https://skizzerz.net/DiceRoller/Changelog for more changes.</PackageReleaseN
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <PackageIconUrl />
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-      <DocumentationFile>C:\Projects\DiceRoller\Dice.xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />

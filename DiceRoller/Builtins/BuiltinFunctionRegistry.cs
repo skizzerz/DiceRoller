@@ -80,10 +80,10 @@ namespace Dice.Builtins
                 return;
             }
 
-            var toRemove = Callbacks.Where(kv => kv.Key.scope == scope).Select(kv => kv.Key).ToList();
-            foreach (var callback in toRemove)
+            var toRemove = Callbacks.Where(kv => kv.Key.Scope == scope).Select(kv => kv.Key).ToList();
+            foreach (var (lowerName, functionScope) in toRemove)
             {
-                Remove(callback.lname, callback.scope);
+                Remove(lowerName, functionScope);
             }
         }
     }

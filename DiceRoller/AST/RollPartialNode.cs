@@ -12,16 +12,24 @@ namespace Dice.AST
     /// </summary>
     internal class RollPartialNode : PartialNode
     {
+        /// <summary>
+        /// The underlying roll being made.
+        /// </summary>
         public RollNode Roll { get; internal set; }
 
+        /// <inheritdoc/>
         protected override FunctionScope FunctionScope => FunctionScope.Basic;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RollPartialNode"/> class.
+        /// </summary>
+        /// <param name="roll">Underlying roll that may be augmented with functions.</param>
         internal RollPartialNode(RollNode roll)
         {
             Roll = roll;
         }
 
-        // this won't appear in the overall AST, but in the course of debugging it may be worthwhile to print out a partial node
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder("RPARTIAL<<");
@@ -41,9 +49,9 @@ namespace Dice.AST
         }
 
         /// <summary>
-        /// Creates the RollNode subtree
+        /// Creates the RollNode subtree.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The full subtree for the RollNode and all functions attached to it. The leaf of the tree is returned.</returns>
         internal DiceAST CreateRollNode()
         {
             DiceAST roll = Roll;

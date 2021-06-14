@@ -4,15 +4,18 @@ using System.Text;
 
 namespace Dice
 {
+    /// <summary>
+    /// Class to hold metadata about an extra.
+    /// </summary>
     public class FunctionExtra
     {
         /// <summary>
-        /// Name of the extra, in all-lowercase
+        /// Name of the extra, in all-lowercase.
         /// </summary>
         public string ExtraName { get; private set; }
 
         /// <summary>
-        /// Name of the function, in all-lowercase
+        /// Name of the function, in all-lowercase.
         /// </summary>
         public string FunctionName { get; private set; }
 
@@ -20,15 +23,15 @@ namespace Dice
 
         /// <summary>
         /// Name of context-dependent extras that can follow this extra, as a map of
-        /// lowercase extra names to lowercase function names
+        /// lowercase extra names to lowercase function names.
         /// </summary>
         public IReadOnlyDictionary<string, string> MultipartFollowers => _multipartFollowers;
 
         /// <summary>
-        /// Construct a new FunctionExtra
+        /// Initializes a new instance of the <see cref="FunctionExtra"/> class.
         /// </summary>
-        /// <param name="extraName">Extra name</param>
-        /// <param name="functionName">Function name this extra is mapped to</param>
+        /// <param name="extraName">Extra name.</param>
+        /// <param name="functionName">Function name this extra is mapped to.</param>
         public FunctionExtra(string extraName, string functionName)
         {
             ExtraName = extraName?.ToLowerInvariant() ?? throw new ArgumentNullException(nameof(extraName));
@@ -39,8 +42,8 @@ namespace Dice
         /// Multipart extras allow for context-dependent extra names. When a multipart extra is defined,
         /// the context-dependent extras added with this method take precedence over extras defined globally.
         /// </summary>
-        /// <param name="extraName">Name of the multipart extra; must be unique for this particular FunctionExtra instance</param>
-        /// <param name="functionName">Function to call when this multipart extra is encountered</param>
+        /// <param name="extraName">Name of the multipart extra; must be unique for this particular FunctionExtra instance.</param>
+        /// <param name="functionName">Function to call when this multipart extra is encountered.</param>
         public void AddMultipart(string extraName, string functionName)
         {
             if (extraName == null)

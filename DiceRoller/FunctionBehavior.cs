@@ -15,6 +15,7 @@ namespace Dice
         /// This is the default.
         /// </summary>
         ExecuteSequentially,
+
         /// <summary>
         /// Combine the arguments of all function calls into a single function call.
         /// </summary>

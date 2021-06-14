@@ -13,12 +13,30 @@ namespace Dice
     /// </summary>
     public class FunctionRegistry
     {
-        protected Dictionary<(string lname, FunctionScope scope), FunctionSlot> Callbacks { get; private set; } = new Dictionary<(string, FunctionScope), FunctionSlot>();
+        /// <summary>
+        /// Mapping of defined functions to their metadata.
+        /// </summary>
+        protected Dictionary<(string LowerName, FunctionScope Scope), FunctionSlot> Callbacks { get; private set; } = new Dictionary<(string, FunctionScope), FunctionSlot>();
 
+        /// <summary>
+        /// Mapping of defined extras to their metadata.
+        /// </summary>
         protected Dictionary<string, FunctionExtra> Extras { get; private set; } = new Dictionary<string, FunctionExtra>();
 
+        /// <summary>
+        /// Event fired when validating function calls. The event handler
+        /// will be passed the set of all functions attached to the roll for
+        /// a given timing, and should throw an exception if validation fails.
+        /// </summary>
         public event EventHandler<ValidateEventArgs>? Validate;
 
+        /// <summary>
+        /// Test if the function with the given name is defined for the given scope.
+        /// </summary>
+        /// <param name="data">Roll configuration dand data.</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="scope">Function scope.</param>
+        /// <returns>true if the function exists for the given function scope, false otherwise.</returns>
         public static bool FunctionExists(RollData data, string name, FunctionScope scope)
         {
             if (data == null)
@@ -36,6 +54,13 @@ namespace Dice
                 || data.Config.BuiltinFunctionRegistry.Contains(name, scope);
         }
 
+        /// <summary>
+        /// Test if the given extra is defined for the passed-in scope.
+        /// </summary>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="name">Extra name.</param>
+        /// <param name="scope">Function scope to check. Cannot be All or Global.</param>
+        /// <returns>true if the extra exists for the given function scope, false otherwise.</returns>
         public static bool ExtraExists(RollData data, string name, FunctionScope scope)
         {
             if (data == null)
@@ -58,6 +83,13 @@ namespace Dice
                 || data.Config.BuiltinFunctionRegistry.ContainsExtra(name, scope);
         }
 
+        /// <summary>
+        /// Get the function entry for a given name and scope.
+        /// </summary>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="scope">Function scope. Cannot be All or Roll.</param>
+        /// <returns>The function registry entry for the given name and scope.</returns>
         public static FunctionSlot GetFunction(RollData data, string name, FunctionScope scope)
         {
             if (data == null)
@@ -95,6 +127,14 @@ namespace Dice
             throw new KeyNotFoundException($"No registered function matches the name and scope ({name}, FunctionScope.{scope})");
         }
 
+        /// <summary>
+        /// Get the underlying function for an extra. If the extra does not exist or is not registered
+        /// for the given scope, a KeyNotFoundException is thrown.
+        /// </summary>
+        /// <param name="data">Roll configuration and data.</param>
+        /// <param name="name">Extra name.</param>
+        /// <param name="scope">Function scope to retrieve the function of. Cannot be All, Roll, or Global.</param>
+        /// <returns>The function registry entry for the given extra and scope.</returns>
         public static FunctionSlot GetExtraSlot(RollData data, string name, FunctionScope scope)
         {
             if (data == null)
