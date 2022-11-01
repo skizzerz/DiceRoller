@@ -87,14 +87,14 @@ namespace Dice.PbP
             // array is deserialized before contents, so cannot do .ToList() to save directly in _pristine and _stored
             // as such, save to these lists instead for the time being, then fix when all is done.
             int version = info.GetInt32("_Version");
-            PristineList = (RollResult[])info.GetValue("Pristine", typeof(RollResult[]));
-            StoredList = (RollResult[])info.GetValue("Stored", typeof(RollResult[]));
+            PristineList = (RollResult[])info.GetValue("Pristine", typeof(RollResult[]))!;
+            StoredList = (RollResult[])info.GetValue("Stored", typeof(RollResult[]))!;
             CurrentList = new List<RollResult>();
 
             if (version >= 2 && context.State != StreamingContextStates.Persistence)
             {
                 // when deserializing persisted data, current/diverged should have default values
-                CurrentList = (RollResult[])info.GetValue("Current", typeof(RollResult[]));
+                CurrentList = (RollResult[])info.GetValue("Current", typeof(RollResult[]))!;
                 Diverged = info.GetInt32("Diverged");
             }
         }
@@ -128,7 +128,7 @@ namespace Dice.PbP
         /// <para>This method should not be directly called.</para>
         /// </summary>
         /// <param name="sender">Unused.</param>
-        public virtual void OnDeserialization(object sender)
+        public virtual void OnDeserialization(object? sender)
         {
             _pristine = PristineList.ToList();
             _stored = StoredList.ToList();

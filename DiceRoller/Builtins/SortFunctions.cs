@@ -18,7 +18,7 @@ namespace Dice.Builtins
         /// <param name="e">Event arguments.</param>
         [SuppressMessage("Security", "CA2109:Review visible event handlers",
             Justification = "Public to allow library consumers to remove this validation event from BuiltinFunctionRegistry")]
-        public static void ValidateSort(object sender, ValidateEventArgs e)
+        public static void ValidateSort(object? sender, ValidateEventArgs e)
         {
             if (e == null)
             {

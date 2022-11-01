@@ -1,5 +1,5 @@
 /* If this file is changed, the corresponding C# files must be regenerated with ANTLR
- * For example: java -jar C:\antlr\antlr-4.9.2-complete.jar -package Dice.Grammar -o Grammar/Generated DiceGrammarLexer.g4 DiceGrammarParser.g4
+ * For example: java -jar C:\antlr\antlr-4.11.1-complete.jar -package Dice.Grammar -o Grammar/Generated DiceGrammarLexer.g4 DiceGrammarParser.g4
  */
 
 lexer grammar DiceGrammarLexer;

@@ -101,7 +101,14 @@ namespace Dice
         protected DiceException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            ErrorCode = (DiceErrorCode)info.GetValue("ErrorCode", typeof(int));
+            if (info.GetValue("ErrorCode", typeof(int)) is int code)
+            {
+                ErrorCode = (DiceErrorCode)code;
+            }
+            else
+            {
+                ErrorCode = DiceErrorCode.Unknown;
+            }
         }
 
         /// <inheritdoc/>

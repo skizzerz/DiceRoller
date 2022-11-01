@@ -13,7 +13,7 @@ namespace Dice.AST
     {
         private readonly List<DieResult> _values;
         private static readonly long[] _normalSides = new long[] { 1, 2, 3, 4, 6, 8, 10, 12, 20, 100, 1000, 10000 };
-        private static readonly RNGCryptoServiceProvider _rand = new RNGCryptoServiceProvider();
+        private static readonly RandomNumberGenerator _rand = RandomNumberGenerator.Create();
 
         /// <summary>
         /// What sort of roll is being made.

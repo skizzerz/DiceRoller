@@ -138,11 +138,11 @@ namespace Dice
 
             ResultType = (ResultType)info.GetInt32("ResultType");
             Value = info.GetDecimal("Value");
-            Values = (DieResult[])info.GetValue("Values", typeof(DieResult[]));
+            Values = (DieResult[])info.GetValue("Values", typeof(DieResult[]))!;
             NumRolls = info.GetInt32("NumRolls");
-            Expression = info.GetString("Expression");
-            AllRolls = (uint[])info.GetValue("AllRolls", typeof(uint[]));
-            AllMacros = (decimal[])info.GetValue("AllMacros", typeof(decimal[]));
+            Expression = info.GetString("Expression")!;
+            AllRolls = (uint[])info.GetValue("AllRolls", typeof(uint[]))!;
+            AllMacros = (decimal[])info.GetValue("AllMacros", typeof(decimal[]))!;
 
             if (version >= 3)
             {
@@ -293,7 +293,7 @@ namespace Dice
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is RollResult r)
             {
@@ -304,7 +304,7 @@ namespace Dice
         }
 
         /// <inheritdoc/>
-        public virtual bool Equals(RollResult other)
+        public virtual bool Equals(RollResult? other)
         {
             // RollRoot is not considered when determining if two RollResults are equal.
             // This is because RollRoot is not preserved on serialization, and does not contain
